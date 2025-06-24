@@ -2,38 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --background-color: #343541;
-  --container-color: #3c3f4a;
-  --text-color: #f1f1f1;
-  --accent-color: #68D08B;
-  --menu-item-color: #a7a9b4;
-  --border-radius-large: 12px;
-  --btn-border-radius: 6px;
-  --header-shadow: 2px 0 3px 0 #00000085;
-  --promo-bg: #373946;
-  --promo-bg-gradient: linear-gradient(45deg, #3e4050, #373846);
-  --promo-border: 1px solid #404055;
-  --promo-shadow: 0 0 4px 0 #1a1b27ad;
-  --card-spacing: 30px;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Ensure proper scroll behavior */
+html {
+  scroll-behavior: auto !important;
+  overflow-x: hidden;
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--background-color);
-  color: var(--text-color);
-  line-height: 1.6;
+  scroll-behavior: auto !important;
   overflow-x: hidden;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #343541;
+  color: #f1f1f1;
+  line-height: 1.6;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+/* Prevent scroll restoration on mobile */
+@media (max-width: 768px) {
+  html, body {
+    scroll-behavior: auto !important;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ensure content starts at top */
+  body {
+    scroll-padding-top: 0;
+  }
+}
+
+/* Fix for mobile scroll position issues */
+.main-content {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Ensure proper positioning for mobile browsers */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific fixes */
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+  }
+  
+  body {
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .container {

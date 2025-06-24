@@ -22,7 +22,6 @@ import { getCodeTermLabel } from '@/lib/settings';
 import RecentlyViewed from '@/components/RecentlyViewed';
 import RecentlyViewedTracker from '@/components/RecentlyViewedTracker';
 import SchemaMarkup from '@/components/SchemaMarkup';
-import CasinoPageScrollToTop from '@/components/CasinoPageScrollToTop';
 
 // Add export const dynamic = 'force-dynamic' to disable caching
 export const dynamic = 'force-dynamic';
@@ -540,10 +539,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
   ).join(' ');
 
   return (
-    <main className="min-h-screen bg-[#343541] flex flex-col pt-4 sm:pt-8">
-      {/* Scroll to top on page load for mobile */}
-      <CasinoPageScrollToTop />
-      
+    <main className="main-content min-h-screen bg-[#343541] flex flex-col pt-4 sm:pt-8">
       {/* Recently Viewed Tracker - Client-side component to track visits */}
       <RecentlyViewedTracker 
         casino={{

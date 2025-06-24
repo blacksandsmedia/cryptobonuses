@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: true,
+    unoptimized: false,
     domains: ['cdn.prod.website-files.com', 'localhost'],
     remotePatterns: [
       {
@@ -14,6 +14,7 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
     largePageDataBytes: 5 * 1024 * 1024, // 5MB
+    scrollRestoration: false,
   },
   typescript: {
     // !! WARN !!
@@ -24,6 +25,21 @@ const nextConfig = {
   // Disable React strict mode to avoid double renders in development
   // This helps react-beautiful-dnd work properly in development
   reactStrictMode: false,
+
+  // Configure headers for better caching
+  async headers() {
+    return [
+      {
+        source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import ScrollLink from './ScrollLink';
 import { normalizeImagePath } from '@/lib/image-utils';
 import ClickableBonusCode from './ClickableBonusCode';
 
@@ -207,7 +206,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
       <article 
         className="relative bg-gradient-to-br from-[#3e4050] to-[#373846] p-5 rounded-xl shadow-lg border-2 border-[#404055] transition-all duration-300 hover:shadow-xl hover:border-[#68D08B] hover:scale-[1.005] group"
       >
-        <ScrollLink 
+        <Link 
           href={`/${bonus.id}`} 
           className="block"
           title={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
@@ -237,7 +236,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
               <p className="text-[#68D08B] text-lg font-medium mt-1">{bonus.bonusText}</p>
             </div>
           </div>
-        </ScrollLink>
+        </Link>
 
         <a
           href={bonus.affiliateLink || '#'}
