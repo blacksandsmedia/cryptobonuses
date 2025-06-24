@@ -7,11 +7,8 @@ export default function ScrollToTop() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Simple, reliable scroll to top on route changes
-    // Works on all browsers including iOS Safari
-    if (typeof window !== 'undefined') {
-      window.scrollTo(0, 0);
-    }
+    // Simple scroll to top on route changes (for any remaining client-side navigation)
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   return null;

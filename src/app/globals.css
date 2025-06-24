@@ -42,11 +42,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
-  position: relative;
-  /* iOS scroll fixes */
-  -webkit-overflow-scrolling: touch;
-  /* Disable scroll restoration to prevent iOS from remembering scroll position */
-  overscroll-behavior: none;
 }
 
 @layer utilities {
@@ -73,61 +68,9 @@ body {
   background: #5abc7a;
 }
 
-/* iOS Safari specific scroll reset */
-@supports (-webkit-touch-callout: none) {
-  /* This targets iOS Safari specifically */
-  body {
-    position: relative;
-    overflow-x: hidden;
-  }
-  
-  /* Ensure links don't inherit scroll position */
-  a {
-    -webkit-touch-callout: default;
-  }
-}
-
-/* iOS Safari touch and scroll optimizations */
-@media screen and (-webkit-min-device-pixel-ratio: 2) {
-  /* High DPI devices (iOS) */
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
 /* Ensure content sections have proper spacing for anchor navigation */
 [id] {
   scroll-margin-top: 2rem;
-}
-
-/* Animation performance optimization */
-* {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
-
-/* Disable animations on devices that prefer reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  
-  /* But keep the scroll behavior */
-  html {
-    scroll-behavior: auto;
-  }
-  
-  /* Pause any running animations */
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    animation-play-state: paused;
-  }
 }
 
 .container {
@@ -149,7 +92,7 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar { 
   display: none;  /* Safari and Chrome */
-} 
+}
 
 /* Casino logo animation within cards */
 .casino-logo {
@@ -192,4 +135,33 @@ body {
 
 .animate-scroll-left:hover {
   animation-play-state: paused;
+}
+
+/* Animation performance optimization */
+* {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Disable animations on devices that prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* But keep the scroll behavior */
+  html {
+    scroll-behavior: auto;
+  }
+  
+  /* Pause any running animations */
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    animation-play-state: paused;
+  }
 } 
