@@ -8,8 +8,6 @@ import ConditionalLayout from '@/components/ConditionalLayout';
 import OfferNotifications from '@/components/OfferNotifications';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import { NotificationProvider } from '@/components/NotificationContext';
-import ScrollToTop from '@/components/ScrollToTop';
-import PullToRefresh from '@/components/PullToRefresh';
 import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -70,15 +68,15 @@ export default async function RootLayout({
 }) {
   // Fetch settings including favicon and Google Analytics ID
   let faviconUrl = '/favicon.ico'; // Default
-  let googleAnalyticsId: string | null = null;
+  let googleAnalyticsId = null;
   
   try {
     const settings = await prisma.settings.findFirst();
     if (settings?.faviconUrl) {
       faviconUrl = settings.faviconUrl;
     }
-    if (settings && 'googleAnalyticsId' in settings && settings.googleAnalyticsId) {
-      googleAnalyticsId = settings.googleAnalyticsId as string;
+    if (settings?.googleAnalyticsId) {
+      googleAnalyticsId = settings.googleAnalyticsId;
     }
   } catch (error) {
     console.error('Error fetching settings:', error);
@@ -88,7 +86,7 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href={faviconUrl} />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#343541" />
         
         {/* Google Analytics */}
@@ -115,12 +113,9 @@ export default async function RootLayout({
         
         <NotificationProvider>
           <AuthProvider>
-            <ScrollToTop />
-            <PullToRefresh>
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
-            </PullToRefresh>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
             <OfferNotifications />
           </AuthProvider>
         </NotificationProvider>

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: false,
+    unoptimized: true,
     domains: ['cdn.prod.website-files.com', 'localhost'],
     remotePatterns: [
       {
@@ -24,21 +24,6 @@ const nextConfig = {
   // Disable React strict mode to avoid double renders in development
   // This helps react-beautiful-dnd work properly in development
   reactStrictMode: false,
-
-  // Configure headers for better caching
-  async headers() {
-    return [
-      {
-        source: '/images/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;

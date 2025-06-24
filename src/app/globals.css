@@ -3,74 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --background-color: #343541;
+  --container-color: #3c3f4a;
+  --text-color: #f1f1f1;
+  --accent-color: #68D08B;
+  --menu-item-color: #a7a9b4;
+  --border-radius-large: 12px;
+  --btn-border-radius: 6px;
+  --header-shadow: 2px 0 3px 0 #00000085;
+  --promo-bg: #373946;
+  --promo-bg-gradient: linear-gradient(45deg, #3e4050, #373846);
+  --promo-border: 1px solid #404055;
+  --promo-shadow: 0 0 4px 0 #1a1b27ad;
+  --card-spacing: 30px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-html {
-  /* Industry standard smooth scrolling for anchor links */
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-  /* iOS Safari specific fixes */
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-  /* Hide scrollbar for Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: #68D08B #2c2f3a;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-color);
   line-height: 1.6;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow-x: hidden;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-/* Custom scrollbar styles */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #2c2f3a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #68D08B;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #5abc7a;
-}
-
-/* Ensure content sections have proper spacing for anchor navigation */
-[id] {
-  scroll-margin-top: 2rem;
 }
 
 .container {
@@ -92,7 +55,7 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar { 
   display: none;  /* Safari and Chrome */
-}
+} 
 
 /* Casino logo animation within cards */
 .casino-logo {
@@ -135,33 +98,4 @@ body {
 
 .animate-scroll-left:hover {
   animation-play-state: paused;
-}
-
-/* Animation performance optimization */
-* {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
-
-/* Disable animations on devices that prefer reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  
-  /* But keep the scroll behavior */
-  html {
-    scroll-behavior: auto;
-  }
-  
-  /* Pause any running animations */
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    animation-play-state: paused;
-  }
 } 

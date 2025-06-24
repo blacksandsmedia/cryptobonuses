@@ -539,7 +539,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
   ).join(' ');
 
   return (
-    <main className="main-content min-h-screen bg-[#343541] flex flex-col pt-4 sm:pt-8">
+    <main className="min-h-screen bg-[#343541] flex flex-col pt-4 sm:pt-8">
       {/* Recently Viewed Tracker - Client-side component to track visits */}
       <RecentlyViewedTracker 
         casino={{
