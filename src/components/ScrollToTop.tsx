@@ -7,12 +7,31 @@ export default function ScrollToTop() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Scroll to top when route changes
-    window.scrollTo(0, 0);
+    const scrollToTop = () => {
+      // Multiple approaches to ensure scroll to top works on all browsers
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      // Force scroll position for stubborn browsers
+      if (window.pageYOffset !== 0) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+    };
+
+    // Immediate scroll when route changes
+    scrollToTop();
     
-    // Also ensure document element is at top (for some mobile browsers)
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    // Additional attempts for mobile browsers that might delay rendering
+    const timeoutId1 = setTimeout(scrollToTop, 10);
+    const timeoutId2 = setTimeout(scrollToTop, 50);
+    const timeoutId3 = setTimeout(scrollToTop, 100);
+    
+    return () => {
+      clearTimeout(timeoutId1);
+      clearTimeout(timeoutId2);
+      clearTimeout(timeoutId3);
+    };
   }, [pathname]);
 
   return null;
