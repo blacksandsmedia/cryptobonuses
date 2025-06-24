@@ -1,45 +1,62 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 
 export default function CasinoPageScrollToTop() {
+  // Use useLayoutEffect for immediate scroll before paint
+  useLayoutEffect(() => {
+    // Immediate scroll to top
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
+
   useEffect(() => {
+    // Additional scroll handling after component mounts
     const scrollToTop = () => {
-      // Multiple approaches to ensure scroll to top works on all mobile browsers
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-      
-      // Force scroll position for stubborn browsers
-      if (window.pageYOffset !== 0) {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      }
     };
 
     // Immediate scroll
     scrollToTop();
     
-    // Additional attempts with different timings for mobile browsers
-    const timeouts = [10, 50, 100, 200];
+    // Multiple attempts to handle different browser behaviors
+    const timeouts = [10, 50, 100, 200, 500];
     const timeoutIds = timeouts.map(delay => 
       setTimeout(scrollToTop, delay)
     );
-    
-    // Also listen for when the page becomes visible (helps with mobile browser switching)
+
+    // Also handle when the page becomes visible (mobile browser tab switching)
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        scrollToTop();
+        setTimeout(scrollToTop, 50);
       }
     };
-    
+
+    // Handle focus events (when user returns to tab)
+    const handleFocus = () => {
+      setTimeout(scrollToTop, 50);
+    };
+
+    // Handle resize events (mobile orientation change)
+    const handleResize = () => {
+      setTimeout(scrollToTop, 100);
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Cleanup function
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
     return () => {
       timeoutIds.forEach(id => clearTimeout(id));
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('resize', handleResize);
     };
-  }, []); // Empty dependency array means this only runs once when component mounts
+  }, []);
 
   return null;
 } 

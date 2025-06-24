@@ -17,15 +17,28 @@ export default function ScrollLink({ href, children, className, title }: ScrollL
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // Force scroll to top immediately
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    // Multiple scroll attempts to ensure it works
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
     
-    // Navigate after a brief delay to ensure scroll happens first
+    // Immediate scroll
+    scrollToTop();
+    
+    // Additional scroll attempts
+    setTimeout(scrollToTop, 10);
+    setTimeout(scrollToTop, 50);
+    
+    // Navigate after ensuring scroll position is reset
     setTimeout(() => {
       router.push(href);
-    }, 10);
+      // Additional scroll after navigation starts
+      setTimeout(scrollToTop, 10);
+      setTimeout(scrollToTop, 50);
+      setTimeout(scrollToTop, 100);
+    }, 100);
   };
 
   return (
