@@ -26,8 +26,10 @@ export default function LoginPage() {
     cookiesToClear.forEach(cookieName => {
       // Clear for current domain
       document.cookie = `${cookieName}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-      // Clear for subdomain
-      document.cookie = `${cookieName}=; Path=/; Domain=${window.location.hostname}; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+      // Clear for subdomain (only if hostname is available)
+      if (typeof window !== 'undefined' && window.location.hostname) {
+        document.cookie = `${cookieName}=; Path=/; Domain=${window.location.hostname}; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+      }
       // Clear with secure flag
       document.cookie = `${cookieName}=; Path=/; Secure; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
     });
@@ -54,10 +56,11 @@ export default function LoginPage() {
     cookiesToClear.forEach(cookieName => {
       // Clear for current domain
       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      // Clear for localhost specifically
-      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost;`;
-      // Clear for .localhost
-      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.localhost;`;
+      // Clear for localhost specifically (only if needed)
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost;`;
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.localhost;`;
+      }
     });
 
     // Clear all localStorage
@@ -121,29 +124,104 @@ export default function LoginPage() {
     toast.success("Debug info logged to console. Press F12 to view.");
   };
 
+  const testUploadAPI = async () => {
+    try {
+      console.log("Testing upload API...");
+      
+      // Get admin token from cookies
+      const adminToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('admin-token='))
+        ?.split('=')[1];
+      
+      console.log("Admin token for upload test:", adminToken);
+      
+      // Create a simple test file
+      const canvas = document.createElement('canvas');
+      canvas.width = 100;
+      canvas.height = 100;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#68D08B';
+        ctx.fillRect(0, 0, 100, 100);
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Arial';
+        ctx.fillText('TEST', 30, 55);
+      }
+      
+      canvas.toBlob(async (blob) => {
+        if (blob) {
+          const formData = new FormData();
+          formData.append('file', blob, 'test-logo.png');
+          formData.append('context', 'Test Casino');
+          formData.append('type', 'logo');
+          
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+          });
+          
+          const data = await response.json();
+          console.log("Upload test response:", data);
+          
+          if (response.ok) {
+            toast.success(`Upload test successful! File: ${data.url}`);
+          } else {
+            toast.error(`Upload test failed: ${data.error}`);
+          }
+        }
+      }, 'image/png');
+      
+    } catch (error) {
+      console.error("Upload test error:", error);
+      toast.error("Upload test failed - check console");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log("Attempting login...");
+      
       // We're using the direct API without NextAuth
       const response = await fetch("/api/admin-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include cookies
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
+      console.log("Login response:", data);
 
       if (response.ok) {
-        toast.success("Login successful!");
-        // Small delay to ensure cookie is set
+        console.log("Login successful, checking cookies...");
+        
+        // Wait a bit for cookie to be set
         setTimeout(() => {
-          router.push("/admin");
-          router.refresh();
+          const adminToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('admin-token='))
+            ?.split('=')[1];
+          
+          console.log("Admin token after login:", adminToken);
+          
+          if (adminToken) {
+            toast.success("Login successful! Token set correctly.");
+            router.push("/admin");
+            router.refresh();
+          } else {
+            console.warn("Login successful but no token found in cookies");
+            toast.success("Login successful!");
+            router.push("/admin");
+            router.refresh();
+          }
         }, 100);
       } else {
         setError(data.error || "Invalid email or password. Please try again.");
@@ -272,17 +350,23 @@ export default function LoginPage() {
         <div className="text-center mt-6 space-y-3">
           <button
             onClick={clearAllCache}
-            className="text-xs text-[#68D08B] hover:text-[#5abc7a] underline transition-colors duration-200"
+            className="text-xs text-[#68D08B] hover:text-[#5abc7a] underline transition-colors duration-200 mr-4"
           >
-            Having login issues? Clear browser cache
+            Clear browser cache
           </button>
           <button
             onClick={debugAuthState}
+            className="text-xs text-[#68D08B] hover:text-[#5abc7a] underline transition-colors duration-200 mr-4"
+          >
+            Debug auth state
+          </button>
+          <button
+            onClick={testUploadAPI}
             className="text-xs text-[#68D08B] hover:text-[#5abc7a] underline transition-colors duration-200"
           >
-            Debug authentication state
+            Test upload API
           </button>
-          <p className="text-xs text-[#6b7280]">
+          <p className="text-xs text-[#6b7280] mt-2">
             Contact your system administrator for support
           </p>
         </div>
