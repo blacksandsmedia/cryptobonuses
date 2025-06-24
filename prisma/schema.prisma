@@ -1,0 +1,317 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String      @id @default(cuid())
+  name           String?
+  email          String      @unique
+  emailVerified  DateTime?
+  image          String?
+  profilePicture String?
+  password       String?
+  role           Role        @default(USER)
+  bio            String?
+  username       String?     @unique
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  pageChecks     PageCheck[]
+  accounts       Account[]
+  sessions       Session[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Casino {
+  id                       String            @id @default(cuid())
+  name                     String
+  slug                     String            @unique
+  logo                     String?
+  featuredImage            String?
+  description              String
+  rating                   Float             @default(0)
+  displayOrder             Int               @default(0)
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
+  affiliateLink            String?
+  screenshots              String[]          @default([])
+  website                  String?
+  foundedYear              Int?
+  wageringRequirement      String?
+  minimumDeposit           String?
+  codeTermLabel            String?           @default("bonus code")
+  keyFeatures              Json?             @default("[]")
+  customTableFields        Json?             @default("[]")
+  aboutContent             String?
+  howToRedeemContent       String?
+  bonusDetailsContent      String?
+  gameContent              String?
+  termsContent             String?
+  faqContent               String?
+  acceptedCryptocurrencies Cryptocurrency[] @default([])
+  licenseLocation          String?
+  ownershipCompanyName     String?
+  ownershipRegNumber       String?
+  ownershipLicenseNumber   String?
+  bonuses                  Bonus[]
+  reports                  CasinoReport[]
+  offerTrackings           OfferTracking[]
+  reviews                  Review[]
+}
+
+model Bonus {
+  id             String          @id @default(cuid())
+  title          String
+  description    String
+  code           String?
+  types          BonusType[]
+  value          String
+  casinoId       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  casino         Casino          @relation(fields: [casinoId], references: [id])
+  CodeFeedback   CodeFeedback[]
+  offerTrackings OfferTracking[]
+}
+
+model OfferTracking {
+  id         String   @id @default(cuid())
+  casinoId   String?
+  bonusId    String?
+  actionType String
+  searchTerm String?
+  createdAt  DateTime @default(now())
+  path       String?
+  bonus      Bonus?   @relation(fields: [bonusId], references: [id])
+  casino     Casino?  @relation(fields: [casinoId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  author    String
+  content   String
+  rating    Float    @default(0)
+  casinoId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  verified  Boolean  @default(false)
+  casino    Casino   @relation(fields: [casinoId], references: [id])
+}
+
+model Settings {
+  id                   String           @id @default(cuid())
+  faviconUrl           String?
+  codeTermLabel        String           @default("bonus code")
+  autoCheckEnabled     Boolean          @default(true)
+  autoCheckFrequency   String           @default("weekly")
+  autoCheckUserId      String?
+  searchDebounceTime   Int              @default(2000)
+  searchInstantTrack   Boolean          @default(true)
+  cryptoTickerSelection Cryptocurrency[] @default([BITCOIN, ETHEREUM, CARDANO, POLKADOT, DOGECOIN, LITECOIN, CHAINLINK, SOLANA, POLYGON, AVALANCHE])
+  hideCryptoTicker     Boolean          @default(false)
+  hideBuyCryptoButton  Boolean          @default(false)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  googleAnalyticsId    String?
+}
+
+model LegalPage {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    ContactStatus @default(UNREAD)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model SlugRedirect {
+  id         String   @id @default(cuid())
+  oldSlug    String   @unique
+  newSlug    String
+  entityType String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Newsletter {
+  id        String           @id @default(cuid())
+  email     String           @unique
+  status    NewsletterStatus @default(SUBSCRIBED)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model PageCheck {
+  id          String   @id @default(cuid())
+  pageSlug    String
+  pageType    String   @default("casino")
+  userId      String
+  notes       String?
+  isAutomatic Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([pageSlug])
+  @@index([createdAt])
+  @@map("PageCheck")
+}
+
+model CasinoReport {
+  id          String       @id @default(cuid())
+  casinoId    String
+  reason      ReportReason
+  description String?
+  reporterIp  String
+  status      ReportStatus @default(PENDING)
+  adminNotes  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  casino      Casino       @relation(fields: [casinoId], references: [id], onDelete: Cascade)
+
+  @@unique([casinoId, reporterIp])
+  @@index([casinoId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CodeFeedback {
+  id        String   @id
+  bonusId   String
+  userIp    String
+  worked    Boolean
+  createdAt DateTime @default(now())
+  Bonus     Bonus    @relation(fields: [bonusId], references: [id], onDelete: Cascade)
+
+  @@unique([bonusId, userIp])
+  @@index([bonusId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BonusType {
+  WELCOME
+  NO_DEPOSIT
+  FREE_SPINS
+  RELOAD
+  CASHBACK
+  DEPOSIT
+}
+
+enum ContactStatus {
+  UNREAD
+  READ
+  REPLIED
+}
+
+enum NewsletterStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+}
+
+enum ReportReason {
+  MISLEADING_BONUSES
+  FAKE_REVIEWS
+  PAYMENT_DELAYS
+  UNFAIR_TERMS
+  SCAM_ACTIVITY
+  POOR_CUSTOMER_SERVICE
+  RIGGED_GAMES
+  IDENTITY_THEFT
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  VERIFIED
+}
+
+enum Cryptocurrency {
+  BITCOIN
+  ETHEREUM
+  LITECOIN
+  BITCOIN_CASH
+  RIPPLE
+  DOGECOIN
+  TETHER
+  CARDANO
+  POLYGON
+  BINANCE_COIN
+  SOLANA
+  AVALANCHE
+  CHAINLINK
+  UNISWAP
+  TRON
+  MONERO
+  DASH
+  ZCASH
+  STELLAR
+  COSMOS
+  POLKADOT
+  FANTOM
+  NEAR
+  ALGORAND
+  SHIBA_INU
+  USDC
+  USDT
+  BUSD
+  DAI
+  OTHER
+}
