@@ -116,9 +116,11 @@ export default async function RootLayout({
         <NotificationProvider>
           <AuthProvider>
             <ScrollToTop />
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
+            <PullToRefresh>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+            </PullToRefresh>
             <OfferNotifications />
           </AuthProvider>
         </NotificationProvider>

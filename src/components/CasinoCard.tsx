@@ -210,6 +210,12 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
           href={`/${bonus.id}`} 
           className="block"
           title={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
+          onClick={() => {
+            // Simple iOS scroll reset - just reset to top before navigation
+            if (typeof window !== 'undefined') {
+              window.scrollTo(0, 0);
+            }
+          }}
         >
           <div className="flex items-start gap-4 mb-4">
             <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#2c2f3a] flex items-center justify-center casino-logo">
