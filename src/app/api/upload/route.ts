@@ -7,6 +7,7 @@ import { JWT_SECRET, getJWTSecret } from "@/lib/auth-utils";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -15,7 +16,10 @@ interface DecodedToken {
   role: string;
 }
 
-// Helper function to ensure the uploads directory exists
+// Check if we're in production (Railway, Vercel, etc.)
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
+
+// Helper function to ensure the uploads directory exists (for local development)
 async function ensureUploadsDir() {
   const uploadsDir = path.join(process.cwd(), 'public/uploads');
   try {
@@ -77,6 +81,11 @@ function createSEOFilename(originalName: string, context?: string, type?: string
 
 export async function POST(request: Request) {
   console.log("=== UPLOAD API DEBUG ===");
+  console.log("Environment:", { 
+    NODE_ENV: process.env.NODE_ENV, 
+    RAILWAY_ENVIRONMENT: process.env.RAILWAY_ENVIRONMENT,
+    isProduction 
+  });
   
   // Debug all cookies
   const cookieStore = cookies();
@@ -180,7 +189,8 @@ export async function POST(request: Request) {
       fileSize: file?.size,
       fileType: file?.type,
       context: context,
-      type: type
+      type: type,
+      isProduction
     });
     
     if (!file) {
@@ -200,25 +210,61 @@ export async function POST(request: Request) {
     const fileName = createSEOFilename(file.name, context, type);
     console.log("Generated filename:", fileName);
     
-    // Ensure uploads directory exists
-    const uploadsDir = await ensureUploadsDir();
-    
-    // Create file path
-    const filePath = path.join(uploadsDir, fileName);
-    
-    // Write file to disk
+    // Convert file to buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, fileBuffer as any);
     
-    // Return the URL to the uploaded file
-    const fileUrl = `/uploads/${fileName}`;
+    let fileUrl: string;
     
-    console.log("Upload successful:", fileUrl);
+    if (isProduction) {
+      // Use Cloudinary for production
+      console.log("Using Cloudinary for production upload");
+      
+      // Check if Cloudinary is configured
+      if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+        console.error("Cloudinary not configured. Missing environment variables:");
+        console.error("CLOUDINARY_CLOUD_NAME:", !!process.env.CLOUDINARY_CLOUD_NAME);
+        console.error("CLOUDINARY_API_KEY:", !!process.env.CLOUDINARY_API_KEY);
+        console.error("CLOUDINARY_API_SECRET:", !!process.env.CLOUDINARY_API_SECRET);
+        
+        return NextResponse.json({ 
+          error: "Cloud storage not configured. Please set up Cloudinary environment variables." 
+        }, { status: 500 });
+      }
+      
+      try {
+        const cloudinaryResult = await uploadToCloudinary(fileBuffer, fileName, 'cryptobonuses');
+        fileUrl = cloudinaryResult.url;
+        console.log("Cloudinary upload successful:", fileUrl);
+      } catch (cloudinaryError) {
+        console.error("Cloudinary upload failed:", cloudinaryError);
+        return NextResponse.json({ 
+          error: "Failed to upload to cloud storage", 
+          details: cloudinaryError instanceof Error ? cloudinaryError.message : "Unknown error" 
+        }, { status: 500 });
+      }
+    } else {
+      // Use local storage for development
+      console.log("Using local storage for development upload");
+      
+      // Ensure uploads directory exists
+      const uploadsDir = await ensureUploadsDir();
+      
+      // Create file path
+      const filePath = path.join(uploadsDir, fileName);
+      
+      // Write file to disk
+      await writeFile(filePath, fileBuffer as any);
+      
+      // Return the URL to the uploaded file
+      fileUrl = `/uploads/${fileName}`;
+      console.log("Local upload successful:", fileUrl);
+    }
     
     return NextResponse.json({ 
       url: fileUrl,
       success: true,
       fileName: fileName,
+      storage: isProduction ? 'cloudinary' : 'local',
       debug: {
         authMethod: authMethod,
         timestamp: new Date().toISOString()
