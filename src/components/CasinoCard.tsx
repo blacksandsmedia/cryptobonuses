@@ -212,9 +212,25 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
           title={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
           onClick={() => {
             // Force scroll to top before navigation to prevent homepage scroll position inheritance
-            window.scrollTo(0, 0);
+            // Use multiple methods to ensure it works across all browsers
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             document.documentElement.scrollTop = 0;
             document.body.scrollTop = 0;
+            
+            // Also reset any scrollable containers
+            const scrollableElements = document.querySelectorAll('[data-scroll-to-top]');
+            scrollableElements.forEach((element) => {
+              if (element instanceof HTMLElement) {
+                element.scrollTop = 0;
+              }
+            });
+            
+            // Force a repaint to ensure scroll position is reset
+            requestAnimationFrame(() => {
+              window.scrollTo(0, 0);
+              document.documentElement.scrollTop = 0;
+              document.body.scrollTop = 0;
+            });
           }}
         >
           <div className="flex items-start gap-4 mb-4">
