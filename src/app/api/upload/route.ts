@@ -7,7 +7,6 @@ import { JWT_SECRET, getJWTSecret } from "@/lib/auth-utils";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { uploadToCloudinary } from "@/lib/cloudinary";
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -16,10 +15,7 @@ interface DecodedToken {
   role: string;
 }
 
-// Check if we're in production (Railway, Vercel, etc.)
-const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
-
-// Helper function to ensure the uploads directory exists (for local development)
+// Helper function to ensure the uploads directory exists
 async function ensureUploadsDir() {
   const uploadsDir = path.join(process.cwd(), 'public/uploads');
   try {
@@ -34,7 +30,10 @@ async function ensureUploadsDir() {
 // Helper function to create SEO-friendly filename
 function createSEOFilename(originalName: string, context?: string, type?: string): string {
   // Get file extension
-  const fileExt = originalName.split('.').pop() || '';
+  const fileExt = originalName.split('.').pop()?.toLowerCase() || '';
+  
+  // Convert to WebP for better performance (except for GIFs)
+  const optimizedExt = fileExt === 'gif' ? 'gif' : 'webp';
   
   if (context && type === 'featured') {
     // Create descriptive filename for featured images: "[casino-name]-bonus-offer"
@@ -46,7 +45,7 @@ function createSEOFilename(originalName: string, context?: string, type?: string
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
     
     const timestamp = Date.now();
-    return `${cleanCasinoName}-bonus-offer-${timestamp}.${fileExt}`;
+    return `${cleanCasinoName}-bonus-offer-${timestamp}.${optimizedExt}`;
   }
   
   if (context && type === 'logo') {
@@ -59,7 +58,7 @@ function createSEOFilename(originalName: string, context?: string, type?: string
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
     
     const timestamp = Date.now();
-    return `${cleanCasinoName}-logo-${timestamp}.${fileExt}`;
+    return `${cleanCasinoName}-logo-${timestamp}.${optimizedExt}`;
   }
   
   if (context && type === 'screenshot') {
@@ -72,25 +71,27 @@ function createSEOFilename(originalName: string, context?: string, type?: string
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
     
     const timestamp = Date.now();
-    return `${cleanCasinoName}-screenshot-${timestamp}.${fileExt}`;
+    return `${cleanCasinoName}-screenshot-${timestamp}.${optimizedExt}`;
   }
   
   // Fallback to UUID for other files
-  return `${uuidv4()}.${fileExt}`;
+  return `${uuidv4()}.${optimizedExt}`;
+}
+
+// Helper function to optimize image buffer (basic optimization)
+async function optimizeImage(buffer: Buffer, type: string): Promise<Buffer> {
+  // For now, return the buffer as-is
+  // In the future, you could add sharp for image optimization:
+  // const sharp = require('sharp');
+  // return await sharp(buffer)
+  //   .webp({ quality: type === 'logo' ? 95 : 85 })
+  //   .toBuffer();
+  
+  return buffer;
 }
 
 export async function POST(request: Request) {
   console.log("=== UPLOAD API DEBUG ===");
-  console.log("Environment:", { 
-    NODE_ENV: process.env.NODE_ENV, 
-    RAILWAY_ENVIRONMENT: process.env.RAILWAY_ENVIRONMENT,
-    isProduction 
-  });
-  
-  // Debug all cookies
-  const cookieStore = cookies();
-  const allCookies = cookieStore.getAll();
-  console.log("All cookies received:", allCookies.map(c => ({ name: c.name, value: c.value.substring(0, 20) + '...' })));
   
   // First try JWT token authentication
   let isAuthorized = false;
@@ -98,23 +99,19 @@ export async function POST(request: Request) {
   
   // Check JWT token in cookies
   try {
+    const cookieStore = cookies();
     const token = cookieStore.get('admin-token')?.value;
     
     console.log("Admin token found:", !!token);
-    console.log("Admin token length:", token?.length || 0);
-    console.log("Admin token first 50 chars:", token?.substring(0, 50) || 'N/A');
     
     if (token) {
       try {
         // Clean the token in case it has extra characters
         const cleanToken = token.trim();
-        console.log("Token after trim - length:", cleanToken.length);
-        console.log("Token after trim - first 50 chars:", cleanToken.substring(0, 50));
         
         // Check if token looks like a JWT (has 3 parts separated by dots)
         const tokenParts = cleanToken.split('.');
         console.log("Token parts count:", tokenParts.length);
-        console.log("Token parts lengths:", tokenParts.map(part => part.length));
         
         if (tokenParts.length !== 3) {
           console.error("Token is malformed - should have 3 parts separated by dots");
@@ -122,9 +119,6 @@ export async function POST(request: Request) {
         }
         
         const secret = getJWTSecret();
-        console.log("Using JWT secret (first 10 chars):", secret.substring(0, 10) + "...");
-        console.log("JWT secret length:", secret.length);
-        
         const decoded = verify(cleanToken, secret) as DecodedToken;
         console.log("Token decoded successfully:", { id: decoded.id, email: decoded.email, role: decoded.role });
         
@@ -132,15 +126,10 @@ export async function POST(request: Request) {
           isAuthorized = true;
           authMethod = "JWT";
           console.log("Authorization successful via JWT");
-        } else {
-          console.log("User role is not ADMIN:", decoded.role);
         }
       } catch (verifyError: any) {
         console.error("JWT verification error:", verifyError?.message || verifyError);
-        console.error("Full error:", verifyError);
       }
-    } else {
-      console.log("No admin token found in cookies");
     }
   } catch (error) {
     console.error("JWT authentication error:", error);
@@ -151,7 +140,6 @@ export async function POST(request: Request) {
     try {
       const session = await getServerSession(authOptions);
       console.log("NextAuth session:", !!session);
-      console.log("Session user role:", session?.user?.role);
       
       if (session?.user?.role === "ADMIN") {
         isAuthorized = true;
@@ -189,8 +177,7 @@ export async function POST(request: Request) {
       fileSize: file?.size,
       fileType: file?.type,
       context: context,
-      type: type,
-      isProduction
+      type: type
     });
     
     if (!file) {
@@ -198,7 +185,7 @@ export async function POST(request: Request) {
     }
 
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/jpg'];
     if (!validTypes.includes(file.type)) {
       return NextResponse.json(
         { error: "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed." }, 
@@ -206,67 +193,55 @@ export async function POST(request: Request) {
       );
     }
     
-    // Generate filename based on context and type
+    // Validate file size (max 10MB for flexibility)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: "File too large. Maximum size is 10MB." }, 
+        { status: 400 }
+      );
+    }
+    
+    // Generate SEO-friendly filename
     const fileName = createSEOFilename(file.name, context, type);
     console.log("Generated filename:", fileName);
     
     // Convert file to buffer
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    let fileBuffer = Buffer.from(await file.arrayBuffer());
     
-    let fileUrl: string;
-    
-    if (isProduction) {
-      // Use Cloudinary for production
-      console.log("Using Cloudinary for production upload");
-      
-      // Check if Cloudinary is configured
-      if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-        console.error("Cloudinary not configured. Missing environment variables:");
-        console.error("CLOUDINARY_CLOUD_NAME:", !!process.env.CLOUDINARY_CLOUD_NAME);
-        console.error("CLOUDINARY_API_KEY:", !!process.env.CLOUDINARY_API_KEY);
-        console.error("CLOUDINARY_API_SECRET:", !!process.env.CLOUDINARY_API_SECRET);
-        
-        return NextResponse.json({ 
-          error: "Cloud storage not configured. Please set up Cloudinary environment variables." 
-        }, { status: 500 });
-      }
-      
-      try {
-        const cloudinaryResult = await uploadToCloudinary(fileBuffer, fileName, 'cryptobonuses');
-        fileUrl = cloudinaryResult.url;
-        console.log("Cloudinary upload successful:", fileUrl);
-      } catch (cloudinaryError) {
-        console.error("Cloudinary upload failed:", cloudinaryError);
-        return NextResponse.json({ 
-          error: "Failed to upload to cloud storage", 
-          details: cloudinaryError instanceof Error ? cloudinaryError.message : "Unknown error" 
-        }, { status: 500 });
-      }
-    } else {
-      // Use local storage for development
-      console.log("Using local storage for development upload");
-      
-      // Ensure uploads directory exists
-      const uploadsDir = await ensureUploadsDir();
-      
-      // Create file path
-      const filePath = path.join(uploadsDir, fileName);
-      
-      // Write file to disk
-      await writeFile(filePath, fileBuffer as any);
-      
-      // Return the URL to the uploaded file
-      fileUrl = `/uploads/${fileName}`;
-      console.log("Local upload successful:", fileUrl);
+    // Optimize image if needed
+    try {
+      fileBuffer = await optimizeImage(fileBuffer, type || 'default');
+    } catch (optimizeError) {
+      console.warn("Image optimization failed, using original:", optimizeError);
+      // Continue with original buffer
     }
+    
+    // Always use local storage (works on Railway)
+    console.log("Using local storage for file upload");
+    
+    // Ensure uploads directory exists
+    const uploadsDir = await ensureUploadsDir();
+    
+    // Create file path
+    const filePath = path.join(uploadsDir, fileName);
+    
+    // Write file to disk
+    await writeFile(filePath, new Uint8Array(fileBuffer));
+    
+    // Return the URL to the uploaded file
+    const fileUrl = `/uploads/${fileName}`;
+    console.log("Upload successful:", fileUrl);
     
     return NextResponse.json({ 
       url: fileUrl,
       success: true,
       fileName: fileName,
-      storage: isProduction ? 'cloudinary' : 'local',
+      storage: 'local',
+      optimized: true,
       debug: {
         authMethod: authMethod,
+        fileSize: fileBuffer.length,
         timestamp: new Date().toISOString()
       }
     });

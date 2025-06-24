@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { normalizeImagePath } from '@/lib/image-utils';
+import { normalizeImagePath, getOptimizedImageProps, getFallbackImagePaths } from '@/lib/image-utils';
 import ClickableBonusCode from './ClickableBonusCode';
 import OptimizedImage from './OptimizedImage';
 
@@ -125,23 +125,10 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // Load alternative logo paths to try
-  const getAlternativeLogoPaths = (casinoName: string, originalPath: string) => {
-    const cleanName = casinoName.replace(/[^a-zA-Z0-9]/g, '');
-    return [
-      originalPath,
-      `/images/${casinoName} Logo.png`,
-      `/images/${casinoName.replace(/\s+/g, '')} Logo.png`,
-      `/images/${cleanName} Logo.png`,
-      `/images/${cleanName}Logo.png`,
-      '/images/default-logo.png'
-    ];
-  };
-
   // Try next image in case of error
   const handleImageError = () => {
-    // Get alternative paths
-    const alternativePaths = getAlternativeLogoPaths(bonus.casinoName, imagePath);
+    // Get alternative paths using the utility function
+    const alternativePaths = getFallbackImagePaths(bonus.casinoName, 'logo');
     const currentIndex = alternativePaths.indexOf(imagePath);
     
     if (currentIndex < alternativePaths.length - 1) {
@@ -210,13 +197,11 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
               {!imageError ? (
                 <div className="relative w-full h-full">
                   <OptimizedImage
-                    src={imagePath}
-                    alt={`${bonus.casinoName} logo`}
+                    {...getOptimizedImageProps(imagePath, bonus.casinoName, 'logo', true)}
                     width={64}
                     height={64}
-                    className="object-cover w-full h-full"
+                    className="object-cover w-full h-full logo-crisp"
                     onError={handleImageError}
-                    priority={true}
                     isLogo={true}
                   />
                 </div>
