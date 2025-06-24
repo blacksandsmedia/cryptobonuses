@@ -8,6 +8,7 @@ import ConditionalLayout from '@/components/ConditionalLayout';
 import OfferNotifications from '@/components/OfferNotifications';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import { NotificationProvider } from '@/components/NotificationContext';
+import ScrollToTop from '@/components/ScrollToTop';
 import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -68,15 +69,15 @@ export default async function RootLayout({
 }) {
   // Fetch settings including favicon and Google Analytics ID
   let faviconUrl = '/favicon.ico'; // Default
-  let googleAnalyticsId = null;
+  let googleAnalyticsId: string | null = null;
   
   try {
     const settings = await prisma.settings.findFirst();
     if (settings?.faviconUrl) {
       faviconUrl = settings.faviconUrl;
     }
-    if (settings?.googleAnalyticsId) {
-      googleAnalyticsId = settings.googleAnalyticsId;
+    if (settings && 'googleAnalyticsId' in settings && settings.googleAnalyticsId) {
+      googleAnalyticsId = settings.googleAnalyticsId as string;
     }
   } catch (error) {
     console.error('Error fetching settings:', error);
@@ -113,6 +114,7 @@ export default async function RootLayout({
         
         <NotificationProvider>
           <AuthProvider>
+            <ScrollToTop />
             <ConditionalLayout>
               {children}
             </ConditionalLayout>
