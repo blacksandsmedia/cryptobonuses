@@ -71,7 +71,6 @@ const transformCasinoDataForUI = (casinos: Casino[]) => {
     
     // Clean up the logo URL
     const logoUrl = casino.logo || '';
-    console.log(`[Homepage] Casino ${casino.name} logo URL: "${logoUrl}"`);
     
     const transformedCasino = {
       id: casino.slug,
@@ -92,7 +91,6 @@ const transformCasinoDataForUI = (casinos: Casino[]) => {
       codeTermLabel: casino.codeTermLabel || 'bonus code'
     };
     
-    console.log(`[Homepage] Transformed casino: ${casino.name}, slug: ${casino.slug}, logo: "${transformedCasino.logoUrl}"`);
     return transformedCasino;
   });
 };

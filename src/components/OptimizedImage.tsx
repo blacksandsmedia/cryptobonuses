@@ -36,29 +36,24 @@ export default function OptimizedImage({
       setHasError(true);
       if (fallback && currentSrc !== fallback) {
         setCurrentSrc(fallback);
-        return;
+        setHasError(false);
+      } else if (onError) {
+        onError();
       }
-      onError?.();
     }
   }, [hasError, fallback, currentSrc, onError]);
 
+  // For logos, use higher quality and specific rendering
+  const imageQuality = isLogo ? 100 : quality;
+  const logoClassName = isLogo ? `${className} logo-crisp` : className;
+
   if (hasError && !fallback) {
     return (
-      <div 
-        className={`bg-[#2c2f3a] flex items-center justify-center text-center text-sm font-semibold px-1 ${className}`}
-        style={{ width, height }}
-      >
-        {alt.substring(0, 2).toUpperCase()}
+      <div className={`${className} flex items-center justify-center bg-gray-700 text-white text-xs`}>
+        Failed to load
       </div>
     );
   }
-
-  const logoClassName = isLogo 
-    ? `${className} logo-crisp` 
-    : className;
-
-  const imageQuality = isLogo ? 100 : quality;
-  const logoSizes = isLogo ? `${width}px` : undefined;
 
   return (
     <Image
@@ -73,11 +68,7 @@ export default function OptimizedImage({
       loading={priority ? 'eager' : 'lazy'}
       placeholder={isLogo ? 'empty' : 'blur'}
       blurDataURL={isLogo ? undefined : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="}
-      sizes={logoSizes}
-      style={isLogo ? { 
-        imageRendering: 'crisp-edges',
-        objectFit: 'contain'
-      } : undefined}
+      sizes={isLogo ? `${width}px` : undefined}
       unoptimized={false}
     />
   );
