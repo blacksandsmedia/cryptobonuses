@@ -4,6 +4,9 @@ import SpinWheel from '@/components/SpinWheel';
 import Link from 'next/link';
 import { getCodeTermLabel } from '@/lib/settings';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Crypto Bonus Spin Wheel - Win Random Casino Bonuses',
   description: `The Crypto Bonus Spin Wheel gives users instant access to random casino bonuses in ${new Date().getFullYear()}. Spin to discover exclusive offers from top-rated crypto casinos.`,
@@ -11,20 +14,29 @@ export const metadata: Metadata = {
 };
 
 export default async function SpinPage() {
-  // Fetch all casinos with their bonuses
-  const casinos = await prisma.casino.findMany({
-    include: {
-      bonuses: true
-    },
-    orderBy: {
-      rating: 'desc'
-    }
-  }) as any; // Type assertion to handle new fields during migration
+  let casinos = [];
+  let faviconUrl = '/favicon.ico';
+  let codeTermLabel = 'bonus code';
 
-  // Fetch settings for favicon and code term
-  const settings = await prisma.settings.findFirst();
-  const faviconUrl = settings?.faviconUrl || '/favicon.ico';
-  const codeTermLabel = await getCodeTermLabel();
+  try {
+    // Fetch all casinos with their bonuses
+    casinos = await prisma.casino.findMany({
+      include: {
+        bonuses: true
+      },
+      orderBy: {
+        rating: 'desc'
+      }
+    }) as any; // Type assertion to handle new fields during migration
+
+    // Fetch settings for favicon and code term
+    const settings = await prisma.settings.findFirst();
+    faviconUrl = settings?.faviconUrl || '/favicon.ico';
+    codeTermLabel = await getCodeTermLabel();
+  } catch (error) {
+    console.error('Failed to fetch spin wheel data:', error);
+    // Continue with empty data - the component will handle this gracefully
+  }
 
   // Transform casino data for the spin wheel
   const spinData = casinos.map((casino: any) => ({
