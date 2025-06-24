@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { normalizeImagePath } from '@/lib/image-utils';
 import ClickableBonusCode from './ClickableBonusCode';
+import OptimizedImage from './OptimizedImage';
 
 // Define the bonus type directly here to avoid import issues
 interface Bonus {
@@ -214,14 +214,15 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
             <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#2c2f3a] flex items-center justify-center casino-logo">
               {!imageError ? (
                 <div className="relative w-full h-full">
-                  <Image
+                  <OptimizedImage
                     src={imagePath}
-                    alt={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
+                    alt={`${bonus.casinoName} logo`}
                     width={64}
                     height={64}
                     className="object-cover w-full h-full"
                     onError={handleImageError}
                     priority={true}
+                    isLogo={true}
                   />
                 </div>
               ) : (

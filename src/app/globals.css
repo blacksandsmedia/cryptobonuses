@@ -138,24 +138,31 @@ body {
   animation-play-state: paused;
 }
 
-/* Performance optimizations for cards and interactive elements */
+/* Performance-focused animations */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
   will-change: transform;
-  transform: translateZ(0);
   backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .card-hover:hover {
-    transform: translateZ(0) scale(1.005);
+    transform: translate3d(0, -2px, 0);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
 }
 
-/* Optimize button transitions */
 .btn-transition {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-  will-change: background-color;
+  transition: background-color 200ms ease-out, transform 200ms ease-out;
+  will-change: transform, background-color;
+  backface-visibility: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-transition:hover {
+    transform: translate3d(0, -1px, 0);
+  }
 }
 
 /* Optimize image loading */
@@ -178,7 +185,44 @@ h1, h2, h3, h4, h5, h6 {
 
 /* GPU acceleration for common animations */
 .gpu-accelerated {
-  transform: translateZ(0);
   will-change: transform;
   backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Crisp image rendering for logos */
+.image-rendering-crisp, .logo-crisp {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+  /* Additional quality enhancements */
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  transform: translateZ(0);
+  /* Prevent image smoothing */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Better quality for logos */
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Specific logo optimization */
+.logo-crisp {
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+  filter: contrast(1.1) saturate(1.05);
+  /* Force high quality */
+  image-resolution: from-image 300dpi;
+}
+
+/* Optimize font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 } 

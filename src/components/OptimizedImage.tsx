@@ -13,6 +13,7 @@ interface OptimizedImageProps {
   priority?: boolean;
   quality?: number;
   onError?: () => void;
+  isLogo?: boolean;
 }
 
 export default function OptimizedImage({
@@ -23,8 +24,9 @@ export default function OptimizedImage({
   className = '',
   fallback,
   priority = false,
-  quality = 75,
-  onError
+  quality = 90,
+  onError,
+  isLogo = false
 }: OptimizedImageProps) {
   const [hasError, setHasError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(src);
@@ -51,19 +53,32 @@ export default function OptimizedImage({
     );
   }
 
+  const logoClassName = isLogo 
+    ? `${className} logo-crisp` 
+    : className;
+
+  const imageQuality = isLogo ? 100 : quality;
+  const logoSizes = isLogo ? `${width}px` : undefined;
+
   return (
     <Image
       src={currentSrc}
       alt={alt}
       width={width}
       height={height}
-      className={className}
+      className={logoClassName}
       priority={priority}
-      quality={quality}
+      quality={imageQuality}
       onError={handleError}
       loading={priority ? 'eager' : 'lazy'}
-      placeholder="blur"
-      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+      placeholder={isLogo ? 'empty' : 'blur'}
+      blurDataURL={isLogo ? undefined : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="}
+      sizes={logoSizes}
+      style={isLogo ? { 
+        imageRendering: 'crisp-edges',
+        objectFit: 'contain'
+      } : undefined}
+      unoptimized={false}
     />
   );
 } 

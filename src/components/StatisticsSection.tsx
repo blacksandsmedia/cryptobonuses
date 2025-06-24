@@ -74,7 +74,7 @@ export default function StatisticsSection() {
   if (loading) {
     return (
       <section className="py-16 mt-16 bg-gradient-to-br from-[#2a2c36] to-[#343541]">
-        <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
+        <div className="mx-auto w-[95%] md:w-[95%] max-w-[1280px]">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="text-center">
@@ -153,7 +153,7 @@ export default function StatisticsSection() {
 
   return (
     <section className="py-16 mt-16 bg-gradient-to-br from-[#2a2c36] to-[#343541]">
-      <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
+      <div className="mx-auto w-[95%] md:w-[95%] max-w-[1280px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             CryptoBonuses by the Numbers

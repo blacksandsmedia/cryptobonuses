@@ -319,7 +319,7 @@ export default function Home() {
         }}
       />
 
-      <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
+      <div className="mx-auto w-[95%] md:w-[95%] max-w-[1280px]">
         <h1 className="text-2xl md:text-4xl font-semibold text-center mt-2 mb-12">
           Bitcoin Casino Bonuses {currentYear}
         </h1>
@@ -354,7 +354,7 @@ export default function Home() {
       {/* Statistics Section */}
       <StatisticsSection />
 
-      <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
+      <div className="mx-auto w-[95%] md:w-[95%] max-w-[1280px]">
         <div className="mt-24 mb-16">
           {/* Hero Section */}
           <div className="text-center mb-16">

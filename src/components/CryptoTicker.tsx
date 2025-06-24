@@ -191,10 +191,11 @@ export default function CryptoTicker() {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           
-          if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          // Hide when scrolling down past 50px, show when scrolling up
+          if (currentScrollY > lastScrollY && currentScrollY > 50) {
             setIsVisible(false); // Hide when scrolling down
-          } else if (currentScrollY < lastScrollY) {
-            setIsVisible(true); // Show when scrolling up
+          } else if (currentScrollY < lastScrollY || currentScrollY <= 50) {
+            setIsVisible(true); // Show when scrolling up or at top
           }
 
           lastScrollY = currentScrollY;

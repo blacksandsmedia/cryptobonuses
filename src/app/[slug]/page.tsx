@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import OptimizedImage from '@/components/OptimizedImage';
 import CopyCodeButton from '@/components/CopyCodeButton';
 import ClickableBonusCode from '@/components/ClickableBonusCode';
 import { Metadata, ResolvingMetadata } from 'next';
@@ -615,7 +616,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
       {/* Crypto Bonuses Brand Schema */}
       <SchemaMarkup type="brand" />
 
-      <div className="flex-grow mx-auto w-[90%] md:w-[95%] max-w-4xl py-3 sm:py-4">
+      <div className="flex-grow mx-auto w-[95%] md:w-[95%] max-w-4xl py-3 sm:py-4">
         <div className="max-w-2xl mx-auto space-y-6 sm:space-y-7">
           {/* Hero Section */}
           <div className="bg-gradient-to-br from-[#3e4050] to-[#373846] rounded-xl px-7 py-6 sm:p-8 shadow-lg">
@@ -623,17 +624,18 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
               {/* Casino Info */}
               <div className="flex items-center gap-4 sm:gap-6">
                 <div className="relative w-16 sm:w-20 h-16 sm:h-20 rounded-lg overflow-hidden flex-shrink-0 bg-[#2c2f3a]">
-                  <Image
+                  <OptimizedImage
                     src={normalizeImagePath(dbCasino.logo)}
                     alt={`${dbCasino.name} logo`}
                     width={80}
                     height={80}
                     className="object-cover w-full h-full"
                     priority
+                    isLogo={true}
                   />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 whitespace-nowrap text-ellipsis overflow-hidden">{dbCasino.name} {codeTypeCapitalized}</h1>
+                  <h1 className="text-lg sm:text-2xl md:text-2xl font-bold mb-1 sm:mb-2 leading-tight">{dbCasino.name} {codeTypeCapitalized}</h1>
                   <p className="text-[#68D08B] text-lg sm:text-xl md:text-2xl font-semibold">
                     {bonusTitle}
                   </p>
@@ -912,12 +914,13 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
                       {/* Header with logo and name */}
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
-                          <Image
+                          <OptimizedImage
                             src={normalizeImagePath(offer.logoUrl)}
                             alt={`${offer.name} logo`}
                             width={48}
                             height={48}
                             className="w-full h-full object-contain"
+                            isLogo={true}
                           />
                         </div>
                         <div className="min-w-0 flex-1">
