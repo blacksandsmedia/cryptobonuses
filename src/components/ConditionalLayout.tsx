@@ -1,12 +1,12 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import Newsletter from './Newsletter';
 import SearchModal from './SearchModal';
 import CryptoTicker from './CryptoTicker';
+import OptimizedImage from './OptimizedImage';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -75,13 +75,15 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
           {/* Logo - Centered on Mobile */}
           <div className="flex-1 flex justify-center md:flex-none md:justify-start">
             <Link href="/" className="flex items-center">
-              <Image
-                src="https://cdn.prod.website-files.com/67dd29ae7952086f714105e7/67e11433aaedad5402a3d9c5_CryptoBonuses%20Logo%20Main.webp"
+              <OptimizedImage
+                src="/logo.webp"
                 alt="CryptoBonuses - Bitcoin Casino Bonuses"
                 width={240}
                 height={50}
                 priority
                 className="h-[50px] w-auto"
+                quality={100}
+                isLogo={true}
               />
             </Link>
           </div>

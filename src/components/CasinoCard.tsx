@@ -139,20 +139,23 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
 
   // Try next image in case of error
   const handleImageError = () => {
-    console.error(`Image failed to load: ${imagePath}`);
+    console.error(`[CasinoCard] Image failed to load: ${imagePath} for ${bonus.casinoName}`);
     
     // Get alternative paths
     const alternativePaths = getAlternativeLogoPaths(bonus.casinoName, imagePath);
     const currentIndex = alternativePaths.indexOf(imagePath);
     
+    console.log(`[CasinoCard] Alternative paths for ${bonus.casinoName}:`, alternativePaths);
+    console.log(`[CasinoCard] Current path index: ${currentIndex}`);
+    
     if (currentIndex < alternativePaths.length - 1) {
       // Try next alternative
       const nextPath = alternativePaths[currentIndex + 1];
-      console.log(`Trying alternative logo path: ${nextPath}`);
+      console.log(`[CasinoCard] Trying alternative logo path: ${nextPath}`);
       setImagePath(nextPath);
     } else {
       // All alternatives failed, show initials
-      console.log(`All logo paths failed for ${bonus.casinoName}, showing initials`);
+      console.log(`[CasinoCard] All logo paths failed for ${bonus.casinoName}, showing initials`);
       setImageError(true);
     }
   };
@@ -175,7 +178,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
       const normalizedPath = normalizeImagePath(bonus.logoUrl);
       setImagePath(normalizedPath);
       setImageError(false); // Reset error state when path changes
-      console.log(`Set image path for ${bonus.casinoName}: ${normalizedPath}`);
+      console.log(`[CasinoCard] Casino: ${bonus.casinoName}, Original logoUrl: "${bonus.logoUrl}", Normalized path: "${normalizedPath}"`);
     } catch (error) {
       console.error(`Error setting image path for ${bonus.casinoName}:`, error);
       setImageError(true);
