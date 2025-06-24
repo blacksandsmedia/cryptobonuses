@@ -210,28 +210,6 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
           href={`/${bonus.id}`} 
           className="block"
           title={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
-          onClick={() => {
-            // Force scroll to top before navigation to prevent homepage scroll position inheritance
-            // Use multiple methods to ensure it works across all browsers
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
-            
-            // Also reset any scrollable containers
-            const scrollableElements = document.querySelectorAll('[data-scroll-to-top]');
-            scrollableElements.forEach((element) => {
-              if (element instanceof HTMLElement) {
-                element.scrollTop = 0;
-              }
-            });
-            
-            // Force a repaint to ensure scroll position is reset
-            requestAnimationFrame(() => {
-              window.scrollTo(0, 0);
-              document.documentElement.scrollTop = 0;
-              document.body.scrollTop = 0;
-            });
-          }}
         >
           <div className="flex items-start gap-4 mb-4">
             <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#2c2f3a] flex items-center justify-center casino-logo">

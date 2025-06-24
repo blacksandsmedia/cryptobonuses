@@ -14,7 +14,6 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
     largePageDataBytes: 5 * 1024 * 1024, // 5MB
-    scrollRestoration: false,
   },
   typescript: {
     // !! WARN !!

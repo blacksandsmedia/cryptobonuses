@@ -17,10 +17,12 @@
 }
 
 html {
+  /* Industry standard smooth scrolling for anchor links */
   scroll-behavior: smooth;
   overflow-x: hidden;
-  /* Disable scroll restoration to prevent browser from remembering scroll position */
-  scroll-restoration: manual;
+  /* iOS Safari specific fixes */
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -38,14 +40,26 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
-  /* Ensure body starts at top */
-  margin: 0;
-  padding: 0;
+  /* iOS Safari scroll fixes */
+  -webkit-overflow-scrolling: touch;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* iOS Safari touch and scroll optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Ensure smooth scrolling on iOS */
+@supports (-webkit-overflow-scrolling: touch) {
+  html, body {
+    -webkit-overflow-scrolling: touch;
   }
 }
 

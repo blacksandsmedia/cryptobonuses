@@ -88,7 +88,7 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href={faviconUrl} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
         <meta name="theme-color" content="#343541" />
         
         {/* Google Analytics */}
@@ -116,11 +116,9 @@ export default async function RootLayout({
         <NotificationProvider>
           <AuthProvider>
             <ScrollToTop />
-            <PullToRefresh>
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
-            </PullToRefresh>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
             <OfferNotifications />
           </AuthProvider>
         </NotificationProvider>

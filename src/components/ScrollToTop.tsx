@@ -7,40 +7,30 @@ export default function ScrollToTop() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Force scroll to top immediately when route changes
+    // Industry standard scroll-to-top with iOS Safari compatibility
+    // Use setTimeout to ensure DOM is ready and avoid iOS scroll restoration issues
     const scrollToTop = () => {
-      // Multiple approaches to ensure scroll reset works
+      // Method 1: Standard scroll to top
       window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
       
-      // Force all scrollable elements to top
-      const scrollableElements = document.querySelectorAll('[data-scroll-to-top]');
-      scrollableElements.forEach((element) => {
-        if (element instanceof HTMLElement) {
-          element.scrollTop = 0;
-        }
-      });
+      // Method 2: iOS Safari fallback - set document scroll position
+      if (document.documentElement) {
+        document.documentElement.scrollTop = 0;
+      }
+      
+      // Method 3: Body scroll fallback for older browsers
+      if (document.body) {
+        document.body.scrollTop = 0;
+      }
     };
 
     // Immediate scroll
     scrollToTop();
     
-    // Use requestAnimationFrame to ensure this runs after the page renders
-    requestAnimationFrame(() => {
-      scrollToTop();
-    });
+    // iOS Safari sometimes needs a slight delay
+    const timeoutId = setTimeout(scrollToTop, 0);
     
-    // Additional scroll for stubborn browsers (especially mobile)
-    const timeoutId1 = setTimeout(scrollToTop, 10);
-    const timeoutId2 = setTimeout(scrollToTop, 50);
-    const timeoutId3 = setTimeout(scrollToTop, 100);
-    
-    return () => {
-      clearTimeout(timeoutId1);
-      clearTimeout(timeoutId2);
-      clearTimeout(timeoutId3);
-    };
+    return () => clearTimeout(timeoutId);
   }, [pathname]);
 
   return null;
