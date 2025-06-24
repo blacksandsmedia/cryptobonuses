@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ensure proper scroll behavior */
+/* Ensure proper scroll behavior and prevent position inheritance */
 html {
   scroll-behavior: auto !important;
   overflow-x: hidden;
+  /* Prevent scroll position restoration */
+  scroll-restoration: manual;
 }
 
 body {
@@ -21,17 +23,25 @@ body {
   min-height: 100vh;
 }
 
-/* Prevent scroll restoration on mobile */
+/* Prevent scroll restoration on mobile and ensure clean starts */
 @media (max-width: 768px) {
   html, body {
     scroll-behavior: auto !important;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+    /* Force scroll position reset */
+    scroll-restoration: manual;
   }
   
   /* Ensure content starts at top */
   body {
     scroll-padding-top: 0;
+  }
+  
+  /* Reset any inherited scroll positions */
+  * {
+    scroll-margin: 0;
+    scroll-padding: 0;
   }
 }
 
@@ -39,6 +49,8 @@ body {
 .main-content {
   position: relative;
   min-height: 100vh;
+  /* Ensure page starts at top */
+  scroll-margin-top: 0;
 }
 
 /* Ensure proper positioning for mobile browsers */
@@ -47,11 +59,18 @@ body {
   html, body {
     height: 100%;
     overflow-x: hidden;
+    /* Disable scroll restoration completely */
+    scroll-restoration: manual;
   }
   
   body {
     position: relative;
     -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Force reset scroll positions on iOS */
+  .main-content {
+    transform: translateZ(0); /* Force hardware acceleration */
   }
 }
 
