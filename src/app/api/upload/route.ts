@@ -76,35 +76,75 @@ function createSEOFilename(originalName: string, context?: string, type?: string
 }
 
 export async function POST(request: Request) {
+  console.log("=== UPLOAD API DEBUG ===");
+  
   // First try JWT token authentication
   let isAuthorized = false;
+  let authMethod = "none";
   
   // Check JWT token in cookies
   try {
     const cookieStore = cookies();
     const token = cookieStore.get('admin-token')?.value;
     
-    if (token) {
-      const decoded = verify(token, JWT_SECRET) as DecodedToken;
-      if (decoded.role === "ADMIN") {
-        isAuthorized = true;
+    console.log("Admin token found:", !!token);
+    console.log("Token length:", token?.length || 0);
+    console.log("JWT_SECRET defined:", !!JWT_SECRET);
+    console.log("JWT_SECRET length:", JWT_SECRET?.length || 0);
+    
+    if (token && JWT_SECRET) {
+      try {
+        const decoded = verify(token, JWT_SECRET) as DecodedToken;
+        console.log("Token decoded successfully:", { id: decoded.id, email: decoded.email, role: decoded.role });
+        
+        if (decoded.role === "ADMIN") {
+          isAuthorized = true;
+          authMethod = "JWT";
+          console.log("Authorization successful via JWT");
+        } else {
+          console.log("User role is not ADMIN:", decoded.role);
+        }
+      } catch (verifyError) {
+        console.error("JWT verification failed:", verifyError);
+        console.log("Token that failed:", token?.substring(0, 50) + "...");
       }
+    } else {
+      console.log("Missing token or JWT_SECRET");
     }
   } catch (error) {
-    console.error("JWT verification error:", error);
+    console.error("JWT authentication error:", error);
   }
   
   // Also try NextAuth session as fallback
   if (!isAuthorized) {
-    const session = await getServerSession(authOptions);
-    if (session?.user?.role === "ADMIN") {
-      isAuthorized = true;
+    try {
+      const session = await getServerSession(authOptions);
+      console.log("NextAuth session:", !!session);
+      console.log("Session user role:", session?.user?.role);
+      
+      if (session?.user?.role === "ADMIN") {
+        isAuthorized = true;
+        authMethod = "NextAuth";
+        console.log("Authorization successful via NextAuth");
+      }
+    } catch (sessionError) {
+      console.error("NextAuth session error:", sessionError);
     }
   }
 
+  console.log("Final authorization status:", isAuthorized, "via", authMethod);
+
   // Return 401 if not authorized
   if (!isAuthorized) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.log("Upload request denied - unauthorized");
+    return NextResponse.json({ 
+      error: "Unauthorized", 
+      debug: {
+        hasToken: !!cookies().get('admin-token')?.value,
+        authMethod: authMethod,
+        timestamp: new Date().toISOString()
+      }
+    }, { status: 401 });
   }
 
   try {
@@ -112,6 +152,14 @@ export async function POST(request: Request) {
     const file = formData.get('file') as File;
     const context = formData.get('context') as string; // Casino name or other context
     const type = formData.get('type') as string; // 'featured', 'logo', 'screenshot', etc.
+    
+    console.log("Upload request details:", {
+      fileName: file?.name,
+      fileSize: file?.size,
+      fileType: file?.type,
+      context: context,
+      type: type
+    });
     
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -128,6 +176,7 @@ export async function POST(request: Request) {
     
     // Generate filename based on context and type
     const fileName = createSEOFilename(file.name, context, type);
+    console.log("Generated filename:", fileName);
     
     // Ensure uploads directory exists
     const uploadsDir = await ensureUploadsDir();
@@ -142,16 +191,22 @@ export async function POST(request: Request) {
     // Return the URL to the uploaded file
     const fileUrl = `/uploads/${fileName}`;
     
+    console.log("Upload successful:", fileUrl);
+    
     return NextResponse.json({ 
       url: fileUrl,
       success: true,
-      fileName: fileName
+      fileName: fileName,
+      debug: {
+        authMethod: authMethod,
+        timestamp: new Date().toISOString()
+      }
     });
     
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json(
-      { error: "Failed to upload file" }, 
+      { error: "Failed to upload file", details: error instanceof Error ? error.message : "Unknown error" }, 
       { status: 500 }
     );
   }
