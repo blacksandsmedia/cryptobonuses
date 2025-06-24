@@ -78,25 +78,43 @@ function createSEOFilename(originalName: string, context?: string, type?: string
 export async function POST(request: Request) {
   console.log("=== UPLOAD API DEBUG ===");
   
+  // Debug all cookies
+  const cookieStore = cookies();
+  const allCookies = cookieStore.getAll();
+  console.log("All cookies received:", allCookies.map(c => ({ name: c.name, value: c.value.substring(0, 20) + '...' })));
+  
   // First try JWT token authentication
   let isAuthorized = false;
   let authMethod = "none";
   
   // Check JWT token in cookies
   try {
-    const cookieStore = cookies();
     const token = cookieStore.get('admin-token')?.value;
     
     console.log("Admin token found:", !!token);
+    console.log("Admin token length:", token?.length || 0);
+    console.log("Admin token first 50 chars:", token?.substring(0, 50) || 'N/A');
     
     if (token) {
       try {
         // Clean the token in case it has extra characters
         const cleanToken = token.trim();
-        console.log("Attempting to verify token...");
+        console.log("Token after trim - length:", cleanToken.length);
+        console.log("Token after trim - first 50 chars:", cleanToken.substring(0, 50));
+        
+        // Check if token looks like a JWT (has 3 parts separated by dots)
+        const tokenParts = cleanToken.split('.');
+        console.log("Token parts count:", tokenParts.length);
+        console.log("Token parts lengths:", tokenParts.map(part => part.length));
+        
+        if (tokenParts.length !== 3) {
+          console.error("Token is malformed - should have 3 parts separated by dots");
+          throw new Error("Token is malformed - incorrect number of parts");
+        }
         
         const secret = getJWTSecret();
         console.log("Using JWT secret (first 10 chars):", secret.substring(0, 10) + "...");
+        console.log("JWT secret length:", secret.length);
         
         const decoded = verify(cleanToken, secret) as DecodedToken;
         console.log("Token decoded successfully:", { id: decoded.id, email: decoded.email, role: decoded.role });
@@ -110,6 +128,7 @@ export async function POST(request: Request) {
         }
       } catch (verifyError: any) {
         console.error("JWT verification error:", verifyError?.message || verifyError);
+        console.error("Full error:", verifyError);
       }
     } else {
       console.log("No admin token found in cookies");
