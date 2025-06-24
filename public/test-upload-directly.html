@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #343541;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"], input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #404055;
+            border-radius: 5px;
+            background-color: #2c2f3a;
+            color: white;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #68D08B;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #5abc7a;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            word-break: break-all;
+        }
+        .success {
+            background-color: #2d5a3d;
+            border: 1px solid #68D08B;
+        }
+        .error {
+            background-color: #5a2d2d;
+            border: 1px solid #d06868;
+        }
+        .step {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #404055;
+            border-radius: 5px;
+            background-color: #2c2f3a;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #68D08B;
+        }
+    </style>
+</head>
+<body>
+    <h1>Direct Upload Test for Logo Issues</h1>
+    <p>This page tests the upload functionality directly to identify why logo uploads aren't working in the admin backend.</p>
+
+    <div class="step">
+        <h3>Step 1: Login as Admin</h3>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="admin@example.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="admin123">
+        </div>
+        <button onclick="loginAdmin()">Login</button>
+        <div id="loginResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Upload Logo</h3>
+        <div class="form-group">
+            <label for="logoFile">Select Logo File:</label>
+            <input type="file" id="logoFile" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label for="casinoName">Casino Name:</label>
+            <input type="text" id="casinoName" value="Test Casino" placeholder="Enter casino name">
+        </div>
+        <button onclick="uploadLogo()">Upload Logo</button>
+        <div id="uploadResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Test Casino Update</h3>
+        <div class="form-group">
+            <label for="casinoId">Casino ID (0xBet ID):</label>
+            <input type="text" id="casinoId" value="cmcanxk7t0000ms4jqf0uhvqb" placeholder="Enter casino ID">
+        </div>
+        <div class="form-group">
+            <label for="newLogoPath">New Logo Path:</label>
+            <input type="text" id="newLogoPath" placeholder="Will be filled after upload">
+        </div>
+        <button onclick="updateCasino()">Update Casino Logo</button>
+        <div id="updateResult" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        async function loginAdmin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+
+            try {
+                const response = await fetch('/api/admin-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                resultDiv.style.display = 'block';
+
+                if (response.ok) {
+                    authToken = true; // Cookie-based auth
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `Login successful! User: ${data.user.email} (${data.user.role})`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `Login failed: ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `Login error: ${error.message}`;
+            }
+        }
+
+        async function uploadLogo() {
+            if (!authToken) {
+                alert('Please login first');
+                return;
+            }
+
+            const fileInput = document.getElementById('logoFile');
+            const casinoName = document.getElementById('casinoName').value;
+            const resultDiv = document.getElementById('uploadResult');
+
+            if (!fileInput.files[0]) {
+                alert('Please select a file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('context', casinoName);
+            formData.append('type', 'logo');
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                const data = await response.json();
+                resultDiv.style.display = 'block';
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `Upload successful!<br>File path: ${data.filePath}<br>Filename: ${data.filename}`;
+                    document.getElementById('newLogoPath').value = data.filePath;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `Upload failed: ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `Upload error: ${error.message}`;
+            }
+        }
+
+        async function updateCasino() {
+            if (!authToken) {
+                alert('Please login first');
+                return;
+            }
+
+            const casinoId = document.getElementById('casinoId').value;
+            const newLogoPath = document.getElementById('newLogoPath').value;
+            const resultDiv = document.getElementById('updateResult');
+
+            if (!casinoId || !newLogoPath) {
+                alert('Please provide both casino ID and logo path');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/casinos/${casinoId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        logo: newLogoPath
+                    })
+                });
+
+                const data = await response.json();
+                resultDiv.style.display = 'block';
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `Casino updated successfully!<br>Casino: ${data.name}<br>New logo: ${data.logo}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `Update failed: ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `Update error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 
