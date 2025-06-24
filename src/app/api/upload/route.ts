@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { verify } from "jsonwebtoken";
-import { JWT_SECRET } from "@/lib/auth-utils";
+import { JWT_SECRET, getJWTSecret } from "@/lib/auth-utils";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
@@ -94,7 +94,12 @@ export async function POST(request: Request) {
     
     if (token && JWT_SECRET) {
       try {
-        const decoded = verify(token, JWT_SECRET) as DecodedToken;
+        // Clean the token in case it has extra characters
+        const cleanToken = token.trim();
+        console.log("Attempting to verify token...");
+        
+        const secret = getJWTSecret();
+        const decoded = verify(cleanToken, secret) as DecodedToken;
         console.log("Token decoded successfully:", { id: decoded.id, email: decoded.email, role: decoded.role });
         
         if (decoded.role === "ADMIN") {
@@ -104,9 +109,15 @@ export async function POST(request: Request) {
         } else {
           console.log("User role is not ADMIN:", decoded.role);
         }
-      } catch (verifyError) {
-        console.error("JWT verification failed:", verifyError);
-        console.log("Token that failed:", token?.substring(0, 50) + "...");
+      } catch (verifyError: any) {
+        console.error("JWT verification error:", verifyError?.message || verifyError);
+        
+        // If the error is about malformed JWT, log more details
+        if (verifyError?.message?.includes('malformed')) {
+          console.log("Token appears malformed. First 50 chars:", token?.substring(0, 50));
+          console.log("Token last 20 chars:", token?.substring(token.length - 20));
+          console.log("Token includes dots:", token?.split('.').length);
+        }
       }
     } else {
       console.log("Missing token or JWT_SECRET");

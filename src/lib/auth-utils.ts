@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 const sharedSecret = process.env.AUTH_SECRET || "cryptobonuses-secret-key";
 
 // JWT secret used for admin authentication
-export const JWT_SECRET = sharedSecret;
+export const JWT_SECRET = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'cryptobonuses-jwt-secret-2024';
 
 // NextAuth secret for session handling
 export const NEXTAUTH_SECRET = sharedSecret;
@@ -42,4 +42,16 @@ export async function verifyAdminToken() {
     console.error("Token verification failed:", error);
     return null;
   }
+}
+
+// Helper function to ensure we have a valid JWT secret
+export function getJWTSecret(): string {
+  const secret = JWT_SECRET;
+  
+  if (!secret || secret.length < 32) {
+    console.warn('JWT_SECRET is not set or too short. Using default for development.');
+    return 'cryptobonuses-jwt-secret-2024-development-only';
+  }
+  
+  return secret;
 } 

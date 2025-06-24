@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { verify } from "jsonwebtoken";
-import { JWT_SECRET } from "@/lib/auth-utils";
+import { JWT_SECRET, getJWTSecret } from "@/lib/auth-utils";
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -103,7 +103,8 @@ export async function PUT(
     const token = cookieStore.get('admin-token')?.value;
     
     if (token) {
-      const decoded = verify(token, JWT_SECRET) as DecodedToken;
+      const secret = getJWTSecret();
+      const decoded = verify(token, secret) as DecodedToken;
       if (decoded.role === "ADMIN") {
         isAuthorized = true;
       }
@@ -207,7 +208,8 @@ export async function DELETE(
     const token = cookieStore.get('admin-token')?.value;
     
     if (token) {
-      const decoded = verify(token, JWT_SECRET) as DecodedToken;
+      const secret = getJWTSecret();
+      const decoded = verify(token, secret) as DecodedToken;
       if (decoded.role === "ADMIN") {
         isAuthorized = true;
       }
