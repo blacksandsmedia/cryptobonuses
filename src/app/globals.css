@@ -2,78 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ensure proper scroll behavior and prevent position inheritance */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
 html {
-  scroll-behavior: auto !important;
+  scroll-behavior: smooth;
   overflow-x: hidden;
-  /* Prevent scroll position restoration */
-  scroll-restoration: manual;
 }
 
 body {
-  scroll-behavior: auto !important;
-  overflow-x: hidden;
-  position: relative;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: #343541;
-  color: #f1f1f1;
   line-height: 1.6;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-/* Prevent scroll restoration on mobile and ensure clean starts */
-@media (max-width: 768px) {
-  html, body {
-    scroll-behavior: auto !important;
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-    /* Force scroll position reset */
-    scroll-restoration: manual;
-  }
-  
-  /* Ensure content starts at top */
-  body {
-    scroll-padding-top: 0;
-    /* Pull to refresh optimizations */
-    overscroll-behavior-y: contain;
-  }
-  
-  /* Reset any inherited scroll positions */
-  * {
-    scroll-margin: 0;
-    scroll-padding: 0;
-  }
-}
-
-/* Fix for mobile scroll position issues */
-.main-content {
+  overflow-x: hidden;
   position: relative;
-  min-height: 100vh;
-  /* Ensure page starts at top */
-  scroll-margin-top: 0;
 }
 
-/* Ensure proper positioning for mobile browsers */
-@supports (-webkit-touch-callout: none) {
-  /* iOS Safari specific fixes */
-  html, body {
-    height: 100%;
-    overflow-x: hidden;
-    /* Disable scroll restoration completely */
-    scroll-restoration: manual;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
-  
-  body {
-    position: relative;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Force reset scroll positions on iOS */
-  .main-content {
-    transform: translateZ(0); /* Force hardware acceleration */
-  }
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2c2f3a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Ensure content sections have proper spacing for anchor navigation */
+.content-section {
+  scroll-margin-top: 2rem;
 }
 
 .container {

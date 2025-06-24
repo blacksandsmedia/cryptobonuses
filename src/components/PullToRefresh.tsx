@@ -11,48 +11,54 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
   const [isPulling, setIsPulling] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const startY = useRef(0);
-  const currentY = useRef(0);
   const router = useRouter();
 
-  const PULL_THRESHOLD = 80; // Distance needed to trigger refresh
-  const MAX_PULL = 120; // Maximum pull distance
+  const PULL_THRESHOLD = 70; // Distance needed to trigger refresh
+  const MAX_PULL = 100; // Maximum pull distance
 
   useEffect(() => {
-    let touchStartY = 0;
-    let touchCurrentY = 0;
+    let startY = 0;
+    let currentY = 0;
     let isAtTop = false;
+    let isDragging = false;
 
     const handleTouchStart = (e: TouchEvent) => {
-      // Only activate if we're at the top of the page
+      // Only activate if we're at the very top of the page
       if (window.scrollY === 0) {
         isAtTop = true;
-        touchStartY = e.touches[0].clientY;
-        startY.current = touchStartY;
+        startY = e.touches[0].clientY;
+        isDragging = false;
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!isAtTop || isRefreshing) return;
 
-      touchCurrentY = e.touches[0].clientY;
-      currentY.current = touchCurrentY;
+      currentY = e.touches[0].clientY;
+      const pullDist = currentY - startY;
       
-      const pullDist = Math.max(0, touchCurrentY - touchStartY);
-      
-      if (pullDist > 0) {
-        // Prevent default scrolling when pulling down
+      // Only consider it a pull if moving down
+      if (pullDist > 5) {
+        isDragging = true;
+        // Prevent default scrolling only when actually pulling
         e.preventDefault();
         
         // Calculate pull distance with resistance
-        const resistance = Math.min(pullDist * 0.6, MAX_PULL);
+        const resistance = Math.min(pullDist * 0.5, MAX_PULL);
         setPullDistance(resistance);
         setIsPulling(resistance > 10);
       }
     };
 
     const handleTouchEnd = () => {
-      if (!isAtTop || isRefreshing) return;
+      if (!isAtTop || !isDragging) {
+        // Reset everything if not a valid pull
+        setPullDistance(0);
+        setIsPulling(false);
+        isAtTop = false;
+        isDragging = false;
+        return;
+      }
 
       if (pullDistance >= PULL_THRESHOLD) {
         // Trigger refresh
@@ -72,6 +78,7 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
       }
       
       isAtTop = false;
+      isDragging = false;
     };
 
     const handleScroll = () => {
@@ -80,14 +87,15 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
         isAtTop = false;
         setPullDistance(0);
         setIsPulling(false);
+        isDragging = false;
       }
     };
 
     // Add event listeners
-    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd);
-    window.addEventListener('scroll', handleScroll);
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       document.removeEventListener('touchstart', handleTouchStart);
@@ -98,17 +106,17 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
   }, [pullDistance, isRefreshing, router]);
 
   return (
-    <div className="relative">
-      {/* Pull to refresh indicator */}
+    <>
+      {/* Pull to refresh indicator - fixed position, doesn't affect content */}
       {(isPulling || isRefreshing) && (
         <div 
-          className="fixed top-0 left-0 right-0 z-50 bg-[#2c2f3a] border-b border-[#404040] transition-transform duration-200 ease-out"
+          className="fixed top-0 left-0 right-0 z-50 bg-[#2c2f3a] border-b border-[#404040] transition-all duration-200 ease-out"
           style={{
-            transform: `translateY(${pullDistance - 60}px)`,
+            transform: `translateY(${Math.min(pullDistance - 50, 50)}px)`,
             opacity: Math.min(pullDistance / PULL_THRESHOLD, 1)
           }}
         >
-          <div className="flex items-center justify-center py-4">
+          <div className="flex items-center justify-center py-3">
             {isRefreshing ? (
               <div className="flex items-center gap-2 text-[#00d4ff]">
                 <div className="w-4 h-4 border-2 border-[#00d4ff] border-t-transparent rounded-full animate-spin"></div>
@@ -130,15 +138,8 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
         </div>
       )}
       
-      {/* Main content */}
-      <div 
-        className="transition-transform duration-200 ease-out"
-        style={{
-          transform: isPulling || isRefreshing ? `translateY(${Math.min(pullDistance, MAX_PULL)}px)` : 'translateY(0)'
-        }}
-      >
-        {children}
-      </div>
-    </div>
+      {/* Main content - no transforms applied */}
+      {children}
+    </>
   );
 } 
