@@ -9,6 +9,7 @@ import OfferNotifications from '@/components/OfferNotifications';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import { NotificationProvider } from '@/components/NotificationContext';
 import ScrollToTop from '@/components/ScrollToTop';
+import PullToRefresh from '@/components/PullToRefresh';
 import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -115,9 +116,11 @@ export default async function RootLayout({
         <NotificationProvider>
           <AuthProvider>
             <ScrollToTop />
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
+            <PullToRefresh>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+            </PullToRefresh>
             <OfferNotifications />
           </AuthProvider>
         </NotificationProvider>

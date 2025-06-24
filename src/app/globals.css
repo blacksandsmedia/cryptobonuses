@@ -36,6 +36,8 @@ body {
   /* Ensure content starts at top */
   body {
     scroll-padding-top: 0;
+    /* Pull to refresh optimizations */
+    overscroll-behavior-y: contain;
   }
   
   /* Reset any inherited scroll positions */
