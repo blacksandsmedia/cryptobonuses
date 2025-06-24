@@ -88,17 +88,16 @@ export async function POST(request: Request) {
     const token = cookieStore.get('admin-token')?.value;
     
     console.log("Admin token found:", !!token);
-    console.log("Token length:", token?.length || 0);
-    console.log("JWT_SECRET defined:", !!JWT_SECRET);
-    console.log("JWT_SECRET length:", JWT_SECRET?.length || 0);
     
-    if (token && JWT_SECRET) {
+    if (token) {
       try {
         // Clean the token in case it has extra characters
         const cleanToken = token.trim();
         console.log("Attempting to verify token...");
         
         const secret = getJWTSecret();
+        console.log("Using JWT secret (first 10 chars):", secret.substring(0, 10) + "...");
+        
         const decoded = verify(cleanToken, secret) as DecodedToken;
         console.log("Token decoded successfully:", { id: decoded.id, email: decoded.email, role: decoded.role });
         
@@ -111,16 +110,9 @@ export async function POST(request: Request) {
         }
       } catch (verifyError: any) {
         console.error("JWT verification error:", verifyError?.message || verifyError);
-        
-        // If the error is about malformed JWT, log more details
-        if (verifyError?.message?.includes('malformed')) {
-          console.log("Token appears malformed. First 50 chars:", token?.substring(0, 50));
-          console.log("Token last 20 chars:", token?.substring(token.length - 20));
-          console.log("Token includes dots:", token?.split('.').length);
-        }
       }
     } else {
-      console.log("Missing token or JWT_SECRET");
+      console.log("No admin token found in cookies");
     }
   } catch (error) {
     console.error("JWT authentication error:", error);

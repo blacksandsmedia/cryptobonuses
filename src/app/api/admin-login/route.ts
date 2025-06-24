@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     }
 
     const secret = getJWTSecret();
-    console.log("Admin login successful, creating token with secret:", secret.substring(0, 5) + "...");
+    console.log("Admin login successful, creating token with secret (first 10 chars):", secret.substring(0, 10) + "...");
 
     // Create JWT token
     const token = sign(
