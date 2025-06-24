@@ -55,8 +55,15 @@ export async function generateMetadata(): Promise<Metadata> {
       canonical: 'https://cryptobonuses.com',
     },
     icons: {
-      icon: faviconUrl,
-      apple: faviconUrl,
+      icon: [
+        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/favicon.ico', sizes: 'any', type: 'image/x-icon' }
+      ],
+      apple: [
+        { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+      ],
+      shortcut: '/favicon.ico',
     },
   };
 }
@@ -82,10 +89,20 @@ export default async function RootLayout({
     console.error('Error fetching settings:', error);
   }
 
+  // Add cache busting parameter for favicon
+  const cacheBuster = Date.now();
+  const faviconWithCacheBuster = `${faviconUrl}?v=${cacheBuster}`;
+
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href={faviconUrl} />
+        {/* Multiple favicon formats for better browser support */}
+        <link rel="icon" type="image/x-icon" href={`/favicon.ico?v=${cacheBuster}`} />
+        <link rel="icon" type="image/png" sizes="32x32" href={`/favicon-32x32.png?v=${cacheBuster}`} />
+        <link rel="icon" type="image/png" sizes="16x16" href={`/favicon-16x16.png?v=${cacheBuster}`} />
+        <link rel="apple-touch-icon" sizes="180x180" href={`/apple-touch-icon.png?v=${cacheBuster}`} />
+        <link rel="shortcut icon" href={`/favicon.ico?v=${cacheBuster}`} />
+        
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#343541" />
         

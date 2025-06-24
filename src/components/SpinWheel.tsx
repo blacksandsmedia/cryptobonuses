@@ -293,11 +293,12 @@ export default function SpinWheel({ casinos, faviconUrl }: SpinWheelProps) {
         >
           <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden">
             <Image
-              src={faviconUrl}
+              src={`/favicon-32x32.png?v=${Date.now()}`}
               alt="CryptoBonuses"
               width={36}
               height={36}
               className="object-contain w-9 h-9"
+              unoptimized
             />
           </div>
         </div>
