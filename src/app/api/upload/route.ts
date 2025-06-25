@@ -4,15 +4,18 @@ import { authOptions } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { verify } from "jsonwebtoken";
 import { JWT_SECRET } from "@/lib/auth-utils";
-import { writeFile } from "fs/promises";
+import { writeFile, unlink } from "fs/promises";
+import { existsSync } from "fs";
 import { 
   ensureUploadDir, 
   publicUploadUrl, 
   getUploadPath, 
   createSEOFilename,
   isValidImageType,
-  isValidFileSize 
+  isValidFileSize,
+  UPLOAD_DIR
 } from "@/lib/upload-utils";
+import path from "path";
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -60,6 +63,7 @@ export async function POST(request: Request) {
     const file = formData.get('file') as File;
     const context = formData.get('context') as string; // Casino name or other context
     const type = formData.get('type') as string; // 'featured', 'logo', 'screenshot', etc.
+    const currentPath = formData.get('currentPath') as string; // Current file path for overwriting
     
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -82,13 +86,24 @@ export async function POST(request: Request) {
     }
     
     // Generate filename based on context and type
-    const fileName = createSEOFilename(file.name, context, type);
+    const fileName = createSEOFilename(file.name, context, type, currentPath);
     
     // Ensure upload directory exists
     await ensureUploadDir();
     
     // Get full file path
     const filePath = getUploadPath(fileName);
+    
+    // If overwriting an existing file, delete the old one first
+    if (currentPath && existsSync(filePath)) {
+      try {
+        await unlink(filePath);
+        console.log(`Deleted existing file: ${filePath}`);
+      } catch (error) {
+        console.warn(`Could not delete existing file: ${filePath}`, error);
+        // Continue anyway - the new file will overwrite
+      }
+    }
     
     // Write file to disk
     const fileBuffer = Buffer.from(await file.arrayBuffer());

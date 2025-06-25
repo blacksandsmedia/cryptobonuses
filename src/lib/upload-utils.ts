@@ -45,11 +45,22 @@ export function getUploadPath(filename: string): string {
  * @param originalName The original filename
  * @param context Optional context (e.g., casino name)
  * @param type Optional type (e.g., 'logo', 'featured', 'screenshot')
+ * @param currentPath Optional current file path (for overwriting existing files)
  * @returns A clean, SEO-friendly filename
  */
-export function createSEOFilename(originalName: string, context?: string, type?: string): string {
+export function createSEOFilename(originalName: string, context?: string, type?: string, currentPath?: string): string {
   // Get file extension
   const fileExt = originalName.split('.').pop() || 'png';
+  
+  // If currentPath is provided (for overwriting existing files), extract and reuse the filename
+  if (currentPath && type === 'logo') {
+    const existingFilename = currentPath.split('/').pop();
+    if (existingFilename) {
+      // Keep the same filename but update the extension if needed
+      const existingName = existingFilename.replace(/\.[^/.]+$/, '');
+      return `${existingName}.${fileExt}`;
+    }
+  }
   
   if (context && type === 'featured') {
     // Create descriptive filename for featured images: "[casino-name]-bonus-offer"
@@ -73,8 +84,8 @@ export function createSEOFilename(originalName: string, context?: string, type?:
       .replace(/-+/g, '-') // Replace multiple hyphens with single
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
     
-    const timestamp = Date.now();
-    return `${cleanCasinoName}-logo-${timestamp}.${fileExt}`;
+    // For new logos, use clean filename without timestamp
+    return `${cleanCasinoName}-logo.${fileExt}`;
   }
   
   if (context && type === 'screenshot') {
@@ -99,8 +110,8 @@ export function createSEOFilename(originalName: string, context?: string, type?:
       .replace(/-+/g, '-') // Replace multiple hyphens with single
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
     
-    const timestamp = Date.now();
-    return `${cleanName}-profile-${timestamp}.${fileExt}`;
+    // For profiles, use clean filename without timestamp
+    return `${cleanName}-profile.${fileExt}`;
   }
   
   // Fallback: create a timestamp-based filename

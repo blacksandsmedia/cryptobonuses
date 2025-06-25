@@ -416,6 +416,12 @@ export default function EditCasinoPage({
       formData.append("context", casinoName);
       formData.append("type", "logo");
       
+      // Pass current logo path if editing existing casino (for overwriting)
+      const currentLogoPath = (document.getElementById('logo') as HTMLInputElement)?.value;
+      if (params.casinoId !== "new" && currentLogoPath) {
+        formData.append("currentPath", currentLogoPath);
+      }
+      
       console.log("Uploading logo file...");
       const response = await fetch("/api/upload", {
         method: "POST",
