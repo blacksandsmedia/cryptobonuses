@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { broadcastNotification } from "@/app/api/notifications/stream/route";
+import { broadcastNotification } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   try {
