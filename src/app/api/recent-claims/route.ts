@@ -1,3 +1,4 @@
+// DEPRECATED: This API is now legacy. Real-time notifications use SSE via /api/notifications/stream
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
