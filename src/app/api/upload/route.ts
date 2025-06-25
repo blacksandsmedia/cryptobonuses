@@ -17,12 +17,12 @@ interface DecodedToken {
 
 // Helper function to ensure the uploads directory exists
 async function ensureUploadsDir() {
-  const uploadsDir = path.join(process.cwd(), 'public/uploads');
+  const uploadsDir = path.join(process.cwd(), 'public/images');
   try {
     await mkdir(uploadsDir, { recursive: true });
     return uploadsDir;
   } catch (error) {
-    console.error('Error creating uploads directory:', error);
+    console.error('Error creating images directory:', error);
     throw error;
   }
 }
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
     await writeFile(filePath, fileBuffer as any);
     
     // Return the URL to the uploaded file
-    const fileUrl = `/uploads/${fileName}`;
+    const fileUrl = `/images/${fileName}`;
     
     return NextResponse.json({ 
       url: fileUrl,

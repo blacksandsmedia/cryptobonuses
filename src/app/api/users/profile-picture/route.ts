@@ -59,20 +59,20 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = new Uint8Array(bytes);
 
-    // Save file to uploads directory
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'profile-pictures');
-    const filePath = join(uploadsDir, fileName);
+    // Save file to images directory
+    const imagesDir = join(process.cwd(), 'public', 'images', 'profile-pictures');
+    const filePath = join(imagesDir, fileName);
     
     // Create directory if it doesn't exist
     const fs = await import('fs');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    if (!fs.existsSync(imagesDir)) {
+      fs.mkdirSync(imagesDir, { recursive: true });
     }
 
     await writeFile(filePath, buffer);
 
     // Update user profile picture in database
-    const profilePictureUrl = `/uploads/profile-pictures/${fileName}`;
+    const profilePictureUrl = `/images/profile-pictures/${fileName}`;
     
     const updatedUser = await prisma.user.update({
       where: { id: userId },

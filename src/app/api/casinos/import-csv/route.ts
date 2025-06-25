@@ -25,14 +25,14 @@ interface CSVRow {
   slug?: string;
 }
 
-// Helper function to ensure the uploads directory exists
-async function ensureUploadsDir() {
-  const uploadsDir = path.join(process.cwd(), 'public/uploads');
+// Helper function to ensure the images directory exists
+async function ensureImagesDir() {
+  const imagesDir = path.join(process.cwd(), 'public/images');
   try {
-    await mkdir(uploadsDir, { recursive: true });
-    return uploadsDir;
+    await mkdir(imagesDir, { recursive: true });
+    return imagesDir;
   } catch (error) {
-    console.error('Error creating uploads directory:', error);
+    console.error('Error creating images directory:', error);
     throw error;
   }
 }
@@ -72,18 +72,18 @@ async function downloadAndSaveImage(imageUrl: string): Promise<string> {
     // Generate unique filename
     const fileName = `${uuidv4()}.${fileExt}`;
     
-    // Ensure uploads directory exists
-    const uploadsDir = await ensureUploadsDir();
+    // Ensure images directory exists
+    const imagesDir = await ensureImagesDir();
     
     // Create file path
-    const filePath = path.join(uploadsDir, fileName);
+    const filePath = path.join(imagesDir, fileName);
     
     // Get image buffer and save
     const imageBuffer = await response.arrayBuffer();
     const fileBuffer = new Uint8Array(imageBuffer);
     await writeFile(filePath, fileBuffer);
     
-    const localUrl = `/uploads/${fileName}`;
+    const localUrl = `/images/${fileName}`;
     console.log(`Image saved locally as: ${localUrl}`);
     
     return localUrl;

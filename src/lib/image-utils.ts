@@ -21,9 +21,14 @@ export function normalizeImagePath(imagePath: string | null): string {
     return imagePath.replace('/images/public/images/', '/images/').replace('public/images/', '/images/');
   }
   
-  // If path already starts with /images/ or /uploads/, preserve it exactly as is
-  if (imagePath.startsWith('/images/') || imagePath.startsWith('/uploads/')) {
+  // If path already starts with /images/, preserve it exactly as is
+  if (imagePath.startsWith('/images/')) {
     return imagePath;
+  }
+  
+  // If path starts with /uploads/, migrate it to /images/ (for backward compatibility)
+  if (imagePath.startsWith('/uploads/')) {
+    return imagePath.replace('/uploads/', '/images/');
   }
   
   // Fix paths that include just 'images/' without leading slash
@@ -64,6 +69,6 @@ export function normalizeImagePath(imagePath: string | null): string {
     return possibleLogoFiles[0];
   }
   
-  // If all else fails, assume it's in the uploads folder
-  return `/uploads/${imagePath}`;
+  // If all else fails, assume it's in the images folder
+  return `/images/${imagePath}`;
 }

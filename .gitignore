@@ -67,8 +67,13 @@ prisma/dev.db
 *.tsbuildinfo
 
 # Local uploads (don't upload user files)
+# Uploaded images are now stored in public/images/ and should be tracked
+# public/uploads/* is no longer used
 public/uploads/*
 !public/uploads/.gitkeep
+
+# Track images directory (uploaded images should be committed)
+# public/images/ - removed from gitignore to allow tracking uploaded images
 
 # Test files
 test-*.csv
