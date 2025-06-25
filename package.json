@@ -4,15 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "create-admin": "node scripts/create-admin.js",
     "seed-data": "node scripts/seed-data.js",
     "clear-db": "node scripts/clear-db.js",
-    "reset-db": "node scripts/clear-db.js && node scripts/seed-data.js",
-    "postinstall": "prisma generate"
+    "reset-db": "node scripts/clear-db.js && node scripts/seed-data.js"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

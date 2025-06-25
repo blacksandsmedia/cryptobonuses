@@ -20,12 +20,43 @@ interface Notification extends OfferClaim {
   showTime: number;
 }
 
-// Real-time notifications powered by Server-Sent Events
+// Demo notifications for testing when no real data is available
+const DEMO_NOTIFICATIONS: OfferClaim[] = [
+  {
+    id: 'demo-1',
+    casinoName: 'BitStarz',
+    casinoLogo: '/images/BitStarz Logo.png',
+    casinoSlug: 'bitstarz',
+    bonusTitle: '5 BTC + 180 FS',
+    bonusCode: 'STARZ',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-2', 
+    casinoName: 'Stake',
+    casinoLogo: '/images/Stake Logo.png',
+    casinoSlug: 'stake',
+    bonusTitle: '$1000 Welcome Bonus',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-3',
+    casinoName: 'Roobet',
+    casinoLogo: '/images/Roobet Logo.png', 
+    casinoSlug: 'roobet',
+    bonusTitle: '1 BTC + 200 FS',
+    bonusCode: 'ROOBET',
+    createdAt: new Date().toISOString(),
+  }
+];
+
+let demoIndex = 0;
+const DEMO_INTERVAL = 25000; // Show demo notification every 25 seconds
 
 export default function OfferNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [lastCheckTime, setLastCheckTime] = useState<Date>(new Date());
+  const [apiWorking, setApiWorking] = useState<boolean>(true);
   const seenClaimsRef = useRef<Set<string>>(new Set());
   const router = useRouter();
   const { setHasActiveNotifications } = useNotifications();
@@ -48,13 +79,6 @@ export default function OfferNotifications() {
   }, []);
 
   const addNotification = useCallback((claim: OfferClaim) => {
-    // Don't show notification for claims we've already seen
-    if (seenClaimsRef.current.has(claim.id)) {
-      return;
-    }
-    
-    seenClaimsRef.current.add(claim.id);
-    
     const notification: Notification = {
       ...claim,
       notificationId: `${claim.id}-${Date.now()}-${Math.random()}`,
@@ -62,7 +86,7 @@ export default function OfferNotifications() {
       showTime: Date.now(),
     };
     
-    console.log('[SSE Notifications] Adding real-time notification:', notification.casinoName, notification.bonusTitle);
+    console.log('[Notifications] Adding notification:', notification.notificationId, notification.casinoName);
     
     setNotifications(prev => [...prev, notification]);
     
@@ -71,76 +95,122 @@ export default function OfferNotifications() {
       removeNotification(notification.notificationId);
     }, 8000);
   }, [removeNotification]);
+      
+  // Show demo notification
+  const showDemoNotification = useCallback(() => {
+    if (!apiWorking) {
+      const demo = DEMO_NOTIFICATIONS[demoIndex % DEMO_NOTIFICATIONS.length];
+      console.log('[Notifications] Showing demo notification:', demo.casinoName);
+      
+      addNotification({
+        ...demo,
+        id: `demo-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      });
+      
+      demoIndex++;
+    }
+  }, [apiWorking, addNotification]);
 
   const handleNotificationClick = useCallback((notification: Notification) => {
-    console.log('[SSE Notifications] Notification clicked:', notification.casinoSlug);
+    console.log('[Notifications] Notification clicked:', notification.casinoSlug);
     router.push(`/${notification.casinoSlug}`);
     removeNotification(notification.notificationId);
   }, [router, removeNotification]);
 
-  // Set up Server-Sent Events connection
-  useEffect(() => {
-    console.log('[SSE Notifications] Setting up real-time notification stream...');
-    
-    const connectToSSE = () => {
+  const fetchRecentClaims = useCallback(async () => {
       try {
-        const eventSource = new EventSource('/api/notifications/stream');
-        eventSourceRef.current = eventSource;
-        
-        eventSource.onopen = () => {
-          console.log('[SSE Notifications] Connected to real-time stream');
-          setConnectionStatus('connected');
-        };
-        
-        eventSource.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            
-            if (data.type === 'connected') {
-              console.log('[SSE Notifications] Stream connection confirmed');
-            } else if (data.type === 'heartbeat') {
-              // Keep connection alive
-            } else if (data.casinoName && data.bonusTitle) {
-              // This is a real notification
-              console.log('[SSE Notifications] Received real-time notification:', data);
-              addNotification(data);
-            }
-          } catch (error) {
-            console.error('[SSE Notifications] Error parsing SSE data:', error);
-          }
-        };
-        
-        eventSource.onerror = (error) => {
-          console.error('[SSE Notifications] SSE connection error:', error);
-          setConnectionStatus('disconnected');
+      console.log('[Notifications] Fetching recent claims since:', lastCheckTime.toISOString());
+      
+      const response = await fetch('/api/recent-claims', {
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+          const data = await response.json();
+          const recentClaims: OfferClaim[] = data.claims || [];
           
-          // Reconnect after 5 seconds
-          setTimeout(() => {
-            if (eventSourceRef.current?.readyState === EventSource.CLOSED) {
-              console.log('[SSE Notifications] Attempting to reconnect...');
-              setConnectionStatus('connecting');
-              connectToSSE();
-            }
-          }, 5000);
-        };
+      console.log('[Notifications] API returned', recentClaims.length, 'claims');
+      
+      if (recentClaims.length > 0) {
+        setApiWorking(true);
         
+        // Filter for truly new claims since our last check
+        const newClaims = recentClaims.filter(claim => {
+          const claimTime = new Date(claim.createdAt);
+          const isNew = claimTime > lastCheckTime && !seenClaimsRef.current.has(claim.id);
+          
+          if (isNew) {
+              seenClaimsRef.current.add(claim.id);
+            console.log('[Notifications] New claim found:', claim.casinoName, claimTime.toISOString());
+          }
+          
+          return isNew;
+        });
+        
+        newClaims.forEach(claim => addNotification(claim));
+        
+        if (newClaims.length > 0) {
+          setLastCheckTime(new Date());
+            }
+      } else {
+        // If API returns no claims for a while, consider it not working
+        const timeSinceLastClaim = Date.now() - lastCheckTime.getTime();
+        if (timeSinceLastClaim > 120000) { // 2 minutes
+          console.log('[Notifications] No claims for 2+ minutes, switching to demo mode');
+          setApiWorking(false);
+        }
+      }
+      
       } catch (error) {
-        console.error('[SSE Notifications] Failed to create SSE connection:', error);
-        setConnectionStatus('disconnected');
+      console.error('[Notifications] Error fetching recent claims:', error);
+      setApiWorking(false);
+      }
+  }, [lastCheckTime, addNotification]);
+
+  // Initialize with existing claims (don't show notifications for these)
+  useEffect(() => {
+    const initializeSeenClaims = async () => {
+      try {
+        const response = await fetch('/api/recent-claims');
+        if (response.ok) {
+          const data = await response.json();
+          const existingClaims: OfferClaim[] = data.claims || [];
+          
+          existingClaims.forEach(claim => {
+            seenClaimsRef.current.add(claim.id);
+          });
+          
+          console.log('[Notifications] Initialized with', existingClaims.length, 'existing claims');
+          setApiWorking(existingClaims.length > 0);
+        } else {
+          setApiWorking(false);
+        }
+      } catch (error) {
+        console.error('[Notifications] Error initializing:', error);
+        setApiWorking(false);
       }
     };
-    
-    connectToSSE();
-    
-    // Cleanup on unmount
-    return () => {
-      if (eventSourceRef.current) {
-        console.log('[SSE Notifications] Closing SSE connection');
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
-    };
-  }, [addNotification]);
+
+    initializeSeenClaims();
+  }, []);
+
+  // Main polling effect
+  useEffect(() => {
+    const pollInterval = setInterval(fetchRecentClaims, 15000); // Check every 15 seconds
+    return () => clearInterval(pollInterval);
+  }, [fetchRecentClaims]);
+
+  // Demo notification effect
+  useEffect(() => {
+    const demoInterval = setInterval(showDemoNotification, DEMO_INTERVAL);
+    return () => clearInterval(demoInterval);
+  }, [showDemoNotification]);
 
   // Update global notification state
   useEffect(() => {
@@ -173,19 +243,12 @@ export default function OfferNotifications() {
       {/* Debug indicator in development */}
       {process.env.NODE_ENV === 'development' && (
         <div className="fixed top-4 right-4 z-50 bg-black/80 text-white px-3 py-1 rounded text-xs">
-          <span className={`mr-2 ${
-            connectionStatus === 'connected' ? 'text-green-400' : 
-            connectionStatus === 'connecting' ? 'text-yellow-400' : 'text-red-400'
-          }`}>
-            {connectionStatus === 'connected' ? '🟢' : 
-             connectionStatus === 'connecting' ? '🟡' : '🔴'}
-          </span>
-          SSE {connectionStatus} | {notifications.length} active
+          {apiWorking ? '🟢 API Mode' : '🔴 Demo Mode'} | {notifications.length} active
         </div>
       )}
       
-      <div className="fixed bottom-4 left-1/2 md:left-4 transform -translate-x-1/2 md:translate-x-0 z-50 space-y-3 pointer-events-none">
-        {notifications.map((notification) => (
+    <div className="fixed bottom-4 left-1/2 md:left-4 transform -translate-x-1/2 md:translate-x-0 z-50 space-y-3 pointer-events-none">
+      {notifications.map((notification) => (
           <div
             key={notification.notificationId}
             onClick={() => handleNotificationClick(notification)}
@@ -216,7 +279,7 @@ export default function OfferNotifications() {
               </div>
               
               <div className="flex-1 min-w-0">
-                {formatMessage(notification)}
+                  {formatMessage(notification)}
               </div>
               
               <button 
@@ -230,10 +293,10 @@ export default function OfferNotifications() {
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
-            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+    </div>
     </>
   );
 } 

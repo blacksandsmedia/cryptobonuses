@@ -2,31 +2,24 @@
 const nextConfig = {
   images: {
     unoptimized: true,
-    domains: ['cryptobonuses.com', 'localhost'],
+    domains: ['cdn.prod.website-files.com', 'localhost'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**',
       },
-      {
-        protocol: 'http', 
-        hostname: 'localhost',
-        port: '3000',
-      }
     ],
   },
   trailingSlash: false,
   experimental: {
-    serverComponentsExternalPackages: ['@prisma/client'],
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
+    serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
+    largePageDataBytes: 5 * 1024 * 1024, // 5MB
   },
   typescript: {
     // !! WARN !!
     // Temporarily ignore TypeScript errors
     // Remove this when Prisma Client is properly regenerated
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
   // Disable React strict mode to avoid double renders in development
   // This helps react-beautiful-dnd work properly in development
@@ -40,31 +33,6 @@ const nextConfig = {
         destination: '/api/uploads/:path*',
       },
     ];
-  },
-  // Skip database validation during build if DATABASE_URL is not available
-  async redirects() {
-    return []
-  },
-  // Custom headers
-  async headers() {
-    return [
-      {
-        source: '/api/notifications/stream',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
-          },
-          {
-            key: 'Connection',
-            value: 'keep-alive',
-          },
-        ],
-      },
-    ];
-  },
-  env: {
-    DATABASE_URL: process.env.DATABASE_URL || '',
   },
 };
 

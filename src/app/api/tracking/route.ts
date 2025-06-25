@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { broadcastNotification } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   try {
@@ -55,36 +54,6 @@ export async function POST(request: Request) {
         INSERT INTO "OfferTracking" ("id", "casinoId", "bonusId", "actionType", "path", "createdAt")
         VALUES (${trackingId}, ${data.casinoId}, ${data.bonusId}, ${data.actionType}, ${path}, CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
       `;
-      
-      // Broadcast real-time notification for bonus claims
-      try {
-        const casino = await prisma.casino.findUnique({
-          where: { id: data.casinoId },
-          select: { name: true, slug: true, logo: true }
-        });
-        
-        const bonus = await prisma.bonus.findUnique({
-          where: { id: data.bonusId },
-          select: { title: true, code: true }
-        });
-        
-        if (casino && bonus) {
-          broadcastNotification({
-            id: trackingId,
-            casinoName: casino.name,
-            casinoLogo: casino.logo || '/images/CryptoBonuses Logo.png',
-            casinoSlug: casino.slug,
-            bonusTitle: bonus.title,
-            bonusCode: bonus.code || undefined,
-            createdAt: new Date().toISOString()
-          });
-          
-          console.log(`[Tracking] Broadcasted real-time notification for ${casino.name} - ${bonus.title}`);
-        }
-      } catch (error) {
-        console.error('[Tracking] Error broadcasting notification:', error);
-        // Don't fail the tracking if notification fails
-      }
     }
 
     let responseData: any = { 
