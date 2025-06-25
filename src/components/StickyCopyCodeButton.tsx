@@ -79,10 +79,20 @@ export default function StickyCopyCodeButton({
     navigator.clipboard.writeText(code);
     setCopied(true);
     
-    // Automatically open affiliate link after 3 seconds if provided
+    // Open affiliate link with popup blocker resistance
     if (affiliateLink) {
+      console.log('Code copied! Opening casino site in 3 seconds...');
+      
+      // Pre-open the window to avoid popup blockers
+      const newWindow = window.open('', '_blank', 'noopener,noreferrer');
+      
       setTimeout(() => {
-        window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+        if (newWindow && !newWindow.closed) {
+          newWindow.location.href = affiliateLink;
+        } else {
+          // Fallback: try direct open if pre-opened window failed
+          window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+        }
       }, 3000);
     }
     

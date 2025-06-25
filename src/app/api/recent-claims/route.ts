@@ -3,16 +3,16 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Get offer trackings from the last 2 minutes (to catch recent activity)
-    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+    // Get offer trackings from the last 10 minutes (to catch recent activity)
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
     
     // Debug: Log the query parameters for troubleshooting
-    console.log('[NotificationsDebug] Querying for recent claims since:', twoMinutesAgo.toISOString());
+    console.log('[NotificationsDebug] Querying for recent claims since:', tenMinutesAgo.toISOString());
     
     const recentTrackings = await prisma.offerTracking.findMany({
       where: {
         createdAt: {
-          gte: twoMinutesAgo
+          gte: tenMinutesAgo
         },
         // Only include trackings that actually represent claims
         OR: [
