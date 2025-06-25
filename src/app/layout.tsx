@@ -9,7 +9,6 @@ import OfferNotifications from '@/components/OfferNotifications';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import { NotificationProvider } from '@/components/NotificationContext';
 import Script from 'next/script';
-import PerformanceOptimizer from '@/components/PerformanceOptimizer';
 
 const inter = Inter({ subsets: ['latin'] });
 const currentYear = new Date().getFullYear();
@@ -92,13 +91,11 @@ export default async function RootLayout({
 
   // Add cache busting parameter for favicon
   const cacheBuster = Date.now();
+  const faviconWithCacheBuster = `${faviconUrl}?v=${cacheBuster}`;
 
   return (
     <html lang="en">
       <head>
-        {/* Performance optimizations and preloading */}
-        <PerformanceOptimizer />
-        
         {/* Multiple favicon formats for better browser support */}
         <link rel="icon" type="image/x-icon" href={`/favicon.ico?v=${cacheBuster}`} />
         <link rel="icon" type="image/png" sizes="32x32" href={`/favicon-32x32.png?v=${cacheBuster}`} />

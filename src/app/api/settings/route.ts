@@ -5,7 +5,17 @@ import { authOptions } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
 import { JWT_SECRET } from '@/lib/auth-utils';
-import { clearSettingsCache } from '@/lib/settings';
+
+// Cache for settings to reduce database queries
+let settingsCache: any = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 60000; // 1 minute cache
+
+// Helper function to clear cache
+export function clearSettingsCache() {
+  settingsCache = null;
+  cacheTimestamp = 0;
+}
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -14,11 +24,23 @@ interface DecodedToken {
   role: string;
 }
 
-// GET /api/settings - Fetch site settings
+// GET /api/settings - Fetch site settings with caching
 export async function GET() {
   try {
+    const now = Date.now();
+    
+    // Return cached settings if still valid
+    if (settingsCache && (now - cacheTimestamp) < CACHE_DURATION) {
+      return NextResponse.json(settingsCache, {
+        headers: {
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+          'CDN-Cache-Control': 'public, max-age=60',
+          'Vercel-CDN-Cache-Control': 'public, max-age=60'
+        }
+      });
+    }
+
     // Find the first settings record or create one if it doesn't exist
-    // Run prisma generate to update types after schema changes
     let settings = await prisma.settings.findFirst();
     
     if (!settings) {
@@ -29,22 +51,33 @@ export async function GET() {
           searchDebounceTime: 2000,    // Default search debounce time
           searchInstantTrack: true,    // Default instant tracking enabled
           hideCryptoTicker: false,     // Default to showing ticker
-          hideBuyCryptoButton: false   // Default to showing buy crypto button
+          hideBuyCryptoButton: false,  // Default to showing buy crypto button
+          cryptoTickerSelection: ['BITCOIN', 'ETHEREUM', 'CARDANO', 'POLKADOT', 'DOGECOIN', 'LITECOIN', 'CHAINLINK', 'SOLANA', 'POLYGON', 'AVALANCHE']
         }
       });
     }
     
-    const response = NextResponse.json(settings);
+    // Update cache
+    settingsCache = settings;
+    cacheTimestamp = now;
     
-    // Add caching headers for better performance
-    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-    
-    return response;
+    return NextResponse.json(settings, {
+      headers: {
+        'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+        'CDN-Cache-Control': 'public, max-age=60',
+        'Vercel-CDN-Cache-Control': 'public, max-age=60'
+      }
+    });
   } catch (error) {
     console.error('Error fetching settings:', error);
     return NextResponse.json(
       { error: 'Failed to fetch settings' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate'
+        }
+      }
     );
   }
 }
@@ -85,26 +118,26 @@ export async function PUT(request: Request) {
     
     const data = await request.json();
     
-    // Find the first settings record or create one if it doesn't exist
-    let settings = await prisma.settings.findFirst();
+    // Find existing settings
+    const existingSettings = await prisma.settings.findFirst();
     
-    if (settings) {
+    let settings;
+    if (existingSettings) {
       // Update existing settings
       settings = await prisma.settings.update({
-        where: { id: settings.id },
+        where: { id: existingSettings.id },
         data: {
           faviconUrl: data.faviconUrl,
           codeTermLabel: data.codeTermLabel || 'bonus code',
           googleAnalyticsId: data.googleAnalyticsId,
-          autoCheckEnabled: data.autoCheckEnabled !== undefined ? data.autoCheckEnabled : settings.autoCheckEnabled,
-          autoCheckFrequency: data.autoCheckFrequency || settings.autoCheckFrequency,
-          autoCheckUserId: data.autoCheckUserId || settings.autoCheckUserId,
-          searchDebounceTime: data.searchDebounceTime !== undefined ? data.searchDebounceTime : settings.searchDebounceTime,
-          searchInstantTrack: data.searchInstantTrack !== undefined ? data.searchInstantTrack : settings.searchInstantTrack,
-          cryptoTickerSelection: data.cryptoTickerSelection !== undefined ? data.cryptoTickerSelection : settings.cryptoTickerSelection,
-          hideCryptoTicker: data.hideCryptoTicker !== undefined ? data.hideCryptoTicker : settings.hideCryptoTicker,
-          hideBuyCryptoButton: data.hideBuyCryptoButton !== undefined ? data.hideBuyCryptoButton : settings.hideBuyCryptoButton,
-          updatedAt: new Date()
+          autoCheckEnabled: data.autoCheckEnabled !== undefined ? data.autoCheckEnabled : true,
+          autoCheckFrequency: data.autoCheckFrequency || 'weekly',
+          autoCheckUserId: data.autoCheckUserId,
+          searchDebounceTime: data.searchDebounceTime !== undefined ? data.searchDebounceTime : 2000,
+          searchInstantTrack: data.searchInstantTrack !== undefined ? data.searchInstantTrack : true,
+          cryptoTickerSelection: data.cryptoTickerSelection || ['BITCOIN', 'ETHEREUM', 'CARDANO', 'POLKADOT', 'DOGECOIN', 'LITECOIN', 'CHAINLINK', 'SOLANA', 'POLYGON', 'AVALANCHE'],
+          hideCryptoTicker: data.hideCryptoTicker !== undefined ? data.hideCryptoTicker : false,
+          hideBuyCryptoButton: data.hideBuyCryptoButton !== undefined ? data.hideBuyCryptoButton : false
         }
       });
     } else {
@@ -129,12 +162,21 @@ export async function PUT(request: Request) {
     // Clear the settings cache so the new values are used immediately
     clearSettingsCache();
     
-    return NextResponse.json(settings);
+    return NextResponse.json(settings, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      }
+    });
   } catch (error) {
     console.error('Error updating settings:', error);
     return NextResponse.json(
       { error: 'Failed to update settings' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate'
+        }
+      }
     );
   }
 } 

@@ -3,7 +3,7 @@ import { sign } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { JWT_SECRET, getJWTSecret } from "@/lib/auth-utils";
+import { JWT_SECRET } from "@/lib/auth-utils";
 
 export async function POST(request: Request) {
   try {
@@ -38,13 +38,6 @@ export async function POST(request: Request) {
     }
 
     // Verify password
-    if (!user.password) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
-    }
-    
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
       return NextResponse.json(
@@ -53,8 +46,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const secret = getJWTSecret();
-    console.log("Admin login successful, creating token with secret (first 10 chars):", secret.substring(0, 10) + "...");
+    console.log("Admin login successful, creating token with secret:", JWT_SECRET.substring(0, 5) + "...");
 
     // Create JWT token
     const token = sign(
@@ -63,7 +55,7 @@ export async function POST(request: Request) {
         email: user.email,
         role: user.role,
       },
-      secret,
+      JWT_SECRET,
       { expiresIn: "24h" }
     );
 

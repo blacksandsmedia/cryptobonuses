@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface CryptoData {
   id: string;
@@ -11,51 +11,63 @@ interface CryptoData {
   image: string;
 }
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const UPDATE_INTERVAL = 2 * 60 * 1000; // 2 minutes
-const RETRY_DELAY = 30 * 1000; // 30 seconds
+// Cache for settings to avoid repeated API calls
+let settingsCache: any = null;
+let settingsCacheTime = 0;
+const SETTINGS_CACHE_DURATION = 60000; // 1 minute
+
+// Cache for crypto data to avoid rate limiting
+let cryptoDataCache: CryptoData[] = [];
+let cryptoCacheTime = 0;
+const CRYPTO_CACHE_DURATION = 30000; // 30 seconds
 
 export default function CryptoTicker() {
   const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-  
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastFetchRef = useRef<number>(0);
-  const cacheRef = useRef<{ data: CryptoData[], timestamp: number } | null>(null);
+  const [hasError, setHasError] = useState(false);
 
-  const fetchCryptoData = useCallback(async (isRetry = false) => {
+  const fetchSettings = useCallback(async () => {
+    const now = Date.now();
+    
+    // Return cached settings if still valid
+    if (settingsCache && (now - settingsCacheTime) < SETTINGS_CACHE_DURATION) {
+      return settingsCache;
+    }
+
     try {
-      // Check cache first
-      const now = Date.now();
-      if (cacheRef.current && (now - cacheRef.current.timestamp) < CACHE_DURATION) {
-        setCryptoData(cacheRef.current.data);
-        setIsLoading(false);
-        setError(null);
-        return;
-      }
-
-      // Prevent too frequent API calls
-      if (!isRetry && (now - lastFetchRef.current) < 60000) {
-        return;
-      }
-
-      lastFetchRef.current = now;
-
-      // First fetch the settings to get selected cryptocurrencies and hide setting
-      const settingsResponse = await fetch('/api/settings', {
-        next: { revalidate: 300 } // Cache for 5 minutes
+      const response = await fetch('/api/settings', {
+        cache: 'force-cache',
+        next: { revalidate: 60 }
       });
       
-      if (!settingsResponse.ok) {
-        throw new Error('Failed to fetch settings');
+      if (!response.ok) {
+        throw new Error(`Settings API failed: ${response.status}`);
       }
       
-      const settings = await settingsResponse.json();
+      const settings = await response.json();
+      settingsCache = settings;
+      settingsCacheTime = now;
+      return settings;
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+      // Return default settings on error
+      return {
+        hideCryptoTicker: false,
+        cryptoTickerSelection: [
+          'BITCOIN', 'ETHEREUM', 'CARDANO', 'POLKADOT', 'DOGECOIN', 
+          'LITECOIN', 'CHAINLINK', 'SOLANA', 'POLYGON', 'AVALANCHE'
+        ]
+      };
+    }
+  }, []);
+
+  const fetchCryptoData = useCallback(async () => {
+    try {
+      setHasError(false);
+      
+      const settings = await fetchSettings();
       
       // Check if ticker should be hidden
       if (settings.hideCryptoTicker) {
@@ -63,7 +75,16 @@ export default function CryptoTicker() {
         setIsLoading(false);
         return;
       }
+
+      const now = Date.now();
       
+      // Return cached crypto data if still valid
+      if (cryptoDataCache.length > 0 && (now - cryptoCacheTime) < CRYPTO_CACHE_DURATION) {
+        setCryptoData(cryptoDataCache);
+        setIsLoading(false);
+        return;
+      }
+
       const selectedCryptos = settings.cryptoTickerSelection || [
         'BITCOIN', 'ETHEREUM', 'CARDANO', 'POLKADOT', 'DOGECOIN', 
         'LITECOIN', 'CHAINLINK', 'SOLANA', 'POLYGON', 'AVALANCHE'
@@ -105,81 +126,61 @@ export default function CryptoTicker() {
         return;
       }
 
-      // Using CoinGecko free API with dynamic crypto selection
+      // Using CoinGecko free API with timeout and retries
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinGeckoIds}&order=market_cap_desc&per_page=20&page=1&sparkline=false`,
-        {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
+      try {
+        const response = await fetch(
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinGeckoIds}&order=market_cap_desc&per_page=20&page=1&sparkline=false`,
+          { 
+            signal: controller.signal,
+            cache: 'force-cache',
+            next: { revalidate: 30 }
           }
+        );
+        
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`CoinGecko API failed: ${response.status}`);
         }
-      );
 
-      clearTimeout(timeoutId);
+        const data = await response.json();
+        
+        // Validate data structure
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('Invalid or empty crypto data received');
+        }
 
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
+        cryptoDataCache = data;
+        cryptoCacheTime = now;
+        setCryptoData(data);
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
-
-      const data = await response.json();
       
-      if (!Array.isArray(data) || data.length === 0) {
-        throw new Error('Invalid or empty data received from API');
-      }
-
-      // Cache the data
-      cacheRef.current = { data, timestamp: now };
-      
-      setCryptoData(data);
       setIsLoading(false);
-      setError(null);
-      setRetryCount(0);
-      
     } catch (error) {
       console.error('Error fetching crypto data:', error);
-      
-      // Use cached data if available and not too old
-      if (cacheRef.current && (Date.now() - cacheRef.current.timestamp) < (CACHE_DURATION * 2)) {
-        setCryptoData(cacheRef.current.data);
-        setIsLoading(false);
-        setError(null);
-        return;
-      }
-      
-      setError(error instanceof Error ? error.message : 'Failed to fetch crypto data');
+      setHasError(true);
       setIsLoading(false);
       
-      // Implement exponential backoff for retries
-      if (retryCount < 3) {
-        const delay = RETRY_DELAY * Math.pow(2, retryCount);
-        retryTimeoutRef.current = setTimeout(() => {
-          setRetryCount(prev => prev + 1);
-          fetchCryptoData(true);
-        }, delay);
+      // Use cached data if available, even if stale
+      if (cryptoDataCache.length > 0) {
+        setCryptoData(cryptoDataCache);
       }
     }
-  }, [retryCount]);
+  }, [fetchSettings]);
 
   useEffect(() => {
     fetchCryptoData();
     
-    // Set up interval for updates
-    intervalRef.current = setInterval(() => {
-      fetchCryptoData();
-    }, UPDATE_INTERVAL);
+    // Reduced update frequency to avoid rate limiting
+    const interval = setInterval(fetchCryptoData, 120000); // Update every 2 minutes
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
-    };
+    return () => clearInterval(interval);
   }, [fetchCryptoData]);
 
   useEffect(() => {
@@ -191,11 +192,10 @@ export default function CryptoTicker() {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           
-          // Hide when scrolling down past 50px, show when scrolling up
-          if (currentScrollY > lastScrollY && currentScrollY > 50) {
+          if (currentScrollY > lastScrollY && currentScrollY > 100) {
             setIsVisible(false); // Hide when scrolling down
-          } else if (currentScrollY < lastScrollY || currentScrollY <= 50) {
-            setIsVisible(true); // Show when scrolling up or at top
+          } else if (currentScrollY < lastScrollY) {
+            setIsVisible(true); // Show when scrolling up
           }
 
           lastScrollY = currentScrollY;
@@ -214,28 +214,30 @@ export default function CryptoTicker() {
     return null;
   }
 
-  // Show loading state briefly, then hide if error persists
-  if (isLoading && !cacheRef.current) {
+  // Show loading state briefly, then hide if data fails to load
+  if (isLoading && !hasError) {
     return (
-      <div className={`bg-[#2c2f3a] border-b border-[#404055] transition-transform duration-300 ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}>
-        <div className="max-w-6xl mx-auto px-4 py-3">
+      <div className="bg-[#2c2f3a] border-b border-[#404055] overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 py-2">
           <div className="flex items-center justify-center">
-            <div className="animate-pulse text-[#9ca3af] text-sm">Loading crypto prices...</div>
+            <div className="animate-pulse flex items-center gap-8">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-[#404055] rounded-md"></div>
+                  <div className="w-12 h-4 bg-[#404055] rounded"></div>
+                  <div className="w-16 h-4 bg-[#404055] rounded"></div>
+                  <div className="w-12 h-4 bg-[#404055] rounded"></div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // Don't render if we have an error and no cached data
-  if (error && (!cryptoData || cryptoData.length === 0)) {
-    return null;
-  }
-
-  // Don't render if no data
-  if (!cryptoData || cryptoData.length === 0) {
+  // Don't render if no data and has error
+  if (!cryptoData.length) {
     return null;
   }
 
@@ -243,14 +245,14 @@ export default function CryptoTicker() {
   const duplicatedData = [...cryptoData, ...cryptoData];
 
   return (
-    <div className={`bg-[#2c2f3a] border-b border-[#404055] overflow-hidden transition-transform duration-300 ${
+    <div className={`bg-[#2c2f3a] border-b border-[#404055] overflow-hidden transform transition-transform duration-200 will-change-transform ${
       isVisible ? 'translate-y-0' : '-translate-y-full'
     }`}>
       <div className="max-w-6xl mx-auto px-4 relative">
-        {/* Left fade - extended to reach header content edges */}
+        {/* Left fade - optimized for performance */}
         <div className="absolute -left-4 top-0 bottom-0 w-20 bg-gradient-to-r from-[#2c2f3a] via-[#2c2f3a] to-transparent z-10 pointer-events-none"></div>
         
-        {/* Right fade - extended to reach header content edges */}
+        {/* Right fade - optimized for performance */}
         <div className="absolute -right-4 top-0 bottom-0 w-20 bg-gradient-to-l from-[#2c2f3a] via-[#2c2f3a] to-transparent z-10 pointer-events-none"></div>
         
         <div className="py-2 overflow-hidden">
@@ -266,7 +268,8 @@ export default function CryptoTicker() {
                   className="w-5 h-5 rounded-md"
                   loading="lazy"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                    // Hide broken images
+                    (e.target as HTMLImageElement).style.display = 'none';
                   }}
                 />
                 <span className="text-white font-medium text-sm">{crypto.symbol.toUpperCase()}</span>

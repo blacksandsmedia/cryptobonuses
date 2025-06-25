@@ -1,15 +1,15 @@
 import { verify } from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-// Use a consistent secret for JWT authentication
-// Priority: AUTH_SECRET > NEXTAUTH_SECRET > fallback
-const JWT_SECRET = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'cryptobonuses-jwt-secret-2024';
+// Use the same secret for both JWT authentication and NextAuth
+// This ensures consistent authentication across different methods
+const sharedSecret = process.env.AUTH_SECRET || "cryptobonuses-secret-key";
+
+// JWT secret used for admin authentication
+export const JWT_SECRET = sharedSecret;
 
 // NextAuth secret for session handling
-export const NEXTAUTH_SECRET = JWT_SECRET;
-
-// Export the JWT secret for use in other files
-export { JWT_SECRET };
+export const NEXTAUTH_SECRET = sharedSecret;
 
 // Verify admin token from cookies
 export async function verifyAdminToken() {
@@ -42,9 +42,4 @@ export async function verifyAdminToken() {
     console.error("Token verification failed:", error);
     return null;
   }
-}
-
-// Helper function to get the JWT secret
-export function getJWTSecret(): string {
-  return JWT_SECRET;
 } 

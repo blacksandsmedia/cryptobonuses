@@ -420,7 +420,6 @@ export default function EditCasinoPage({
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
-        credentials: "include", // Include cookies for auth
       });
       
       if (!response.ok) {
@@ -477,7 +476,6 @@ export default function EditCasinoPage({
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
-        credentials: "include", // Include cookies for auth
       });
       
       if (!response.ok) {
@@ -518,7 +516,6 @@ export default function EditCasinoPage({
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
-        credentials: "include", // Include cookies for auth
       });
       
       if (!response.ok) {

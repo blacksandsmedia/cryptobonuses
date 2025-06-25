@@ -26,20 +26,8 @@ function verifyJWT(token: string, secret: string): any {
 
 // Middleware that handles casino redirects, admin routes and API routes
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const pathname = request.nextUrl.pathname;
   
-  // Skip middleware for API routes, static files, and certain paths
-  if (
-    pathname.startsWith('/api/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.startsWith('/images/') ||
-    pathname.startsWith('/uploads/') ||
-    pathname.includes('.')
-  ) {
-    return NextResponse.next();
-  }
-
   // Casino page redirect handling (for old slugs to new .com format)
   if (pathname.match(/^\/[^\/]+$/) && !pathname.startsWith('/api') && 
       !pathname.startsWith('/admin') && !pathname.startsWith('/user') && 
@@ -87,13 +75,8 @@ export async function middleware(request: NextRequest) {
     return response;
   }
   
-  // Create a response that we can modify
+  // Create response
   const response = NextResponse.next();
-
-  // Add security headers
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
 
   // Add CORS headers for API routes
   if (pathname.startsWith('/api')) {
@@ -159,9 +142,7 @@ export async function middleware(request: NextRequest) {
     }
     
     try {
-      // Use the same secret as auth-utils.ts
-      const jwtSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'cryptobonuses-jwt-secret-2024';
-      const decoded = verifyJWT(token, jwtSecret);
+      const decoded = verifyJWT(token, process.env.AUTH_SECRET || 'cryptobonuses-secret-key');
       
       // Check if user has admin role
       if (decoded.role !== 'ADMIN') {
@@ -190,15 +171,7 @@ export async function middleware(request: NextRequest) {
 // Configure the paths that middleware should run on
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - images (public images)
-     * - uploads (uploaded files)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|images|uploads).*)',
+    // Match all paths except static files and Next.js internals
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }; 

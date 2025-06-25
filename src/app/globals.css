@@ -34,7 +34,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* Performance optimizations */
+  /* Optimize for performance */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeSpeed;
@@ -61,52 +61,47 @@ body {
   display: none;  /* Safari and Chrome */
 } 
 
-/* Performance optimized casino logo animation */
+/* Optimized casino logo animation within cards */
 .casino-logo {
   outline: none;
   border-radius: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  will-change: transform, box-shadow;
+  transition: box-shadow 0.2s ease-out;
+  will-change: box-shadow;
   transform: translateZ(0); /* Force hardware acceleration */
-  backface-visibility: hidden;
 }
 
 .casino-logo:hover {
+  box-shadow: 0 0 0 2px #68D08B, 0 0 10px rgba(104, 208, 139, 0.4);
+}
+
+/* Optimized hover effects for better Safari performance */
+.optimized-hover {
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.optimized-hover:hover {
   transform: translateZ(0) scale(1.02);
-  box-shadow: 0 0 0 2px #68D08B, 0 0 8px rgba(104, 208, 139, 0.3);
 }
 
-/* Optimized hover effects for Safari */
-@media (hover: hover) and (pointer: fine) {
-  .casino-logo:hover {
-    transform: translateZ(0) scale(1.02);
-    box-shadow: 0 0 0 2px #68D08B, 0 0 8px rgba(104, 208, 139, 0.3);
-  }
+/* Reduced complexity hover for cards */
+.card-hover {
+  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+  will-change: border-color, box-shadow;
 }
 
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  .casino-logo {
-    transition: none;
-  }
-  
-  .casino-logo:hover {
-    transform: none;
-    box-shadow: 0 0 0 2px #68D08B;
-  }
-  
-  .animate-spin-slow,
-  .animate-scroll-left {
-    animation: none;
-  }
+.card-hover:hover {
+  border-color: #68D08B;
+  box-shadow: 0 4px 12px rgba(104, 208, 139, 0.15);
 }
 
-/* Optimized slow spin animation */
+/* Slow spin animation for wheel emoji */
 @keyframes spin-slow {
-  0% {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
@@ -131,98 +126,50 @@ body {
   animation: scroll-left 40s linear infinite;
   will-change: transform;
   transform: translateZ(0); /* Force hardware acceleration */
-  backface-visibility: hidden;
 }
 
 .animate-scroll-left:hover {
   animation-play-state: paused;
 }
 
-/* Performance-focused animations */
-.card-hover {
-  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
-  will-change: transform;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .card-hover:hover {
-    transform: translate3d(0, -2px, 0);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+/* Performance optimizations for Safari */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Safari-specific optimizations */
+  .casino-logo,
+  .optimized-hover,
+  .card-hover {
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+  }
+  
+  /* Reduce motion for Safari if preferred */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-scroll-left {
+      animation: none;
+    }
+    
+    .animate-spin-slow {
+      animation: none;
+    }
+    
+    .casino-logo,
+    .optimized-hover,
+    .card-hover {
+      transition: none;
+    }
   }
 }
 
-.btn-transition {
-  transition: background-color 200ms ease-out, transform 200ms ease-out;
-  will-change: transform, background-color;
-  backface-visibility: hidden;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .btn-transition:hover {
-    transform: translate3d(0, -1px, 0);
+/* Optimize transforms for mobile Safari */
+@media (max-width: 768px) {
+  .casino-logo:hover {
+    /* Simpler hover effect on mobile */
+    box-shadow: 0 0 0 2px #68D08B;
   }
-}
-
-/* Optimize image loading */
-img {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-/* Optimize text rendering */
-h1, h2, h3, h4, h5, h6 {
-  text-rendering: optimizeSpeed;
-}
-
-/* Smooth scrolling with performance consideration */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
+  
+  .optimized-hover:hover {
+    /* Reduced scale on mobile for better performance */
+    transform: translateZ(0) scale(1.01);
   }
-}
-
-/* GPU acceleration for common animations */
-.gpu-accelerated {
-  will-change: transform;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-/* Crisp image rendering for logos */
-.image-rendering-crisp, .logo-crisp {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
-  -ms-interpolation-mode: nearest-neighbor;
-  /* Additional quality enhancements */
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  transform: translateZ(0);
-  /* Prevent image smoothing */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* Better quality for logos */
-  object-fit: contain;
-  object-position: center;
-}
-
-/* Specific logo optimization */
-.logo-crisp {
-  image-rendering: -webkit-optimize-contrast !important;
-  image-rendering: crisp-edges !important;
-  filter: contrast(1.1) saturate(1.05);
-  /* Force high quality */
-  image-resolution: from-image 300dpi;
-}
-
-/* Optimize font rendering */
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 } 

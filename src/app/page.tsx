@@ -40,7 +40,10 @@ interface Casino {
 // Only show one card per casino, using the first bonus for each casino
 // Casinos are already sorted by displayOrder from the API
 const transformCasinoDataForUI = (casinos: Casino[]) => {
+  console.log('Transforming casino data for UI, count:', casinos.length);
+  
   if (casinos.length === 0) {
+    console.warn('No casinos data available to transform');
     return [];
   }
   
@@ -68,6 +71,7 @@ const transformCasinoDataForUI = (casinos: Casino[]) => {
     
     // Clean up the logo URL
     const logoUrl = casino.logo || '';
+    console.log(`Casino ${casino.name} logo URL: ${logoUrl}`);
     
     const transformedCasino = {
       id: casino.slug,
@@ -88,6 +92,7 @@ const transformCasinoDataForUI = (casinos: Casino[]) => {
       codeTermLabel: casino.codeTermLabel || 'bonus code'
     };
     
+    console.log(`Transformed casino: ${casino.name}, slug: ${casino.slug}, logo: ${transformedCasino.logoUrl}`);
     return transformedCasino;
   });
 };
@@ -151,6 +156,17 @@ export default function Home() {
         if (!casinosResponse.ok) throw new Error('Failed to fetch casinos');
         const casinosData = await casinosResponse.json();
         
+        // Log the data for debugging
+        console.log('Fetched casinos count:', casinosData.length);
+        
+        // List all casino names to help with mapping
+        if (casinosData.length > 0) {
+          console.log('All casino names for reference:');
+          casinosData.forEach((casino: Casino, index: number) => {
+            console.log(`${index + 1}. ${casino.name} (slug: ${casino.slug}, order: ${casino.displayOrder})`);
+          });
+        }
+        
         setCasinos(casinosData);
 
         // Fetch trending data (usage statistics for the past week)
@@ -171,6 +187,7 @@ export default function Home() {
             }
             
             setTrendingData(trendsMap);
+            console.log('Loaded trending data for casinos:', trendsMap.size);
           }
         } catch (trendingError) {
           console.error('Error fetching trending data:', trendingError);
@@ -201,9 +218,12 @@ export default function Home() {
   // Apply filters whenever the filters state changes
   useEffect(() => {
     if (!initialized) return;
+
+    console.log('Applying filters to casinos, count:', casinos.length);
     
     // Generate one card per casino (not per bonus)
     const bonusesData = transformCasinoDataForUI(casinos);
+    console.log('Transformed bonuses data, count:', bonusesData.length);
     
     const result = bonusesData
       .filter(bonus => {
@@ -259,6 +279,8 @@ export default function Home() {
         
         return 0;
       });
+
+    console.log('Final filtered bonuses count:', result.length);
     
     // Ensure we're actually updating the state with the filtered results
     setFilteredBonuses(result);
@@ -266,6 +288,7 @@ export default function Home() {
 
   // Get unique casino names for filter dropdown
   const casinoNames = Array.from(new Set(casinos.map(casino => casino.name))).sort();
+  console.log('Available casino names for filter:', casinoNames.length);
 
   const currentYear = new Date().getFullYear();
 
@@ -296,7 +319,7 @@ export default function Home() {
         }}
       />
 
-      <div className="mx-auto w-[95%] md:w-[95%] max-w-[1280px]">
+      <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
         <h1 className="text-2xl md:text-4xl font-semibold text-center mt-2 mb-12">
           Bitcoin Casino Bonuses {currentYear}
         </h1>
@@ -331,7 +354,7 @@ export default function Home() {
       {/* Statistics Section */}
       <StatisticsSection />
 
-      <div className="mx-auto w-[95%] md:w-[95%] max-w-[1280px]">
+      <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
         <div className="mt-24 mb-16">
           {/* Hero Section */}
           <div className="text-center mb-16">
