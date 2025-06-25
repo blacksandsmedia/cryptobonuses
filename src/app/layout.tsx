@@ -77,7 +77,7 @@ export default async function RootLayout({
 }) {
   // Fetch settings including favicon and Google Analytics ID
   let faviconUrl = '/favicon.ico'; // Default
-  let googleAnalyticsId = null;
+  let googleAnalyticsId: string | null = null;
   
   try {
     const settings = await prisma.settings.findFirst();
@@ -109,7 +109,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#343541" />
         
         {/* Google Analytics */}
-        {googleAnalyticsId && (
+        {googleAnalyticsId && !googleAnalyticsId.includes('XXXXXXXXXX') && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
@@ -120,10 +120,23 @@ export default async function RootLayout({
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${googleAnalyticsId}');
+                gtag('config', '${googleAnalyticsId}', {
+                  page_title: document.title,
+                  page_location: window.location.href
+                });
+                console.log('Google Analytics initialized with ID: ${googleAnalyticsId}');
               `}
             </Script>
           </>
+        )}
+        
+        {/* Debug message for invalid GA ID */}
+        {googleAnalyticsId && googleAnalyticsId.includes('XXXXXXXXXX') && (
+          <Script id="ga-debug" strategy="afterInteractive">
+            {`
+              console.warn('Google Analytics not loaded: Please set a valid GA4 tracking ID in admin settings. Current ID: ${googleAnalyticsId}');
+            `}
+          </Script>
         )}
       </head>
       <body className={`${inter.className} bg-[#343541] text-white overflow-x-hidden`}>

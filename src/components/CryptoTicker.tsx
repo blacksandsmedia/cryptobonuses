@@ -11,15 +11,65 @@ interface CryptoData {
   image: string;
 }
 
+// Fallback crypto data when API fails
+const FALLBACK_CRYPTO_DATA: CryptoData[] = [
+  {
+    id: 'bitcoin',
+    symbol: 'btc',
+    name: 'Bitcoin',
+    current_price: 67000,
+    price_change_percentage_24h: 2.5,
+    image: 'https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png'
+  },
+  {
+    id: 'ethereum',
+    symbol: 'eth',
+    name: 'Ethereum',
+    current_price: 3500,
+    price_change_percentage_24h: 1.8,
+    image: 'https://coin-images.coingecko.com/coins/images/279/large/ethereum.png'
+  },
+  {
+    id: 'cardano',
+    symbol: 'ada',
+    name: 'Cardano',
+    current_price: 0.45,
+    price_change_percentage_24h: -0.8,
+    image: 'https://coin-images.coingecko.com/coins/images/975/large/cardano.png'
+  },
+  {
+    id: 'solana',
+    symbol: 'sol',
+    name: 'Solana',
+    current_price: 140,
+    price_change_percentage_24h: 3.2,
+    image: 'https://coin-images.coingecko.com/coins/images/4128/large/solana.png'
+  },
+  {
+    id: 'dogecoin',
+    symbol: 'doge',
+    name: 'Dogecoin',
+    current_price: 0.08,
+    price_change_percentage_24h: 1.5,
+    image: 'https://coin-images.coingecko.com/coins/images/5/large/dogecoin.png'
+  }
+];
+
 export default function CryptoTicker() {
   const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [usingFallback, setUsingFallback] = useState(false);
+  const MAX_RETRIES = 3;
 
   useEffect(() => {
     const fetchCryptoData = async () => {
       try {
+        setError(null);
+        
         // First fetch the settings to get selected cryptocurrencies and hide setting
         const settingsResponse = await fetch('/api/settings');
         const settings = await settingsResponse.json();
@@ -67,12 +117,14 @@ export default function CryptoTicker() {
           .join(',');
 
         if (!coinGeckoIds) {
-          console.warn('No valid cryptocurrencies selected for ticker');
+          console.warn('No valid cryptocurrencies selected for ticker - using fallback data');
+          setCryptoData(FALLBACK_CRYPTO_DATA);
+          setUsingFallback(true);
           setIsLoading(false);
           return;
         }
 
-        // Using CoinGecko free API with dynamic crypto selection and error handling
+        // Using CoinGecko free API with dynamic crypto selection and enhanced error handling
         const response = await fetch(
           `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinGeckoIds}&order=market_cap_desc&per_page=20&page=1&sparkline=false`,
           {
@@ -91,14 +143,32 @@ export default function CryptoTicker() {
         
         // Validate data before setting it
         if (!Array.isArray(data) || data.length === 0) {
-          console.warn('CoinGecko API returned invalid or empty data');
-          setIsLoading(false);
-          return;
+          throw new Error('CoinGecko API returned invalid or empty data');
         }
+        
         setCryptoData(data);
+        setUsingFallback(false);
+        setRetryCount(0); // Reset retry count on success
         setIsLoading(false);
+        
       } catch (error) {
         console.error('Error fetching crypto data:', error);
+        setError(error instanceof Error ? error.message : 'Unknown error');
+        
+        // If we have retries left, don't show fallback yet
+        if (retryCount < MAX_RETRIES) {
+          setRetryCount(prev => prev + 1);
+          // Retry after a delay (exponential backoff)
+          setTimeout(() => {
+            fetchCryptoData();
+          }, Math.pow(2, retryCount) * 1000); // 1s, 2s, 4s delays
+          return;
+        }
+        
+        // Max retries reached - use fallback data
+        console.warn('Max retries reached - using fallback crypto data');
+        setCryptoData(FALLBACK_CRYPTO_DATA);
+        setUsingFallback(true);
         setIsLoading(false);
       }
     };
@@ -107,7 +177,7 @@ export default function CryptoTicker() {
     const interval = setInterval(fetchCryptoData, 60000); // Update every minute
 
     return () => clearInterval(interval);
-  }, []);
+  }, [retryCount]);
 
   useEffect(() => {
     let ticking = false;
@@ -142,8 +212,13 @@ export default function CryptoTicker() {
     return null;
   }
 
-  // Don't render anything while loading
-  if (isLoading) {
+  // Show loading state only initially
+  if (isLoading && cryptoData.length === 0) {
+    return null;
+  }
+
+  // If no data available (shouldn't happen with fallback), return null
+  if (cryptoData.length === 0) {
     return null;
   }
 
@@ -172,6 +247,10 @@ export default function CryptoTicker() {
                   src={crypto.image} 
                   alt={crypto.name}
                   className="w-5 h-5 rounded-md"
+                  onError={(e) => {
+                    // Fallback to a generic crypto icon if image fails
+                    e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiM2OEQwOEIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMmMtNS41MyAwLTEwIDQuNDctMTAgMTBzNC40NyAxMCAxMCAxMCAxMC00LjQ3IDEwLTEwUzE3LjUzIDIgMTIgMnoiLz48L3N2Zz4=';
+                  }}
                 />
                 <span className="text-white font-medium text-sm">{crypto.symbol.toUpperCase()}</span>
                 <span className="text-[#9ca3af] text-sm">${crypto.current_price.toLocaleString()}</span>
@@ -183,6 +262,13 @@ export default function CryptoTicker() {
                 </span>
               </div>
             ))}
+            
+            {/* Show fallback indicator */}
+            {usingFallback && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-md whitespace-nowrap text-xs">
+                <span className="text-yellow-400">📊 Live prices unavailable</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
