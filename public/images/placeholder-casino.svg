@@ -1,0 +1,6 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#f3f4f6"/>
+  <text x="100" y="90" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af" text-anchor="middle">Casino</text>
+  <text x="100" y="110" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af" text-anchor="middle">Logo</text>
+  <text x="100" y="130" font-family="Arial, sans-serif" font-size="12" fill="#d1d5db" text-anchor="middle">Placeholder</text>
+</svg>

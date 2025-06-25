@@ -7,6 +7,8 @@ import { JWT_SECRET, getJWTSecret } from "@/lib/auth-utils";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { RailwayImageService } from "@/lib/railway-image-service";
+import { getImageServiceConfig, isRailwayImageServiceEnabled } from "@/lib/railway-image-config";
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -18,7 +20,10 @@ interface DecodedToken {
 // Check if we're in Railway production environment
 const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID;
 
-// Helper function to get the correct upload directory
+// Check if Railway Image Service is configured
+const hasImageService = isRailwayImageServiceEnabled();
+
+// Helper function to get the correct upload directory (fallback only)
 function getUploadDirectory(): string {
   if (isRailway) {
     // In Railway, use a persistent volume if available, otherwise fall back to public/uploads
@@ -33,7 +38,7 @@ function getUploadDirectory(): string {
   return path.join(process.cwd(), 'public/uploads');
 }
 
-// Helper function to get the correct URL path for uploaded files
+// Helper function to get the correct URL path for uploaded files (fallback only)
 function getUploadUrlPath(filename: string): string {
   if (isRailway && process.env.RAILWAY_VOLUME_MOUNT_PATH) {
     // If using Railway volume, files need to be served differently
@@ -43,7 +48,7 @@ function getUploadUrlPath(filename: string): string {
   return `/uploads/${filename}`;
 }
 
-// Helper function to ensure the uploads directory exists
+// Helper function to ensure the uploads directory exists (fallback only)
 async function ensureUploadsDir() {
   const uploadsDir = getUploadDirectory();
   try {
@@ -77,7 +82,8 @@ function generateSEOFilename(originalName: string, prefix?: string): string {
 export async function POST(request: Request) {
   console.log("=== UPLOAD API DEBUG ===");
   console.log("Railway environment:", !!isRailway);
-  console.log("Upload directory:", getUploadDirectory());
+  console.log("Image service configured:", !!hasImageService);
+  console.log("Upload directory (fallback):", getUploadDirectory());
   
   // Debug all cookies
   const cookieStore = cookies();
@@ -177,11 +183,46 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
+    // Generate SEO-friendly filename
+    const filename = generateSEOFilename(file.name);
+
+    // Try Railway Image Service first if configured
+    if (hasImageService) {
+      try {
+        console.log("Using Railway Image Service for upload");
+        const config = getImageServiceConfig();
+        const imageService = new RailwayImageService(config);
+        
+        const result = await imageService.uploadImage(file, filename, {
+          quality: 85,
+          format: 'webp'
+        });
+
+        if (result.success && result.url) {
+          console.log("Railway Image Service upload successful:", result.url);
+          return NextResponse.json({
+            message: "File uploaded successfully via Railway Image Service",
+            url: result.url,
+            filename: filename,
+            size: file.size,
+            service: "railway-image-service"
+          });
+        } else {
+          console.log("Railway Image Service upload failed:", result.error);
+          // Fall through to local storage
+        }
+      } catch (imageServiceError) {
+        console.error("Railway Image Service error:", imageServiceError);
+        // Fall through to local storage
+      }
+    }
+
+    // Fallback to local storage
+    console.log("Using local storage for upload");
+    
     // Ensure uploads directory exists
     await ensureUploadsDir();
 
-    // Generate SEO-friendly filename
-    const filename = generateSEOFilename(file.name);
     const uploadDir = getUploadDirectory();
     const filePath = path.join(uploadDir, filename);
 
@@ -210,7 +251,8 @@ export async function POST(request: Request) {
       message: "File uploaded successfully",
       url: urlPath,
       filename: filename,
-      size: buffer.length
+      size: buffer.length,
+      service: "local-storage"
     });
 
   } catch (error) {
