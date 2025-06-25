@@ -96,13 +96,19 @@ export async function POST(request: Request) {
     const filePath = getUploadPath(fileName);
     
     // If overwriting an existing file, delete the old one first
-    if (currentPath && existsSync(filePath)) {
-      try {
-        await unlink(filePath);
-        console.log(`Deleted existing file: ${filePath}`);
-      } catch (error) {
-        console.warn(`Could not delete existing file: ${filePath}`, error);
-        // Continue anyway - the new file will overwrite
+    if (currentPath) {
+      // Convert relative path to full system path
+      const currentFileName = currentPath.replace('/uploads/', '');
+      const currentFilePath = getUploadPath(currentFileName);
+      
+      if (existsSync(currentFilePath)) {
+        try {
+          await unlink(currentFilePath);
+          console.log(`Deleted existing file: ${currentFilePath}`);
+        } catch (error) {
+          console.warn(`Could not delete existing file: ${currentFilePath}`, error);
+          // Continue anyway - the new file will overwrite
+        }
       }
     }
     
