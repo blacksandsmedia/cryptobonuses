@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/generate-redirects.js && next build",
+    "build:quick": "next build",
     "start": "next start",
     "lint": "next lint",
     "create-admin": "node scripts/create-admin.js",
     "seed-data": "node scripts/seed-data.js",
     "clear-db": "node scripts/clear-db.js",
-    "reset-db": "node scripts/clear-db.js && node scripts/seed-data.js"
+    "reset-db": "node scripts/clear-db.js && node scripts/seed-data.js",
+    "generate-redirects": "node scripts/generate-redirects.js"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

@@ -24,55 +24,9 @@ function verifyJWT(token: string, secret: string): any {
   }
 }
 
-// Direct database query for redirects (Edge Runtime compatible)
-async function checkRedirect(slug: string): Promise<string | null> {
-  try {
-    // Use regular Prisma client (works better than edge client)
-    const { PrismaClient } = await import('@prisma/client');
-    const prisma = new PrismaClient();
-    
-    const redirect = await prisma.slugRedirect.findUnique({
-      where: { oldSlug: slug },
-      select: { newSlug: true }
-    });
-    
-    await prisma.$disconnect();
-    
-    return redirect?.newSlug || null;
-  } catch (error) {
-    console.error('Error checking redirect in middleware:', error);
-    return null;
-  }
-}
-
-// Middleware that handles casino redirects, admin routes and API routes
+// Middleware that handles admin routes and API routes
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  
-  // Casino page redirect handling (for old slugs to new .com format)
-  if (pathname.match(/^\/[^\/]+$/) && !pathname.startsWith('/api') && 
-      !pathname.startsWith('/admin') && !pathname.startsWith('/user') && 
-      !pathname.startsWith('/_next') && pathname !== '/' && 
-      pathname !== '/contact' && pathname !== '/privacy' && pathname !== '/terms' && 
-      pathname !== '/spin' && !pathname.includes('.')) {
-    
-    const slug = pathname.slice(1); // Remove leading slash
-    
-    console.log(`[MIDDLEWARE] Checking redirect for slug: ${slug}`);
-    
-    try {
-      // Check if this slug has a redirect (direct database query)
-      const newSlug = await checkRedirect(slug);
-      
-      if (newSlug) {
-        console.log(`[MIDDLEWARE] Redirecting ${slug} -> ${newSlug}`);
-        const newUrl = new URL(`/${newSlug}`, request.url);
-        return NextResponse.redirect(newUrl, 301);
-      }
-    } catch (error) {
-      console.error('Error checking redirect:', error);
-    }
-  }
   
   // Handle preflight OPTIONS requests for CORS
   if (request.method === 'OPTIONS') {

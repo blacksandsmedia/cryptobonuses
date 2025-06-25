@@ -1,4 +1,13 @@
 /** @type {import('next').NextConfig} */
+
+// Import redirects from generated configuration
+let redirectsConfig = { redirects: [] };
+try {
+  redirectsConfig = require('./redirects.config.js');
+} catch (error) {
+  console.warn('No redirects.config.js found, using empty redirects array');
+}
+
 const nextConfig = {
   images: {
     unoptimized: true,
@@ -33,6 +42,12 @@ const nextConfig = {
         destination: '/api/uploads/:path*',
       },
     ];
+  },
+
+  // 301 redirects from database (dynamically generated)
+  async redirects() {
+    console.log(`Loading ${redirectsConfig.redirects.length} redirects from database`);
+    return redirectsConfig.redirects;
   },
 };
 
