@@ -403,7 +403,7 @@ export default function Home() {
 
           {/* Feature Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-all duration-300">
+            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
               <div className="w-12 h-12 bg-[#68D08B]/10 rounded-lg flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68D08B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -417,7 +417,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-all duration-300">
+            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
               <div className="w-12 h-12 bg-[#68D08B]/10 rounded-lg flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68D08B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -431,7 +431,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-all duration-300">
+            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
               <div className="w-12 h-12 bg-[#68D08B]/10 rounded-lg flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68D08B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 12l2 2 4-4"/>

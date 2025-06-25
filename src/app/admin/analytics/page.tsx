@@ -359,21 +359,41 @@ export default function AnalyticsPage() {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data.dailyActivity}
-            margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+            margin={{ 
+              top: typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 25, 
+              right: typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 35, 
+              left: typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 35, 
+              bottom: typeof window !== 'undefined' && window.innerWidth < 768 ? 40 : 25 
+            }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#404055" />
             <XAxis 
               dataKey="date" 
-              tick={{ fill: '#a7a9b4' }}
+              tick={{ 
+                fill: '#a7a9b4', 
+                fontSize: typeof window !== 'undefined' && window.innerWidth < 768 ? 10 : 12 
+              }}
+              angle={typeof window !== 'undefined' && window.innerWidth < 768 ? -30 : 0}
+              textAnchor={typeof window !== 'undefined' && window.innerWidth < 768 ? "end" : "middle"}
+              height={typeof window !== 'undefined' && window.innerWidth < 768 ? 50 : 30}
+              interval={typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 0}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                // Format with abbreviated month and day only, with explicit timezone
+                const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+                if (isMobile) {
+                  return date.toLocaleDateString('en-GB', { 
+                    day: '2-digit',
+                    month: '2-digit',
+                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                  });
+                }
                 return date.toLocaleDateString('en-GB', { 
                   day: 'numeric', 
                   month: 'short',
                   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
                 });
               }}
+              tickMargin={typeof window !== 'undefined' && window.innerWidth < 768 ? 5 : 10}
             />
             <YAxis tick={{ fill: '#a7a9b4' }} />
             <Tooltip 
@@ -720,21 +740,41 @@ export default function AnalyticsPage() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={analytics.dailyActivity}
-                margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+                margin={{ 
+                  top: typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 25, 
+                  right: typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 35, 
+                  left: typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 35, 
+                  bottom: typeof window !== 'undefined' && window.innerWidth < 768 ? 40 : 25 
+                }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#404055" />
                 <XAxis 
                   dataKey="date" 
-                  tick={{ fill: '#a7a9b4' }}
+                  tick={{ 
+                    fill: '#a7a9b4', 
+                    fontSize: typeof window !== 'undefined' && window.innerWidth < 768 ? 10 : 12 
+                  }}
+                  angle={typeof window !== 'undefined' && window.innerWidth < 768 ? -30 : 0}
+                  textAnchor={typeof window !== 'undefined' && window.innerWidth < 768 ? "end" : "middle"}
+                  height={typeof window !== 'undefined' && window.innerWidth < 768 ? 50 : 30}
+                  interval={typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 0}
                   tickFormatter={(value) => {
                     const date = new Date(value);
-                    // Format with abbreviated month and day only, with explicit timezone
+                    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+                    if (isMobile) {
+                      return date.toLocaleDateString('en-GB', { 
+                        day: '2-digit',
+                        month: '2-digit',
+                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                      });
+                    }
                     return date.toLocaleDateString('en-GB', { 
                       day: 'numeric', 
                       month: 'short',
                       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
                     });
                   }}
+                  tickMargin={typeof window !== 'undefined' && window.innerWidth < 768 ? 5 : 10}
                 />
                 <YAxis tick={{ fill: '#a7a9b4' }} />
                 <Tooltip 

@@ -633,7 +633,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
                   />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 whitespace-nowrap text-ellipsis overflow-hidden">{dbCasino.name} {codeTypeCapitalized}</h1>
+                  <h1 className="text-lg sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 leading-tight">{dbCasino.name} {codeTypeCapitalized}</h1>
                   <p className="text-[#68D08B] text-lg sm:text-xl md:text-2xl font-semibold">
                     {bonusTitle}
                   </p>
@@ -905,7 +905,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
                   <Link 
                     key={offer.id} 
                     href={`/${offer.id}`}
-                    className="bg-[#2c2f3a] rounded-lg p-5 border border-[#404055]/50 hover:border-[#68D08B]/40 hover:bg-[#323544] transition-all duration-200 group cursor-pointer block h-full"
+                    className="bg-[#2c2f3a] rounded-lg p-5 border border-[#404055]/50 hover:border-[#68D08B]/40 hover:bg-[#323544] transition-[border-color,background-color] duration-200 group cursor-pointer block h-full will-change-[border-color]"
                     title={offerTitle}
                   >
                     <div className="flex flex-col h-full">

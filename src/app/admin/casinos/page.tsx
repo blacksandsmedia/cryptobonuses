@@ -18,6 +18,9 @@ interface Casino {
   rating?: number;
   displayOrder?: number;
   bonuses?: any[];
+  affiliateLink?: string;
+  website?: string;
+  bonusCode?: string;
 }
 
 interface Bonus {
@@ -41,6 +44,9 @@ export default function CasinosPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [detailedView, setDetailedView] = useState(false);
+  const [editingField, setEditingField] = useState<{ casinoId: string; field: string } | null>(null);
+  const [editValue, setEditValue] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -297,6 +303,111 @@ export default function CasinosPage() {
     setShowImportModal(false);
   };
 
+  const startEdit = (casinoId: string, field: string, currentValue: string) => {
+    setEditingField({ casinoId, field });
+    setEditValue(currentValue || '');
+  };
+
+  const cancelEdit = () => {
+    setEditingField(null);
+    setEditValue('');
+  };
+
+  const saveEdit = async () => {
+    if (!editingField) return;
+
+    try {
+      const response = await fetch(`/api/casinos/${editingField.casinoId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          [editingField.field]: editValue,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update casino');
+      }
+
+      const updatedCasino = await response.json();
+      
+      // Update the casino in both arrays
+      setCasinos(prev => prev.map(casino => 
+        casino.id === editingField.casinoId ? { ...casino, ...updatedCasino } : casino
+      ));
+      setFilteredCasinos(prev => prev.map(casino => 
+        casino.id === editingField.casinoId ? { ...casino, ...updatedCasino } : casino
+      ));
+
+      setEditingField(null);
+      setEditValue('');
+      toast.success('Casino updated successfully');
+    } catch (error) {
+      console.error('Error updating casino:', error);
+      toast.error('Failed to update casino');
+    }
+  };
+
+  const renderEditableField = (casino: Casino, field: string, displayValue: string, placeholder: string) => {
+    const isEditing = editingField?.casinoId === casino.id && editingField?.field === field;
+    
+    if (isEditing) {
+      return (
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="flex-1 px-2 py-1 bg-[#1d1d25] border border-[#404055] rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#68D08B]"
+            placeholder={placeholder}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveEdit();
+              if (e.key === 'Escape') cancelEdit();
+            }}
+          />
+          <button
+            onClick={saveEdit}
+            className="text-green-400 hover:text-green-300 p-1"
+            title="Save"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
+          <button
+            onClick={cancelEdit}
+            className="text-red-400 hover:text-red-300 p-1"
+            title="Cancel"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div 
+        className="flex items-center group cursor-pointer"
+        onClick={() => startEdit(casino.id, field, displayValue)}
+      >
+        <span className="text-sm text-white truncate max-w-[200px]" title={displayValue}>
+          {displayValue || 
+            <span className="text-[#a7a9b4] italic">{placeholder}</span>
+          }
+        </span>
+        <svg className="w-3 h-3 ml-2 text-[#a7a9b4] opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -350,7 +461,7 @@ export default function CasinosPage() {
         </div>
       )}
 
-      {/* Search bar */}
+      {/* Search bar and view toggle */}
       <div className="flex items-center space-x-4">
         <div className="flex-grow">
           <input
@@ -360,6 +471,19 @@ export default function CasinosPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 bg-[#1d1d25] border border-[#404055] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#68D08B]"
           />
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-[#a7a9b4]">Quick Edit:</span>
+          <button
+            onClick={() => setDetailedView(!detailedView)}
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              detailedView 
+                ? 'bg-[#68D08B] text-white' 
+                : 'bg-[#373946] text-[#a7a9b4] hover:bg-[#454655]'
+            }`}
+          >
+            {detailedView ? 'Enabled' : 'Disabled'}
+          </button>
         </div>
         <button
           onClick={handleSearch}
@@ -406,8 +530,21 @@ export default function CasinosPage() {
                       />
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
-                      Name
+                      Name & Slug
                     </th>
+                    {detailedView && (
+                      <>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
+                          Website
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
+                          Affiliate Link
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
+                          Bonus Code
+                        </th>
+                      </>
+                    )}
                     <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
                       Rating <span className="text-xs font-normal opacity-75">(from reviews)</span>
                     </th>
@@ -481,11 +618,33 @@ export default function CasinosPage() {
                             />
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-white">
-                              {casino.name || 'Unnamed Casino'}
-                            </div>
-                            <div className="text-sm text-[#a7a9b4]">{casino.slug || 'no-slug'}</div>
+                            {detailedView ? (
+                              <div className="space-y-1">
+                                {renderEditableField(casino, 'name', casino.name || '', 'Casino name')}
+                                {renderEditableField(casino, 'slug', casino.slug || '', 'URL slug')}
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="text-sm font-medium text-white">
+                                  {casino.name || 'Unnamed Casino'}
+                                </div>
+                                <div className="text-sm text-[#a7a9b4]">{casino.slug || 'no-slug'}</div>
+                              </div>
+                            )}
                           </td>
+                          {detailedView && (
+                            <>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {renderEditableField(casino, 'website', casino.website || '', 'Website URL')}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {renderEditableField(casino, 'affiliateLink', casino.affiliateLink || '', 'Affiliate link')}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {renderEditableField(casino, 'bonusCode', casino.bonusCode || '', 'Bonus code')}
+                              </td>
+                            </>
+                          )}
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-white">
                               {casino.rating ? `${casino.rating.toFixed(1)}/5` : '0.0/5'}
@@ -512,7 +671,7 @@ export default function CasinosPage() {
                   {provided.placeholder}
                   {filteredCasinos.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-6 py-8 text-center text-[#a7a9b4]">
+                      <td colSpan={detailedView ? 10 : 7} className="px-6 py-8 text-center text-[#a7a9b4]">
                         {searchTerm ? "No casinos found matching your search." : "No casinos found. Create your first casino by clicking the \"Add New Casino\" button."}
                       </td>
                     </tr>

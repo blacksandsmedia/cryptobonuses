@@ -112,7 +112,7 @@ export default function StatisticsSection() {
     const animatedValue = typeof value === 'number' ? useCounter(value) : value;
     
     const content = (
-      <div className="bg-[#3e4050] rounded-xl p-6 hover:bg-[#434555] transition-all duration-300 hover:scale-102 hover:shadow-lg border border-[#404055] hover:border-[#68D08B]/30 h-full">
+              <div className="bg-[#3e4050] rounded-xl p-6 hover:bg-[#434555] transition-[background-color,border-color,box-shadow,transform] duration-300 hover:scale-102 hover:shadow-lg border border-[#404055] hover:border-[#68D08B]/30 h-full will-change-transform" style={{ transform: 'translateZ(0)' }}>
         <div className="text-center flex flex-col items-center justify-center h-full">
           {showLogo && logoUrl ? (
             <div className="w-8 h-8 mx-auto mb-3 rounded-md overflow-hidden bg-[#2c2f3a] flex items-center justify-center flex-shrink-0">

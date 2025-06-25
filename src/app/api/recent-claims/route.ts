@@ -6,6 +6,9 @@ export async function GET() {
     // Get offer trackings from the last 2 minutes (to catch recent activity)
     const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
     
+    // Debug: Log the query parameters for troubleshooting
+    console.log('[NotificationsDebug] Querying for recent claims since:', twoMinutesAgo.toISOString());
+    
     const recentTrackings = await prisma.offerTracking.findMany({
       where: {
         createdAt: {
@@ -38,6 +41,10 @@ export async function GET() {
       take: 20 // Limit to recent claims
     });
 
+    // Debug: Log the raw results
+    console.log('[NotificationsDebug] Found', recentTrackings.length, 'recent trackings');
+    console.log('[NotificationsDebug] Action types found:', [...new Set(recentTrackings.map(t => t.actionType))]);
+
     // Transform the data for the notification component
     const claims = recentTrackings
       .filter(tracking => tracking.casino && tracking.bonus) // Only include trackings with valid casino and bonus
@@ -50,6 +57,11 @@ export async function GET() {
         bonusCode: tracking.bonus!.code || undefined,
         createdAt: tracking.createdAt.toISOString()
       }));
+
+    console.log('[NotificationsDebug] Transformed to', claims.length, 'valid claims');
+    if (claims.length > 0) {
+      console.log('[NotificationsDebug] Sample claim:', claims[0]);
+    }
 
     return NextResponse.json({ claims });
   } catch (error) {

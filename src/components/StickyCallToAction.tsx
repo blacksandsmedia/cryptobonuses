@@ -50,14 +50,17 @@ export default function StickyCallToAction({
 
       {/* Action Buttons */}
       <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Hide promo code on mobile (sm and below), show on desktop */}
         {bonusCode ? (
-          <StickyCopyCodeButton 
-            code={bonusCode} 
-            casinoId={casinoId}
-            bonusId={bonusId}
-            affiliateLink={affiliateLink}
-            isSticky={true}
-          />
+          <div className="hidden md:block">
+            <StickyCopyCodeButton 
+              code={bonusCode} 
+              casinoId={casinoId}
+              bonusId={bonusId}
+              affiliateLink={affiliateLink}
+              isSticky={true}
+            />
+          </div>
         ) : null}
         <OfferButton 
           affiliateLink={affiliateLink}

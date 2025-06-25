@@ -175,7 +175,12 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 
               data={data.chartData}
-              margin={{ top: 35, right: 40, left: 40, bottom: 40 }}
+              margin={{ 
+                top: typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 40, 
+                right: typeof window !== 'undefined' && window.innerWidth < 768 ? 35 : 45, 
+                left: typeof window !== 'undefined' && window.innerWidth < 768 ? 35 : 45, 
+                bottom: typeof window !== 'undefined' && window.innerWidth < 768 ? 35 : 45 
+              }}
             >
               <defs>
                 <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
@@ -189,27 +194,26 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
                 tickLine={false}
                 tick={{ 
                   fill: '#9ca3af', 
-                  fontSize: 13, 
-                  fontWeight: 500,
-                  dy: 20 
+                  fontSize: typeof window !== 'undefined' && window.innerWidth < 768 ? 10 : 11,
+                  fontWeight: 500
                 }}
                 interval={0}
-                tickMargin={10}
+                tickMargin={typeof window !== 'undefined' && window.innerWidth < 768 ? 8 : 10}
+                height={typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 40}
               />
               <YAxis 
                 axisLine={false}
                 tickLine={false}
                 tick={{ 
                   fill: '#9ca3af', 
-                  fontSize: 12,
-                  fontWeight: 500,
-                  dx: -5
+                  fontSize: typeof window !== 'undefined' && window.innerWidth < 768 ? 10 : 12,
+                  fontWeight: 500
                 }}
                 domain={[0, 'dataMax + 1']}
                 tickFormatter={(value) => Math.round(value).toString()}
                 allowDecimals={false}
-                tickMargin={15}
-                width={25}
+                tickMargin={typeof window !== 'undefined' && window.innerWidth < 768 ? 8 : 15}
+                width={typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 25}
               />
               <CartesianGrid 
                 strokeDasharray="3 3" 

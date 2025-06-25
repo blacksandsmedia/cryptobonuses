@@ -62,21 +62,30 @@ export default function OfferNotifications() {
   useEffect(() => {
     const fetchRecentClaims = async () => {
       try {
+        console.log('[NotificationsDebug] Fetching recent claims...');
         const response = await fetch('/api/recent-claims');
         if (response.ok) {
           const data = await response.json();
           const recentClaims: OfferClaim[] = data.claims || [];
           
+          console.log('[NotificationsDebug] Received', recentClaims.length, 'claims from API');
+          console.log('[NotificationsDebug] Seen claims count:', seenClaimsRef.current.size);
+          
           // Add new notifications for claims we haven't seen yet
           recentClaims.forEach(claim => {
             if (!seenClaimsRef.current.has(claim.id)) {
+              console.log('[NotificationsDebug] Adding new notification for claim:', claim.id, claim.casinoName);
               seenClaimsRef.current.add(claim.id);
               addNotification(claim);
+            } else {
+              console.log('[NotificationsDebug] Skipping already seen claim:', claim.id);
             }
           });
+        } else {
+          console.error('[NotificationsDebug] API response not ok:', response.status, response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching recent claims:', error);
+        console.error('[NotificationsDebug] Error fetching recent claims:', error);
       }
     };
 

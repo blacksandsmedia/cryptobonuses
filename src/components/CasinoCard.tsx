@@ -192,7 +192,9 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
       {bonus.promoCode && (
         <button
           onClick={handleCopy}
-          className="absolute right-4 sm:right-5 top-5 z-10 bg-[#2c2f3a] text-white px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg text-xs sm:text-sm hover:bg-[#343747] hover:shadow-lg border border-transparent hover:border-[#68D08B] transition-all duration-200 flex items-center gap-1 sm:gap-1.5 group"
+          className={`absolute right-4 sm:right-5 top-5 z-10 bg-[#2c2f3a] text-white px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg text-xs sm:text-sm border border-transparent transition-[background-color,box-shadow,border-color] duration-200 flex items-center gap-1 sm:gap-1.5 group will-change-[background-color] ${
+            isMobile ? '' : 'hover:bg-[#343747] hover:shadow-lg hover:border-[#68D08B]'
+          }`}
           title={bonus.promoCode}
         >
           <span className="text-white">{copied ? 'Copied!' : displayCode}</span>
@@ -203,7 +205,12 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
         </button>
       )}
       <article 
-        className="relative bg-gradient-to-br from-[#3e4050] to-[#373846] p-5 rounded-xl shadow-lg border-2 border-[#404055] transition-all duration-300 hover:shadow-xl hover:border-[#68D08B] hover:scale-[1.005] group"
+        className={`relative bg-gradient-to-br from-[#3e4050] to-[#373846] p-5 rounded-xl shadow-lg border-2 border-[#404055] transition-[box-shadow,border-color,transform] duration-300 group will-change-transform ${
+          isMobile 
+            ? '' 
+            : 'hover:shadow-xl hover:border-[#68D08B] hover:scale-[1.005]'
+        }`}
+        style={{ transform: 'translateZ(0)' }}
       >
         <a 
           href={`/${bonus.id}`} 
@@ -241,7 +248,9 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
           href={bonus.affiliateLink || '#'}
           target="_blank"
           rel="noopener noreferrer nofollow"
-          className="w-full bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-bold py-3 px-4 rounded-lg text-center transition-colors duration-300 block"
+          className={`w-full bg-[#68D08B] text-[#343541] font-bold py-3 px-4 rounded-lg text-center transition-[background-color] duration-300 block will-change-[background-color] ${
+            isMobile ? '' : 'hover:bg-[#5abc7a]'
+          }`}
           onClick={handleGetBonusClick}
         >
           Get Bonus
