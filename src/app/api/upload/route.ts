@@ -110,11 +110,11 @@ export async function POST(request: Request) {
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await writeFile(filePath, fileBuffer as any);
     
-    // Return the public URL to the uploaded file
-    const fileUrl = publicUploadUrl(fileName);
+    // Return the relative path for database storage
+    const relativePath = `/uploads/${fileName}`;
     
     return NextResponse.json({ 
-      url: fileUrl,
+      url: relativePath,
       success: true,
       fileName: fileName
     });
