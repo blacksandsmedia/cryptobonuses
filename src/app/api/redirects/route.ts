@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { verify } from "jsonwebtoken";
 import { JWT_SECRET } from "@/lib/auth-utils";
+import { generateRedirects } from '../../../../scripts/generate-redirects.js';
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -76,6 +77,10 @@ export async function POST(request: NextRequest) {
         where: { oldSlug },
         data: { newSlug, entityType }
       });
+      
+      // Regenerate redirects config for Next.js
+      await generateRedirects();
+      
       return NextResponse.json({ redirect: updatedRedirect, updated: true });
     } else {
       // Create new redirect
@@ -86,6 +91,10 @@ export async function POST(request: NextRequest) {
           entityType
         }
       });
+      
+      // Regenerate redirects config for Next.js
+      await generateRedirects();
+      
       return NextResponse.json({ redirect: newRedirect, created: true });
     }
   } catch (error) {
@@ -133,6 +142,9 @@ export async function DELETE(request: NextRequest) {
     await prisma.slugRedirect.delete({
       where: { oldSlug }
     });
+
+    // Regenerate redirects config for Next.js
+    await generateRedirects();
 
     return NextResponse.json({ message: 'Redirect deleted successfully' });
   } catch (error) {

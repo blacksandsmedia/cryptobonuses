@@ -32,7 +32,8 @@ async function generateRedirects() {
     const nextjsRedirects = redirects.map(redirect => ({
       source: `/${redirect.oldSlug}`,
       destination: `/${redirect.newSlug}`,
-      permanent: true // 301 redirect
+      permanent: true, // 301 redirect
+      statusCode: 301  // Explicitly set 301 instead of 308
     }));
 
     // Create the configuration content
