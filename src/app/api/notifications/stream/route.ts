@@ -28,6 +28,7 @@ export function broadcastNotification(notification: {
 }
 
 export async function GET(request: NextRequest) {
+  // Real-time Server-Sent Events for instant notifications
   const stream = new ReadableStream({
     start(controller) {
       // Add connection to active set
