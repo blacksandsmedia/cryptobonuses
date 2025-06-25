@@ -81,7 +81,7 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
             onChange={(e) => handleSearchChange(e.target.value)}
             onClick={() => handleSearchInteraction(filters.searchTerm)}
             onFocus={() => handleSearchInteraction(filters.searchTerm)}
-            className="w-full pl-12 pr-4 h-12 bg-[#2c2f3a] border-2 border-[#404055] rounded-xl text-white placeholder-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all"
+            className="w-full pl-12 pr-4 h-12 bg-[#2c2f3a] border border-[#404055] rounded-xl text-white placeholder-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all"
           />
         </div>
 
@@ -89,7 +89,7 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
         <select
           value={filters.bonusType}
           onChange={(e) => onFilterChange({ bonusType: e.target.value as BonusType | '' })}
-          className="h-12 px-4 bg-[#2c2f3a] border-2 border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 min-w-[160px]"
+          className="h-12 px-4 bg-[#2c2f3a] border border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 min-w-[160px]"
           style={dropdownStyle}
         >
           <option value="">All Types</option>
@@ -105,11 +105,12 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
         <select
           value={filters.sortBy}
           onChange={(e) => onFilterChange({ sortBy: e.target.value as FilterState['sortBy'] })}
-          className="h-12 px-4 bg-[#2c2f3a] border-2 border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 min-w-[160px]"
+          className="h-12 px-4 bg-[#2c2f3a] border border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 min-w-[160px]"
           style={dropdownStyle}
         >
           <option value="">Default</option>
           <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
           <option value="highest_rated">Highest Rated</option>
           <option value="trending">Trending</option>
         </select>
@@ -134,7 +135,7 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
               onChange={(e) => handleSearchChange(e.target.value)}
               onClick={() => handleSearchInteraction(filters.searchTerm)}
               onFocus={() => handleSearchInteraction(filters.searchTerm)}
-              className="w-full pl-12 pr-4 h-12 bg-[#2c2f3a] border-2 border-[#404055] rounded-xl text-white placeholder-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all"
+              className="w-full pl-12 pr-4 h-12 bg-[#2c2f3a] border border-[#404055] rounded-xl text-white placeholder-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all"
             />
           </div>
         </div>
@@ -145,7 +146,7 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
           <select
             value={filters.bonusType}
             onChange={(e) => onFilterChange({ bonusType: e.target.value as BonusType | '' })}
-            className="h-12 px-4 bg-[#2c2f3a] border-2 border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 w-full"
+            className="h-12 px-4 bg-[#2c2f3a] border border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 w-full"
             style={dropdownStyle}
           >
             <option value="">All Types</option>
@@ -161,11 +162,12 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
           <select
             value={filters.sortBy}
             onChange={(e) => onFilterChange({ sortBy: e.target.value as FilterState['sortBy'] })}
-            className="h-12 px-4 bg-[#2c2f3a] border-2 border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 w-full"
+            className="h-12 px-4 bg-[#2c2f3a] border border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 w-full"
             style={dropdownStyle}
           >
             <option value="">Default</option>
             <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
             <option value="highest_rated">Highest Rated</option>
             <option value="trending">Trending</option>
           </select>

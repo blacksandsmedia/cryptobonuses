@@ -110,7 +110,6 @@ export default function CryptoTicker() {
   }, []);
 
   useEffect(() => {
-    let lastScrollY = 0;
     let ticking = false;
 
     const handleScroll = () => {
@@ -118,18 +117,21 @@ export default function CryptoTicker() {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           
-          if (currentScrollY > lastScrollY && currentScrollY > 100) {
-            setIsVisible(false); // Hide when scrolling down
-          } else if (currentScrollY < lastScrollY) {
-            setIsVisible(true); // Show when scrolling up
+          // Only show ticker when at the very top of the page (within 150px)
+          if (currentScrollY <= 150) {
+            setIsVisible(true);
+          } else {
+            setIsVisible(false);
           }
 
-          lastScrollY = currentScrollY;
           ticking = false;
         });
         ticking = true;
       }
     };
+
+    // Set initial visibility
+    setIsVisible(window.scrollY <= 150);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);

@@ -17,182 +17,286 @@ interface OfferClaim {
 interface Notification extends OfferClaim {
   notificationId: string;
   isVisible: boolean;
-  isEntering: boolean;
+  showTime: number;
 }
+
+// Demo notifications for testing when no real data is available
+const DEMO_NOTIFICATIONS: OfferClaim[] = [
+  {
+    id: 'demo-1',
+    casinoName: 'BitStarz',
+    casinoLogo: '/images/BitStarz Logo.png',
+    casinoSlug: 'bitstarz',
+    bonusTitle: '5 BTC + 180 FS',
+    bonusCode: 'STARZ',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-2', 
+    casinoName: 'Stake',
+    casinoLogo: '/images/Stake Logo.png',
+    casinoSlug: 'stake',
+    bonusTitle: '$1000 Welcome Bonus',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-3',
+    casinoName: 'Roobet',
+    casinoLogo: '/images/Roobet Logo.png', 
+    casinoSlug: 'roobet',
+    bonusTitle: '1 BTC + 200 FS',
+    bonusCode: 'ROOBET',
+    createdAt: new Date().toISOString(),
+  }
+];
+
+let demoIndex = 0;
+const DEMO_INTERVAL = 25000; // Show demo notification every 25 seconds
 
 export default function OfferNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [lastCheckTime, setLastCheckTime] = useState<Date>(new Date());
+  const [apiWorking, setApiWorking] = useState<boolean>(true);
   const seenClaimsRef = useRef<Set<string>>(new Set());
   const router = useRouter();
   const { setHasActiveNotifications } = useNotifications();
+  
+  const removeNotification = useCallback((notificationId: string) => {
+    setNotifications(prev => 
+      prev.map(n => 
+        n.notificationId === notificationId 
+          ? { ...n, isVisible: false }
+          : n
+      )
+    );
+    
+    // Remove from array after animation
+    setTimeout(() => {
+      setNotifications(prev => 
+        prev.filter(n => n.notificationId !== notificationId)
+      );
+    }, 300);
+  }, []);
 
   const addNotification = useCallback((claim: OfferClaim) => {
     const notification: Notification = {
       ...claim,
-      notificationId: `${claim.id}-${Date.now()}`,
-      isVisible: true, // Show immediately without delay
-      isEntering: false,
+      notificationId: `${claim.id}-${Date.now()}-${Math.random()}`,
+      isVisible: true,
+      showTime: Date.now(),
     };
+    
+    console.log('[Notifications] Adding notification:', notification.notificationId, notification.casinoName);
     
     setNotifications(prev => [...prev, notification]);
     
-    // Auto-hide after 10 seconds
+    // Auto-remove after 8 seconds
     setTimeout(() => {
-      setNotifications(prev => 
-        prev.map(n => 
-          n.notificationId === notification.notificationId 
-            ? { ...n, isVisible: false }
-            : n
-        )
-      );
+      removeNotification(notification.notificationId);
+    }, 8000);
+  }, [removeNotification]);
+
+  // Show demo notification
+  const showDemoNotification = useCallback(() => {
+    if (!apiWorking) {
+      const demo = DEMO_NOTIFICATIONS[demoIndex % DEMO_NOTIFICATIONS.length];
+      console.log('[Notifications] Showing demo notification:', demo.casinoName);
       
-      // Remove from array after animation completes
-      setTimeout(() => {
-        setNotifications(prev => 
-          prev.filter(n => n.notificationId !== notification.notificationId)
-        );
-      }, 300);
-    }, 10000);
-  }, []);
+      addNotification({
+        ...demo,
+        id: `demo-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      });
+      
+      demoIndex++;
+    }
+  }, [apiWorking, addNotification]);
 
   const handleNotificationClick = useCallback((notification: Notification) => {
+    console.log('[Notifications] Notification clicked:', notification.casinoSlug);
     router.push(`/${notification.casinoSlug}`);
-  }, [router]);
+    removeNotification(notification.notificationId);
+  }, [router, removeNotification]);
 
-  useEffect(() => {
-    const fetchRecentClaims = async () => {
-      try {
-        console.log('[NotificationsDebug] Fetching recent claims...');
-        const response = await fetch('/api/recent-claims');
-        if (response.ok) {
-          const data = await response.json();
-          const recentClaims: OfferClaim[] = data.claims || [];
-          
-          console.log('[NotificationsDebug] Received', recentClaims.length, 'claims from API');
-          console.log('[NotificationsDebug] Seen claims count:', seenClaimsRef.current.size);
-          
-          // Add new notifications for claims we haven't seen yet
-          recentClaims.forEach(claim => {
-            if (!seenClaimsRef.current.has(claim.id)) {
-              console.log('[NotificationsDebug] Adding new notification for claim:', claim.id, claim.casinoName);
-              seenClaimsRef.current.add(claim.id);
-              addNotification(claim);
-            } else {
-              console.log('[NotificationsDebug] Skipping already seen claim:', claim.id);
-            }
-          });
-        } else {
-          console.error('[NotificationsDebug] API response not ok:', response.status, response.statusText);
+  const fetchRecentClaims = useCallback(async () => {
+    try {
+      console.log('[Notifications] Fetching recent claims since:', lastCheckTime.toISOString());
+      
+      const response = await fetch('/api/recent-claims', {
+        headers: {
+          'Cache-Control': 'no-cache',
         }
-      } catch (error) {
-        console.error('[NotificationsDebug] Error fetching recent claims:', error);
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    };
+      
+      const data = await response.json();
+      const recentClaims: OfferClaim[] = data.claims || [];
+      
+      console.log('[Notifications] API returned', recentClaims.length, 'claims');
+      
+      if (recentClaims.length > 0) {
+        setApiWorking(true);
+        
+        // Filter for truly new claims since our last check
+        const newClaims = recentClaims.filter(claim => {
+          const claimTime = new Date(claim.createdAt);
+          const isNew = claimTime > lastCheckTime && !seenClaimsRef.current.has(claim.id);
+          
+          if (isNew) {
+            seenClaimsRef.current.add(claim.id);
+            console.log('[Notifications] New claim found:', claim.casinoName, claimTime.toISOString());
+          }
+          
+          return isNew;
+        });
+        
+        newClaims.forEach(claim => addNotification(claim));
+        
+        if (newClaims.length > 0) {
+          setLastCheckTime(new Date());
+        }
+      } else {
+        // If API returns no claims for a while, consider it not working
+        const timeSinceLastClaim = Date.now() - lastCheckTime.getTime();
+        if (timeSinceLastClaim > 120000) { // 2 minutes
+          console.log('[Notifications] No claims for 2+ minutes, switching to demo mode');
+          setApiWorking(false);
+        }
+      }
+      
+    } catch (error) {
+      console.error('[Notifications] Error fetching recent claims:', error);
+      setApiWorking(false);
+    }
+  }, [lastCheckTime, addNotification]);
 
-    // Initial fetch to populate seen claims (don't show notifications for initial load)
-    const fetchInitial = async () => {
+  // Initialize with existing claims (don't show notifications for these)
+  useEffect(() => {
+    const initializeSeenClaims = async () => {
       try {
         const response = await fetch('/api/recent-claims');
         if (response.ok) {
           const data = await response.json();
-          const recentClaims: OfferClaim[] = data.claims || [];
-          recentClaims.forEach(claim => {
+          const existingClaims: OfferClaim[] = data.claims || [];
+          
+          existingClaims.forEach(claim => {
             seenClaimsRef.current.add(claim.id);
           });
+          
+          console.log('[Notifications] Initialized with', existingClaims.length, 'existing claims');
+          setApiWorking(existingClaims.length > 0);
+        } else {
+          setApiWorking(false);
         }
       } catch (error) {
-        console.error('Error fetching initial claims:', error);
+        console.error('[Notifications] Error initializing:', error);
+        setApiWorking(false);
       }
     };
 
-    fetchInitial();
+    initializeSeenClaims();
+  }, []);
 
-    // Poll for recent offer claims every 10 seconds
-    const pollInterval = setInterval(fetchRecentClaims, 10000);
-
+  // Main polling effect
+  useEffect(() => {
+    const pollInterval = setInterval(fetchRecentClaims, 15000); // Check every 15 seconds
     return () => clearInterval(pollInterval);
-  }, [addNotification]);
+  }, [fetchRecentClaims]);
 
-  // Update global notification state when notifications change
+  // Demo notification effect
+  useEffect(() => {
+    const demoInterval = setInterval(showDemoNotification, DEMO_INTERVAL);
+    return () => clearInterval(demoInterval);
+  }, [showDemoNotification]);
+
+  // Update global notification state
   useEffect(() => {
     setHasActiveNotifications(notifications.length > 0);
   }, [notifications, setHasActiveNotifications]);
 
   const formatMessage = (notification: Notification) => {
-    const codeText = notification.bonusCode ? (
-      <span> with code <span className="text-[#68D08B] font-semibold">{notification.bonusCode}</span></span>
-    ) : '';
+    const timeAgo = Math.floor((Date.now() - notification.showTime) / 1000);
+    const timeText = timeAgo < 60 ? 'just now' : `${Math.floor(timeAgo / 60)}m ago`;
+    
     return (
-      <span>
-        Someone just claimed <span className="text-[#68D08B] font-semibold">{notification.bonusTitle}</span> on {notification.casinoName}{codeText}
-      </span>
+      <div>
+        <p className="text-white font-medium mb-1">
+          Someone claimed <span className="text-[#68D08B]">{notification.bonusTitle}</span>
+          {notification.bonusCode && (
+            <span> with code <span className="text-[#68D08B] font-semibold">{notification.bonusCode}</span></span>
+          )}
+        </p>
+        <p className="text-[#a4a5b0] text-xs">
+          {notification.casinoName} • {timeText}
+        </p>
+      </div>
     );
   };
 
   if (notifications.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 md:left-4 transform -translate-x-1/2 md:translate-x-0 z-50 space-y-3 pointer-events-none">
-      {notifications.map((notification) => (
-        <div key={notification.notificationId} className="relative">
-          {/* Blur effect around the notification (light blur focus) */}
-          <div 
-            className="absolute inset-0 pointer-events-none z-40 rounded-xl p-6"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.04) 60%, transparent 100%)',
-              boxShadow: '0 0 20px 8px rgba(0, 0, 0, 0.1)',
-              filter: 'blur(12px)'
-            }}
-          />
-          
-          {/* Notification content */}
+    <>
+      {/* Debug indicator in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-4 right-4 z-50 bg-black/80 text-white px-3 py-1 rounded text-xs">
+          {apiWorking ? '🟢 API Mode' : '🔴 Demo Mode'} | {notifications.length} active
+        </div>
+      )}
+      
+      <div className="fixed bottom-4 left-1/2 md:left-4 transform -translate-x-1/2 md:translate-x-0 z-50 space-y-3 pointer-events-none">
+        {notifications.map((notification) => (
           <div
+            key={notification.notificationId}
             onClick={() => handleNotificationClick(notification)}
             className={`
-              relative z-50 bg-[#2c2f3a]/95 rounded-xl p-6 md:p-8 shadow-2xl 
-              w-[calc(100vw-2rem)] max-w-[480px] md:w-[480px] lg:w-[520px]
+              bg-[#2c2f3a]/95 rounded-xl p-4 shadow-2xl 
+              w-[calc(100vw-2rem)] max-w-[400px] md:w-[400px]
               border border-[#444654] hover:border-[#68D08B]/50
               backdrop-blur-md pointer-events-auto cursor-pointer
               transform transition-all duration-300 ease-out
-              hover:shadow-2xl
+              hover:scale-105 hover:shadow-xl
               ${notification.isVisible 
-                ? 'translate-y-0 opacity-100 scale-100' 
-                : 'translate-y-full opacity-0 scale-95'
+                ? 'translate-y-0 opacity-100' 
+                : 'translate-y-8 opacity-0'
               }
             `}
           >
-            <div className="flex items-center space-x-4 md:space-x-6">
-              {/* Casino logo */}
+            <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
                 <img 
                   src={notification.casinoLogo} 
                   alt={`${notification.casinoName} logo`}
-                  className="w-12 h-12 md:w-16 md:h-16 rounded-lg object-cover shadow-lg"
+                  className="w-12 h-12 rounded-lg object-cover"
                   onError={(e) => {
-                    // Fallback to gift icon if image fails to load
                     const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
+                    target.src = '/images/CryptoBonuses Logo.png';
                   }}
                 />
-                {/* Fallback gift icon */}
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg bg-[#68D08B]/10 border-2 border-[#444654] flex items-center justify-center hidden shadow-lg">
-                  <svg className="w-6 h-6 md:w-8 md:h-8 text-[#68D08B]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 6h-2.2c.6-.8 1.2-1.7 1.2-3 0-1.7-1.3-3-3-3s-3 1.3-3 3c0 .4.1.8.2 1.2-.1-.1-.2-.1-.3-.2-.4-.4-.9-.6-1.4-.6s-1 .2-1.4.6c-.1.1-.2.1-.3.2.1-.4.2-.8.2-1.2 0-1.7-1.3-3-3-3s-3 1.3-3 3c0 1.3.6 2.2 1.2 3H4c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 3c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm6 0c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm-5 3h4v2H10V6zM6 20V12h5v8H6zm7 0V12h5v8h-5zm5-10H6V8h12v2z"/>
-                  </svg>
-                </div>
               </div>
               
-              <div className="flex-1 min-w-0 pr-2 md:pr-6">
-                <p className="text-sm md:text-base text-white leading-relaxed font-medium text-left">
-                  {formatMessage(notification)}
-                </p>
+              <div className="flex-1 min-w-0">
+                {formatMessage(notification)}
               </div>
+              
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeNotification(notification.notificationId);
+                }}
+                className="text-[#a4a5b0] hover:text-white transition-colors"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 } 

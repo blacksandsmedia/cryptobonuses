@@ -33,6 +33,7 @@ interface Casino {
   affiliateLink: string | null;
   bonuses: Bonus[];
   createdAt: string;
+  foundedYear?: number;
   codeTermLabel?: string;
 }
 
@@ -255,12 +256,21 @@ export default function Home() {
         }
         
         if (filters.sortBy === 'newest') {
-          // Sort by creation date (newest first)
+          // Sort by founded year (newest first)
           const casinoA = casinos.find(c => c.id === a.casinoId);
           const casinoB = casinos.find(c => c.id === b.casinoId);
-          const dateA = new Date(casinoA?.createdAt || 0).getTime();
-          const dateB = new Date(casinoB?.createdAt || 0).getTime();
-          return dateB - dateA;
+          const yearA = casinoA?.foundedYear || 0;
+          const yearB = casinoB?.foundedYear || 0;
+          return yearB - yearA;
+        }
+        
+        if (filters.sortBy === 'oldest') {
+          // Sort by founded year (oldest first)
+          const casinoA = casinos.find(c => c.id === a.casinoId);
+          const casinoB = casinos.find(c => c.id === b.casinoId);
+          const yearA = casinoA?.foundedYear || 9999; // Put casinos without founded year at end
+          const yearB = casinoB?.foundedYear || 9999;
+          return yearA - yearB;
         }
         
         if (filters.sortBy === 'highest_rated') {
@@ -320,11 +330,11 @@ export default function Home() {
       />
 
       <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
-        <h1 className="text-2xl md:text-4xl font-semibold text-center mt-2 mb-12">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold text-center mt-1 mb-8 sm:mb-12 px-4">
           Bitcoin Casino Bonuses {currentYear}
         </h1>
         
-        <div className="mb-12" data-filter-section>
+        <div className="mb-6 sm:mb-8 md:mb-12 px-4" data-filter-section>
           <FilterControls
             key={`filter-controls-${initialized}`}
             filters={filters}
@@ -333,7 +343,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4">
           {filteredBonuses.map(bonus => (
             <CasinoCard
               key={`${bonus.id}`}
@@ -365,11 +375,11 @@ export default function Home() {
               </span>
             </div>
             
-            <h2 className="text-4xl md:text-5xl font-semibold mb-6 bg-gradient-to-r from-white to-[#a4a5b0] bg-clip-text text-transparent leading-tight py-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 sm:mb-6 bg-gradient-to-r from-white to-[#a4a5b0] bg-clip-text text-transparent leading-tight py-2 px-4">
               Welcome to CryptoBonuses
             </h2>
             
-            <p className="text-[#a4a5b0] max-w-3xl mx-auto text-lg md:text-xl leading-relaxed mb-8">
+            <p className="text-[#a4a5b0] max-w-3xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed mb-6 sm:mb-8 px-4">
               Discover the best Bitcoin casino bonuses and promotional bonuses in {currentYear}. Our expertly curated list includes trusted crypto casinos offering generous welcome packages, exclusive bonus codes, and free spins.
             </p>
             
@@ -402,8 +412,8 @@ export default function Home() {
           </div>
 
           {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 px-4">
+            <div className="bg-[#3e4050] rounded-xl p-4 sm:p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
               <div className="w-12 h-12 bg-[#68D08B]/10 rounded-lg flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68D08B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -411,13 +421,13 @@ export default function Home() {
                   <path d="m22 21-3-3m0 0a5.5 5.5 0 1 0-7.8-7.8 5.5 5.5 0 0 0 7.8 7.8Z"/>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Expert Reviews</h3>
+              <h3 className="text-lg sm:text-xl font-semibold mb-2">Expert Reviews</h3>
               <p className="text-[#a4a5b0] text-sm leading-relaxed">
                 Our team thoroughly tests each casino and bonus offer to ensure you get the best deals with fair terms and conditions.
               </p>
             </div>
 
-            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
+            <div className="bg-[#3e4050] rounded-xl p-4 sm:p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
               <div className="w-12 h-12 bg-[#68D08B]/10 rounded-lg flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68D08B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -425,20 +435,20 @@ export default function Home() {
                   <path d="M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Exclusive Offers</h3>
+              <h3 className="text-lg sm:text-xl font-semibold mb-2">Exclusive Offers</h3>
               <p className="text-[#a4a5b0] text-sm leading-relaxed">
                 Access special {pluralCodeTermLabel} and enhanced bonuses that you won't find anywhere else, negotiated exclusively for our users.
               </p>
             </div>
 
-            <div className="bg-[#3e4050] rounded-xl p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
+            <div className="bg-[#3e4050] rounded-xl p-4 sm:p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
               <div className="w-12 h-12 bg-[#68D08B]/10 rounded-lg flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68D08B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 12l2 2 4-4"/>
                   <circle cx="12" cy="12" r="10"/>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Always Updated</h3>
+              <h3 className="text-lg sm:text-xl font-semibold mb-2">Always Updated</h3>
               <p className="text-[#a4a5b0] text-sm leading-relaxed">
                 Our bonus database is updated daily to ensure all offers are current, active, and provide the maximum value to players.
               </p>

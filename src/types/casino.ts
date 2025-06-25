@@ -26,5 +26,5 @@ export interface FilterState {
   searchTerm: string;
   bonusType: BonusType | '';
   casino: string;
-  sortBy: 'newest' | 'highest_rated' | 'trending' | '';
+  sortBy: 'newest' | 'oldest' | 'highest_rated' | 'trending' | '';
 }
