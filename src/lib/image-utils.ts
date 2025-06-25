@@ -26,9 +26,9 @@ export function normalizeImagePath(imagePath: string | null): string {
     return imagePath;
   }
   
-  // If path starts with /uploads/, migrate it to /images/ (for backward compatibility)
+  // If path starts with /uploads/, preserve it (for Railway volume storage)
   if (imagePath.startsWith('/uploads/')) {
-    return imagePath.replace('/uploads/', '/images/');
+    return imagePath;
   }
   
   // Fix paths that include just 'images/' without leading slash
