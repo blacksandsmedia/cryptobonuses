@@ -157,4 +157,21 @@ export function isValidImageType(fileType: string): boolean {
 export function isValidFileSize(fileSize: number, maxSizeMB: number = 10): boolean {
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
   return fileSize <= maxSizeBytes;
+}
+
+/**
+ * Add cache busting parameter to an image URL
+ * @param imageUrl The original image URL
+ * @param bustCache Whether to add cache busting (default: false)
+ * @returns The URL with cache busting parameter if needed
+ */
+export function addCacheBusting(imageUrl: string, bustCache: boolean = false): string {
+  if (!bustCache || !imageUrl) return imageUrl;
+  
+  // Don't add cache busting to external URLs
+  if (imageUrl.startsWith('http')) return imageUrl;
+  
+  // Add timestamp parameter for cache busting
+  const separator = imageUrl.includes('?') ? '&' : '?';
+  return `${imageUrl}${separator}v=${Date.now()}`;
 } 

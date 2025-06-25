@@ -442,7 +442,12 @@ export default function EditCasinoPage({
       
       console.log("Logo uploaded successfully:", data.url);
       
-      // Make sure we have a proper image path format
+      // Use cache-busted URL for immediate preview if available
+      if (data.displayUrl) {
+        setLogoPreview(data.displayUrl);
+      }
+      
+      // Make sure we have a proper image path format (clean URL for database)
       const logoPath = data.url.startsWith('/') ? data.url : `/${data.url}`;
       return logoPath;
     } catch (error) {
@@ -498,7 +503,12 @@ export default function EditCasinoPage({
       
       console.log("Featured image uploaded successfully:", data.url);
       
-      // Make sure we have a proper image path format
+      // Use cache-busted URL for immediate preview if available
+      if (data.displayUrl) {
+        setFeaturedImagePreview(data.displayUrl);
+      }
+      
+      // Make sure we have a proper image path format (clean URL for database)
       const imagePath = data.url.startsWith('/') ? data.url : `/${data.url}`;
       return imagePath;
     } catch (error) {
@@ -544,7 +554,14 @@ export default function EditCasinoPage({
       
       console.log("Screenshot uploaded successfully:", data.url);
       
-      // Make sure we have a proper image path format
+      // Use cache-busted URL for immediate preview if available
+      if (data.displayUrl) {
+        const newPreviews = [...screenshotPreviews];
+        newPreviews[index] = data.displayUrl;
+        setScreenshotPreviews(newPreviews);
+      }
+      
+      // Make sure we have a proper image path format (clean URL for database)
       const imagePath = data.url.startsWith('/') ? data.url : `/${data.url}`;
       return imagePath;
     } catch (error) {
@@ -629,11 +646,12 @@ export default function EditCasinoPage({
         const logoUrl = await uploadLogo(logoFile);
         data.logo = logoUrl;
         
-        // Update the preview with the new URL
+        // Update the preview with the new URL (add cache busting)
         if (logoPreview && logoPreview.startsWith('blob:')) {
           URL.revokeObjectURL(logoPreview);
         }
-        setLogoPreview(logoUrl);
+        const cacheBustedLogoUrl = `${logoUrl}?v=${Date.now()}`;
+        setLogoPreview(cacheBustedLogoUrl);
       }
       
       // Handle featured image upload if there's a new file
@@ -641,11 +659,12 @@ export default function EditCasinoPage({
         const featuredImageUrl = await uploadFeaturedImage(featuredImageFile);
         data.featuredImage = featuredImageUrl;
         
-        // Update the preview with the new URL
+        // Update the preview with the new URL (add cache busting)
         if (featuredImagePreview && featuredImagePreview.startsWith('blob:')) {
           URL.revokeObjectURL(featuredImagePreview);
         }
-        setFeaturedImagePreview(featuredImageUrl);
+        const cacheBustedFeaturedUrl = `${featuredImageUrl}?v=${Date.now()}`;
+        setFeaturedImagePreview(cacheBustedFeaturedUrl);
       }
       
       // Handle screenshot uploads properly
@@ -670,12 +689,13 @@ export default function EditCasinoPage({
             const screenshotUrl = await uploadScreenshot(file, i);
             screenshotUrls.push(screenshotUrl);
             
-            // Update the preview with the new URL and clean up blob URL
+            // Update the preview with the new URL and clean up blob URL (add cache busting)
             if (screenshotPreviews[i] && screenshotPreviews[i]!.startsWith('blob:')) {
               URL.revokeObjectURL(screenshotPreviews[i]!);
             }
             const newPreviews = [...screenshotPreviews];
-            newPreviews[i] = screenshotUrl;
+            const cacheBustedScreenshotUrl = `${screenshotUrl}?v=${Date.now()}`;
+            newPreviews[i] = cacheBustedScreenshotUrl;
             setScreenshotPreviews(newPreviews);
           } catch (error) {
             console.error(`Failed to upload screenshot ${i + 1}:`, error);

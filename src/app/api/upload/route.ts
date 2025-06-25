@@ -116,11 +116,15 @@ export async function POST(request: Request) {
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await writeFile(filePath, fileBuffer as any);
     
-    // Return the relative path for database storage
+    // Return the relative path for database storage (without cache busting)
     const relativePath = `/uploads/${fileName}`;
     
+    // Also return a cache-busted URL for immediate frontend display
+    const cacheBustedUrl = `${relativePath}?v=${Date.now()}`;
+    
     return NextResponse.json({ 
-      url: relativePath,
+      url: relativePath,        // Clean path for database
+      displayUrl: cacheBustedUrl, // Cache-busted URL for immediate display
       success: true,
       fileName: fileName
     });
