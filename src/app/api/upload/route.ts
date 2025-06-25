@@ -4,9 +4,15 @@ import { authOptions } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { verify } from "jsonwebtoken";
 import { JWT_SECRET } from "@/lib/auth-utils";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { writeFile } from "fs/promises";
+import { 
+  ensureUploadDir, 
+  publicUploadUrl, 
+  getUploadPath, 
+  createSEOFilename,
+  isValidImageType,
+  isValidFileSize 
+} from "@/lib/upload-utils";
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -15,65 +21,7 @@ interface DecodedToken {
   role: string;
 }
 
-// Helper function to ensure the uploads directory exists
-async function ensureUploadsDir() {
-  const uploadsDir = path.join(process.cwd(), 'public/images');
-  try {
-    await mkdir(uploadsDir, { recursive: true });
-    return uploadsDir;
-  } catch (error) {
-    console.error('Error creating images directory:', error);
-    throw error;
-  }
-}
-
-// Helper function to create SEO-friendly filename
-function createSEOFilename(originalName: string, context?: string, type?: string): string {
-  // Get file extension
-  const fileExt = originalName.split('.').pop() || '';
-  
-  if (context && type === 'featured') {
-    // Create descriptive filename for featured images: "[casino-name]-bonus-offer"
-    const cleanCasinoName = context
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
-      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-    
-    const timestamp = Date.now();
-    return `${cleanCasinoName}-bonus-offer-${timestamp}.${fileExt}`;
-  }
-  
-  if (context && type === 'logo') {
-    // Create descriptive filename for logos: "[casino-name]-logo"
-    const cleanCasinoName = context
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
-      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-    
-    const timestamp = Date.now();
-    return `${cleanCasinoName}-logo-${timestamp}.${fileExt}`;
-  }
-  
-  if (context && type === 'screenshot') {
-    // Create descriptive filename for screenshots: "[casino-name]-screenshot"
-    const cleanCasinoName = context
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
-      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-    
-    const timestamp = Date.now();
-    return `${cleanCasinoName}-screenshot-${timestamp}.${fileExt}`;
-  }
-  
-  // Fallback to UUID for other files
-  return `${uuidv4()}.${fileExt}`;
-}
+// Note: Helper functions moved to @/lib/upload-utils
 
 export async function POST(request: Request) {
   // First try JWT token authentication
@@ -118,10 +66,17 @@ export async function POST(request: Request) {
     }
 
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!validTypes.includes(file.type)) {
+    if (!isValidImageType(file.type)) {
       return NextResponse.json(
         { error: "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed." }, 
+        { status: 400 }
+      );
+    }
+    
+    // Validate file size (10MB limit)
+    if (!isValidFileSize(file.size)) {
+      return NextResponse.json(
+        { error: "File too large. Maximum size is 10MB." }, 
         { status: 400 }
       );
     }
@@ -129,18 +84,18 @@ export async function POST(request: Request) {
     // Generate filename based on context and type
     const fileName = createSEOFilename(file.name, context, type);
     
-    // Ensure uploads directory exists
-    const uploadsDir = await ensureUploadsDir();
+    // Ensure upload directory exists
+    await ensureUploadDir();
     
-    // Create file path
-    const filePath = path.join(uploadsDir, fileName);
+    // Get full file path
+    const filePath = getUploadPath(fileName);
     
     // Write file to disk
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await writeFile(filePath, fileBuffer as any);
     
-    // Return the URL to the uploaded file
-    const fileUrl = `/images/${fileName}`;
+    // Return the public URL to the uploaded file
+    const fileUrl = publicUploadUrl(fileName);
     
     return NextResponse.json({ 
       url: fileUrl,

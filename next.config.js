@@ -24,6 +24,16 @@ const nextConfig = {
   // Disable React strict mode to avoid double renders in development
   // This helps react-beautiful-dnd work properly in development
   reactStrictMode: false,
+  
+  // Serve uploaded files from Railway volume
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: '/api/uploads/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

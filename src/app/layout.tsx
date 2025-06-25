@@ -9,6 +9,8 @@ import OfferNotifications from '@/components/OfferNotifications';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import { NotificationProvider } from '@/components/NotificationContext';
 import Script from 'next/script';
+// Initialize application startup (upload directory, etc.)
+import '@/lib/startup';
 
 const inter = Inter({ subsets: ['latin'] });
 const currentYear = new Date().getFullYear();

@@ -4,9 +4,14 @@ import { BonusType } from "@prisma/client";
 import { cookies } from "next/headers";
 import { verify } from "jsonwebtoken";
 import { JWT_SECRET } from "@/lib/auth-utils";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { writeFile } from "fs/promises";
+import { 
+  ensureUploadDir, 
+  publicUploadUrl, 
+  getUploadPath, 
+  createSEOFilename,
+  isValidImageType 
+} from "@/lib/upload-utils";
 
 // Define a type for decoded JWT token
 interface DecodedToken {
@@ -25,17 +30,7 @@ interface CSVRow {
   slug?: string;
 }
 
-// Helper function to ensure the images directory exists
-async function ensureImagesDir() {
-  const imagesDir = path.join(process.cwd(), 'public/images');
-  try {
-    await mkdir(imagesDir, { recursive: true });
-    return imagesDir;
-  } catch (error) {
-    console.error('Error creating images directory:', error);
-    throw error;
-  }
-}
+// Note: Helper functions moved to @/lib/upload-utils
 
 // Helper function to download and save image from URL
 async function downloadAndSaveImage(imageUrl: string): Promise<string> {
@@ -70,20 +65,20 @@ async function downloadAndSaveImage(imageUrl: string): Promise<string> {
     }
 
     // Generate unique filename
-    const fileName = `${uuidv4()}.${fileExt}`;
+    const fileName = createSEOFilename(`image.${fileExt}`, 'imported', 'logo');
     
-    // Ensure images directory exists
-    const imagesDir = await ensureImagesDir();
+    // Ensure upload directory exists
+    await ensureUploadDir();
     
-    // Create file path
-    const filePath = path.join(imagesDir, fileName);
+    // Get full file path
+    const filePath = getUploadPath(fileName);
     
     // Get image buffer and save
     const imageBuffer = await response.arrayBuffer();
-    const fileBuffer = new Uint8Array(imageBuffer);
-    await writeFile(filePath, fileBuffer);
+    const fileBuffer = Buffer.from(imageBuffer);
+    await writeFile(filePath, fileBuffer as any);
     
-    const localUrl = `/images/${fileName}`;
+    const localUrl = publicUploadUrl(fileName);
     console.log(`Image saved locally as: ${localUrl}`);
     
     return localUrl;

@@ -2,8 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminToken } from '@/lib/auth-utils';
 import { prisma } from '@/lib/prisma';
 import { writeFile } from 'fs/promises';
-import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { 
+  ensureUploadDir, 
+  publicUploadUrl, 
+  getUploadPath, 
+  createSEOFilename,
+  isValidImageType,
+  isValidFileSize 
+} from "@/lib/upload-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,8 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
+    if (!isValidImageType(file.type)) {
       return NextResponse.json(
         { success: false, error: 'Invalid file type. Only JPEG, PNG, and WebP are allowed.' },
         { status: 400 }
@@ -45,34 +50,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
+    if (!isValidFileSize(file.size, 5)) {
       return NextResponse.json(
         { success: false, error: 'File too large. Maximum size is 5MB.' },
         { status: 400 }
       );
     }
 
-    // Generate unique filename
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExtension}`;
+    // Generate SEO-friendly filename for profile picture
+    const fileName = createSEOFilename(file.name, `profile-${userId}`, 'profile');
     const bytes = await file.arrayBuffer();
-    const buffer = new Uint8Array(bytes);
+    const buffer = Buffer.from(bytes);
 
-    // Save file to images directory
-    const imagesDir = join(process.cwd(), 'public', 'images', 'profile-pictures');
-    const filePath = join(imagesDir, fileName);
-    
-    // Create directory if it doesn't exist
-    const fs = await import('fs');
-    if (!fs.existsSync(imagesDir)) {
-      fs.mkdirSync(imagesDir, { recursive: true });
-    }
+    // Ensure upload directory exists
+    await ensureUploadDir();
 
-    await writeFile(filePath, buffer);
+    // Get full file path
+    const filePath = getUploadPath(fileName);
 
-    // Update user profile picture in database
-    const profilePictureUrl = `/images/profile-pictures/${fileName}`;
+    await writeFile(filePath, buffer as any);
+
+    // Generate public URL for the uploaded file
+    const profilePictureUrl = publicUploadUrl(fileName);
     
     const updatedUser = await prisma.user.update({
       where: { id: userId },

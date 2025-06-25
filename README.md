@@ -10,6 +10,8 @@ A modern web application for discovering and comparing cryptocurrency casino bon
 - Copy promo codes with one click
 - Responsive design for all devices
 - Modern UI with smooth animations
+- Admin panel for managing casinos and bonuses
+- Persistent image storage with Railway Volume
 
 ## Tech Stack
 
@@ -38,6 +40,24 @@ npm run dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Image Storage
+
+Images uploaded via the admin UI are stored on the mounted Volume at `/data/uploads`, so they survive redeploys on Railway.
+
+### Environment Variables
+
+- `UPLOAD_DIR`: Directory for storing uploaded files (defaults to `/data/uploads`)
+- `NEXT_PUBLIC_BASE_URL`: Base URL for generating public file URLs
+
+### Upload Features
+
+- **Persistent Storage**: Files are stored on Railway's mounted volume at `/data/uploads`
+- **SEO-Friendly Filenames**: Automatic generation of descriptive filenames based on context
+- **File Validation**: Type and size validation for uploaded images (JPEG, PNG, WebP, GIF up to 10MB)
+- **Security**: Directory traversal protection and access controls
+- **Performance**: Optimized file serving with proper caching headers
+- **Public Access**: Files accessible via `/uploads/<filename>` URL pattern
 
 ## Project Structure
 
