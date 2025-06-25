@@ -98,7 +98,7 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
           const casinoTitle = `${casino.name} ${codeTypeCapitalized} - ${bonusTitle} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`;
           
           return (
-            <Link 
+            <a 
               key={casino.id} 
               href={`/${casino.slug}`}
               className="bg-[#2c2f3a] rounded-lg p-4 hover:bg-[#343750] transition-all duration-200 border border-[#404055] hover:border-[#68D08B]/30 block"
@@ -145,14 +145,14 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
                   </div>
                 </div>
               </div>
-            </Link>
+            </a>
           );
         })}
       </div>
 
       {/* View All Link */}
       <div className="mt-3 text-center">
-        <Link 
+        <a 
           href="/"
           className="inline-flex items-center gap-2 text-[#68D08B] hover:text-[#7ee3a3] transition-colors text-sm font-medium"
         >
@@ -160,7 +160,7 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M7 17l9.2-9.2M17 17V7H7"/>
           </svg>
-        </Link>
+        </a>
       </div>
     </section>
   );

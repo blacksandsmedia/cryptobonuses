@@ -15,10 +15,9 @@ export async function GET() {
           gte: tenMinutesAgo
         },
         // Only include trackings that actually represent claims
-        OR: [
-          { actionType: 'code_copy' },
-          { actionType: 'offer_click' }
-        ]
+        actionType: {
+          in: ['code_copy', 'offer_click']
+        }
       },
       include: {
         casino: {
@@ -44,6 +43,19 @@ export async function GET() {
     // Debug: Log the raw results
     console.log('[NotificationsDebug] Found', recentTrackings.length, 'recent trackings');
     console.log('[NotificationsDebug] Action types found:', [...new Set(recentTrackings.map(t => t.actionType))]);
+    
+    // Log some sample tracking data for debugging
+    if (recentTrackings.length > 0) {
+      console.log('[NotificationsDebug] Sample tracking data:', {
+        id: recentTrackings[0].id,
+        actionType: recentTrackings[0].actionType,
+        createdAt: recentTrackings[0].createdAt,
+        casinoId: recentTrackings[0].casinoId,
+        bonusId: recentTrackings[0].bonusId,
+        hasCasino: !!recentTrackings[0].casino,
+        hasBonus: !!recentTrackings[0].bonus
+      });
+    }
 
     // Transform the data for the notification component
     const claims = recentTrackings

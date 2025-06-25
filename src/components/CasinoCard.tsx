@@ -65,22 +65,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
         trackCopyCode(bonus.casinoId, bonus.bonusId);
       }
       
-      // Open affiliate link with popup blocker resistance
-      if (bonus.affiliateLink) {
-        console.log('Code copied! Opening casino site in 3 seconds...');
-        
-        // Pre-open the window to avoid popup blockers
-        const newWindow = window.open('', '_blank', 'noopener,noreferrer');
-        
-        setTimeout(() => {
-          if (newWindow && !newWindow.closed) {
-            newWindow.location.href = bonus.affiliateLink;
-          } else {
-            // Fallback: try direct open if pre-opened window failed
-            window.open(bonus.affiliateLink, '_blank', 'noopener,noreferrer');
-          }
-        }, 3000);
-      }
+      // Affiliate link opening removed per user request
       
       setTimeout(() => setCopied(false), 2000);
     }

@@ -72,11 +72,29 @@ export default function CryptoTicker() {
           return;
         }
 
-        // Using CoinGecko free API with dynamic crypto selection
+        // Using CoinGecko free API with dynamic crypto selection and error handling
         const response = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinGeckoIds}&order=market_cap_desc&per_page=20&page=1&sparkline=false`
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinGeckoIds}&order=market_cap_desc&per_page=20&page=1&sparkline=false`,
+          {
+            headers: {
+              'Accept': 'application/json',
+            },
+            signal: AbortSignal.timeout(10000) // 10 second timeout
+          }
         );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        
+        // Validate data before setting it
+        if (!Array.isArray(data) || data.length === 0) {
+          console.warn('CoinGecko API returned invalid or empty data');
+          setIsLoading(false);
+          return;
+        }
         setCryptoData(data);
         setIsLoading(false);
       } catch (error) {

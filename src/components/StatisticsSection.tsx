@@ -142,9 +142,9 @@ export default function StatisticsSection() {
 
     if (link) {
       return (
-        <Link href={link} className="block">
+        <a href={link} className="block">
           {content}
-        </Link>
+        </a>
       );
     }
 

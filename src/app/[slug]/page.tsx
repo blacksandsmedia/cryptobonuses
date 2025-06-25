@@ -902,7 +902,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
                 const offerTitle = `${offer.name} ${offerCodeTypeCapitalized} - ${offer.bonusTitle} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`;
                 
                 return (
-                  <Link 
+                  <a 
                     key={offer.id} 
                     href={`/${offer.id}`}
                     className="bg-[#2c2f3a] rounded-lg p-5 border border-[#404055]/50 hover:border-[#68D08B]/40 hover:bg-[#323544] transition-[border-color,background-color] duration-200 group cursor-pointer block h-full will-change-[border-color]"
@@ -937,7 +937,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 );
               })}
             </div>

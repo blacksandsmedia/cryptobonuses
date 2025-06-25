@@ -54,23 +54,7 @@ export default function CopyCodeButton({
         trackCopyCode();
       }
       
-      // Open affiliate link immediately to avoid popup blockers, then add delay with user notification
-      if (affiliateLink) {
-        // Show immediate feedback about what will happen
-        console.log('Code copied! Opening casino site in 3 seconds...');
-        
-        // Pre-open the window to avoid popup blockers
-        const newWindow = window.open('', '_blank', 'noopener,noreferrer');
-        
-        setTimeout(() => {
-          if (newWindow && !newWindow.closed) {
-            newWindow.location.href = affiliateLink;
-          } else {
-            // Fallback: try direct open if pre-opened window failed
-            window.open(affiliateLink, '_blank', 'noopener,noreferrer');
-          }
-        }, 3000);
-      }
+      // Affiliate link opening removed per user request
       
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {

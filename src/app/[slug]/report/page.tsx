@@ -122,6 +122,8 @@ export default function ReportCasinoPage({
     setErrorMessage('');
 
     try {
+      console.log('Submitting report:', { casinoId: casino.id, reason: selectedReason, description: description.trim() || null });
+      
       const response = await fetch('/api/reports', {
         method: 'POST',
         headers: {
@@ -135,6 +137,7 @@ export default function ReportCasinoPage({
       });
 
       const data = await response.json();
+      console.log('Report submission response:', { status: response.status, data });
 
       if (response.ok) {
         setSubmitStatus('success');
@@ -143,8 +146,10 @@ export default function ReportCasinoPage({
       } else {
         setSubmitStatus('error');
         setErrorMessage(data.error || 'Failed to submit report');
+        console.error('Report submission failed:', data);
       }
     } catch (error) {
+      console.error('Report submission error:', error);
       setSubmitStatus('error');
       setErrorMessage('Failed to submit report. Please try again.');
     } finally {

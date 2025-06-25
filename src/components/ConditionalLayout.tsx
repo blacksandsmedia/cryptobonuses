@@ -88,18 +88,18 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
           
           {/* Desktop Navigation Menu */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link 
+            <a 
               href="/spin" 
               className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium"
             >
               Spin Wheel
-            </Link>
-            <Link 
+            </a>
+            <a 
               href="/contact" 
               className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium"
             >
               Submit Bonus
-            </Link>
+            </a>
             {!hideBuyCryptoButton && (
               <a
                 href="https://login.coinbase.com/signup?action=signup&clickId=xm1VZp24-xycU37VwcXve1RcUksVa3zP5Q0kWM0&client_id=258660e1-9cfe-4202-9eda-d3beedb3e118&locale=en&oauth_challenge=fdcffb12-d2e9-411c-a129-7b9e5135f8cf&utm_campaign=rt_p_m_w_d_acq_imp_gro_aff_Black+Sands+Media&utm_content=552039&utm_creative=Online+Tracking+Link&utm_medium=growthp&utm_source=impact"
@@ -158,7 +158,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                     <span>Search</span>
                   </div>
                 </button>
-                <Link 
+                <a 
                   href="/spin" 
                   className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs"
                   onClick={() => setMobileMenuOpen(false)}
@@ -169,8 +169,8 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                       WIN!
                     </div>
                   </div>
-                </Link>
-                <Link 
+                </a>
+                <a 
                   href="/contact" 
                   className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs"
                   onClick={() => setMobileMenuOpen(false)}
@@ -182,7 +182,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                     </svg>
                     <span>Submit Bonus</span>
                   </div>
-                </Link>
+                </a>
                 {!hideBuyCryptoButton && (
                   <a
                     href="https://login.coinbase.com/signup?action=signup&clickId=xm1VZp24-xycU37VwcXve1RcUksVa3zP5Q0kWM0&client_id=258660e1-9cfe-4202-9eda-d3beedb3e118&locale=en&oauth_challenge=fdcffb12-d2e9-411c-a129-7b9e5135f8cf&utm_campaign=rt_p_m_w_d_acq_imp_gro_aff_Black+Sands+Media&utm_content=552039&utm_creative=Online+Tracking+Link&utm_medium=growthp&utm_source=impact"
@@ -234,9 +234,9 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-6 sm:mb-0">
-              <Link href="/" className="text-[#68D08B] hover:text-[#5abc7a] transition-all duration-200 hover:translate-y-[-1px] font-medium text-center sm:text-left">
+              <a href="/" className="text-[#68D08B] hover:text-[#5abc7a] transition-all duration-200 hover:translate-y-[-1px] font-medium text-center sm:text-left">
                 CryptoBonuses.com
-              </Link>
+              </a>
               <div className="flex items-center justify-center sm:justify-start gap-6 text-sm mt-4 sm:mt-0">
                 <a href="/privacy" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
                   Privacy Policy
