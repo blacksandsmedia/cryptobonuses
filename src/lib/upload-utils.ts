@@ -28,7 +28,9 @@ export async function ensureUploadDir(): Promise<string> {
  */
 export function publicUploadUrl(filename: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-  return `${baseUrl}/uploads/${filename}`;
+  // Remove trailing slash from baseUrl to avoid double slashes
+  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  return `${cleanBaseUrl}/uploads/${filename}`;
 }
 
 /**
@@ -46,14 +48,15 @@ export function getUploadPath(filename: string): string {
  * @param context Optional context (e.g., casino name)
  * @param type Optional type (e.g., 'logo', 'featured', 'screenshot')
  * @param currentPath Optional current file path (for overwriting existing files)
+ * @param index Optional index for screenshots
  * @returns A clean, SEO-friendly filename
  */
-export function createSEOFilename(originalName: string, context?: string, type?: string, currentPath?: string): string {
+export function createSEOFilename(originalName: string, context?: string, type?: string, currentPath?: string, index?: string): string {
   // Get file extension
   const fileExt = originalName.split('.').pop() || 'png';
   
   // If currentPath is provided (for overwriting existing files), extract and reuse the filename
-  if (currentPath && type === 'logo') {
+  if (currentPath && (type === 'logo' || type === 'screenshot' || type === 'featured')) {
     const existingFilename = currentPath.split('/').pop();
     if (existingFilename) {
       // Keep the same filename but update the extension if needed
@@ -89,7 +92,7 @@ export function createSEOFilename(originalName: string, context?: string, type?:
   }
   
   if (context && type === 'screenshot') {
-    // Create descriptive filename for screenshots: "[casino-name]-screenshot"
+    // Create descriptive filename for screenshots: "[casino-name]-screenshot-[index]"
     const cleanCasinoName = context
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '') // Remove special characters
@@ -97,8 +100,9 @@ export function createSEOFilename(originalName: string, context?: string, type?:
       .replace(/-+/g, '-') // Replace multiple hyphens with single
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
     
-    const timestamp = Date.now();
-    return `${cleanCasinoName}-screenshot-${timestamp}.${fileExt}`;
+    // For screenshots, use clean filename with index (no timestamp)
+    const screenshotIndex = index ? parseInt(index) + 1 : 1; // Convert 0-based to 1-based index
+    return `${cleanCasinoName}-screenshot-${screenshotIndex}.${fileExt}`;
   }
   
   if (context && type === 'profile') {

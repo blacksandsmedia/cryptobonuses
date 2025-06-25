@@ -64,6 +64,7 @@ export async function POST(request: Request) {
     const context = formData.get('context') as string; // Casino name or other context
     const type = formData.get('type') as string; // 'featured', 'logo', 'screenshot', etc.
     const currentPath = formData.get('currentPath') as string; // Current file path for overwriting
+    const index = formData.get('index') as string; // Index for screenshots
     
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
     }
     
     // Generate filename based on context and type
-    const fileName = createSEOFilename(file.name, context, type, currentPath);
+    const fileName = createSEOFilename(file.name, context, type, currentPath, index);
     
     // Ensure upload directory exists
     await ensureUploadDir();

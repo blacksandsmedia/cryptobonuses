@@ -508,7 +508,7 @@ export default function EditCasinoPage({
   };
 
   // Upload screenshot file and get the URL
-  const uploadScreenshot = async (file: File): Promise<string> => {
+  const uploadScreenshot = async (file: File, index: number): Promise<string> => {
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -517,6 +517,12 @@ export default function EditCasinoPage({
       const casinoName = (document.getElementById('name') as HTMLInputElement)?.value || 'casino';
       formData.append("context", casinoName);
       formData.append("type", "screenshot");
+      formData.append("index", index.toString()); // Add screenshot index
+      
+      // Pass current screenshot path if editing existing casino (for overwriting)
+      if (params.casinoId !== "new" && screenshotPreviews[index] && !screenshotPreviews[index]?.startsWith('blob:')) {
+        formData.append("currentPath", screenshotPreviews[index]!);
+      }
       
       console.log("Uploading screenshot file...");
       const response = await fetch("/api/upload", {
@@ -661,7 +667,7 @@ export default function EditCasinoPage({
         const file = screenshotFiles[i];
         if (file !== null) {
           try {
-            const screenshotUrl = await uploadScreenshot(file);
+            const screenshotUrl = await uploadScreenshot(file, i);
             screenshotUrls.push(screenshotUrl);
             
             // Update the preview with the new URL and clean up blob URL
