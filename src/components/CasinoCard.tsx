@@ -30,113 +30,180 @@ interface CasinoCardProps {
 }
 
 export default function CasinoCard({ bonus }: CasinoCardProps) {
+  const [copied, setCopied] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
-
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
-  const imagePath = normalizeImagePath(bonus.logoUrl);
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const handleCopy = async (code: string, event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const [imagePath, setImagePath] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Use casino-specific code term label, fallback to "bonus code"
+  const codeTermLabel = bonus.codeTermLabel || 'bonus code';
+  
+  // More aggressive truncation on mobile only if casino name is long
+  const getDisplayCode = () => {
+    if (!bonus.promoCode) return bonus.promoCode;
     
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopiedCode(code);
+    // Only truncate more aggressively on mobile if casino name is over 9 characters
+    const shouldTruncateMore = isMobile && bonus.casinoName.length > 9;
+    const maxLength = shouldTruncateMore ? 6 : 8;
+    
+    return bonus.promoCode.length > maxLength 
+      ? `${bonus.promoCode.slice(0, maxLength)}..`
+      : bonus.promoCode;
+  };
+  
+  const displayCode = getDisplayCode();
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (bonus.promoCode) {
+      navigator.clipboard.writeText(bonus.promoCode);
+      setCopied(true);
       
-      // Track copy event
-      try {
-        await fetch('/api/tracking', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            bonusId: bonus.id,
-            actionType: 'code_copy',
-            path: window.location.pathname
-          }),
-        });
-      } catch (trackingError) {
-        console.warn('Failed to track copy event:', trackingError);
+      // Track the copy event
+      if (bonus.bonusId && bonus.casinoId) {
+        trackCopyCode(bonus.casinoId, bonus.bonusId);
       }
       
-      setTimeout(() => setCopiedCode(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy code:', err);
+      // Automatically open affiliate link after 3 seconds if available
+      if (bonus.affiliateLink) {
+        setTimeout(() => {
+          window.open(bonus.affiliateLink, '_blank', 'noopener,noreferrer');
+        }, 3000);
+      }
+      
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  const handleGetBonusClick = async (event: React.MouseEvent) => {
-    event.preventDefault();
+  const handleGetBonusClick = (e: React.MouseEvent) => {
+    // Don't stop propagation - allow the link to work normally
     
-    // Track click event
+    // Track the click event
+    if (bonus.bonusId && bonus.casinoId) {
+      trackOfferClick(bonus.casinoId, bonus.bonusId);
+    }
+  };
+
+  const trackCopyCode = async (casinoId: string, bonusId: string) => {
     try {
       await fetch('/api/tracking', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          bonusId: bonus.id,
-          actionType: 'offer_click',
-          path: window.location.pathname
+          casinoId,
+          bonusId,
+          actionType: 'code_copy',
         }),
       });
     } catch (error) {
-      console.warn('Failed to track click event:', error);
-    }
-    
-    // Open affiliate link
-    if (bonus.affiliateLink) {
-      window.open(bonus.affiliateLink, '_blank', 'noopener,noreferrer');
+      console.error("Error tracking code copy:", error);
     }
   };
 
-  // Determine the code type for display
-  const codeTypeCapitalized = bonus.promoCode ? 'Bonus Code' : 'Bonus';
+  const trackOfferClick = async (casinoId: string, bonusId: string) => {
+    try {
+      await fetch('/api/tracking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          casinoId,
+          bonusId,
+          actionType: 'offer_click',
+        }),
+      });
+    } catch (error) {
+      console.error("Error tracking offer click:", error);
+    }
+  };
+
+  const getInitials = (name: string) => {
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  // Load alternative logo paths to try
+  const getAlternativeLogoPaths = (casinoName: string, originalPath: string) => {
+    const cleanName = casinoName.replace(/[^a-zA-Z0-9]/g, '');
+    return [
+      `/images/${casinoName} Logo.png`,
+      `/images/${casinoName.replace(/\s+/g, '')} Logo.png`,
+      `/images/${cleanName} Logo.png`,
+      `/images/${cleanName}Logo.png`,
+      '/images/Simplified Logo.png'
+    ];
+  };
+
+  // Try next image in case of error
+  const handleImageError = () => {
+    console.error(`Image failed to load: ${imagePath}`);
+    
+    // Get alternative paths
+    const alternativePaths = getAlternativeLogoPaths(bonus.casinoName, imagePath);
+    const currentIndex = alternativePaths.indexOf(imagePath);
+    
+    if (currentIndex < alternativePaths.length - 1) {
+      // Try next alternative
+      const nextPath = alternativePaths[currentIndex + 1];
+      console.log(`Trying alternative logo path: ${nextPath}`);
+      setImagePath(nextPath);
+    } else {
+      // All alternatives failed, show initials
+      console.log(`All logo paths failed for ${bonus.casinoName}, showing initials`);
+      setImageError(true);
+    }
+  };
+
+  // Check for mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Determine the best logo path when component mounts
+  useEffect(() => {
+    try {
+      const normalizedPath = normalizeImagePath(bonus.logoUrl);
+      setImagePath(normalizedPath);
+      setImageError(false); // Reset error state when path changes
+      console.log(`Set image path for ${bonus.casinoName}: ${normalizedPath}`);
+    } catch (error) {
+      console.error(`Error setting image path for ${bonus.casinoName}:`, error);
+      setImageError(true);
+    }
+  }, [bonus.logoUrl, bonus.casinoName]);
+
+  // Capitalize the first letter of each word in the code term
+  const codeTypeCapitalized = codeTermLabel.split(' ').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
 
   return (
     <div className="relative">
       {bonus.promoCode && (
         <button
-          onClick={(e) => handleCopy(bonus.promoCode!, e)}
-          className={`absolute top-3 right-3 z-10 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 border-2 ${
-            copiedCode === bonus.promoCode
-              ? 'bg-[#68D08B] text-[#343541] border-[#68D08B]'
-              : 'bg-[#2c2f3a] text-[#68D08B] border-[#68D08B] hover:bg-[#68D08B] hover:text-[#343541]'
-          }`}
-          title={`Copy ${codeTypeCapitalized}: ${bonus.promoCode}`}
+          onClick={handleCopy}
+          className="absolute right-4 sm:right-5 top-5 z-10 bg-[#2c2f3a] text-white px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg text-xs sm:text-sm hover:bg-[#343747] hover:shadow-lg border border-transparent hover:border-[#68D08B] transition-all duration-200 flex items-center gap-1 sm:gap-1.5 group"
+          title={bonus.promoCode}
         >
-          {copiedCode === bonus.promoCode ? (
-            <span className="flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
-              COPIED
-            </span>
-          ) : (
-            <span className="flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              {bonus.promoCode}
-            </span>
-          )}
+          <span className="text-white">{copied ? 'Copied!' : displayCode}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-80 group-hover:text-[#68D08B] group-hover:opacity-100">
+            <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+            <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+          </svg>
         </button>
       )}
-
       <article 
-        className="relative bg-gradient-to-br from-[#3e4050] to-[#373846] p-5 rounded-xl shadow-lg border-2 border-[#404055] card-hover group will-change-transform"
+        className="relative bg-gradient-to-br from-[#3e4050] to-[#373846] p-5 rounded-xl shadow-lg border-2 border-[#404055] transition-all duration-300 hover:shadow-xl hover:border-[#68D08B] hover:scale-[1.005] group"
       >
         <a 
           href={`/${bonus.id}`} 
@@ -155,7 +222,6 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
                     className="object-cover w-full h-full"
                     onError={handleImageError}
                     priority={true}
-                    loading="eager"
                   />
                 </div>
               ) : (
@@ -175,7 +241,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
           href={bonus.affiliateLink || '#'}
           target="_blank"
           rel="noopener noreferrer nofollow"
-          className="w-full bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-bold py-3 px-4 rounded-lg text-center transition-colors duration-200 block optimized-hover"
+          className="w-full bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-bold py-3 px-4 rounded-lg text-center transition-colors duration-300 block"
           onClick={handleGetBonusClick}
         >
           Get Bonus

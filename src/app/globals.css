@@ -34,10 +34,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* Optimize for performance */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeSpeed;
 }
 
 .container {
@@ -61,39 +57,15 @@ body {
   display: none;  /* Safari and Chrome */
 } 
 
-/* Optimized casino logo animation within cards */
+/* Casino logo animation within cards */
 .casino-logo {
   outline: none;
   border-radius: 8px;
-  transition: box-shadow 0.2s ease-out;
-  will-change: box-shadow;
-  transform: translateZ(0); /* Force hardware acceleration */
+  transition: box-shadow 0.3s ease;
 }
 
 .casino-logo:hover {
   box-shadow: 0 0 0 2px #68D08B, 0 0 10px rgba(104, 208, 139, 0.4);
-}
-
-/* Optimized hover effects for better Safari performance */
-.optimized-hover {
-  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
-  will-change: transform, opacity;
-  transform: translateZ(0); /* Force hardware acceleration */
-}
-
-.optimized-hover:hover {
-  transform: translateZ(0) scale(1.02);
-}
-
-/* Reduced complexity hover for cards */
-.card-hover {
-  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
-  will-change: border-color, box-shadow;
-}
-
-.card-hover:hover {
-  border-color: #68D08B;
-  box-shadow: 0 4px 12px rgba(104, 208, 139, 0.15);
 }
 
 /* Slow spin animation for wheel emoji */
@@ -108,68 +80,22 @@ body {
 
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
-  will-change: transform;
-  transform: translateZ(0); /* Force hardware acceleration */
 }
 
-/* Optimized crypto ticker scroll animation */
+/* Crypto ticker scroll animation */
 @keyframes scroll-left {
   0% { 
-    transform: translate3d(0, 0, 0); 
+    transform: translateX(0); 
   }
   100% { 
-    transform: translate3d(-50%, 0, 0); 
+    transform: translateX(-50%); 
   }
 }
 
 .animate-scroll-left {
   animation: scroll-left 40s linear infinite;
-  will-change: transform;
-  transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .animate-scroll-left:hover {
   animation-play-state: paused;
-}
-
-/* Performance optimizations for Safari */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  /* Safari-specific optimizations */
-  .casino-logo,
-  .optimized-hover,
-  .card-hover {
-    -webkit-transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000px;
-  }
-  
-  /* Reduce motion for Safari if preferred */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-scroll-left {
-      animation: none;
-    }
-    
-    .animate-spin-slow {
-      animation: none;
-    }
-    
-    .casino-logo,
-    .optimized-hover,
-    .card-hover {
-      transition: none;
-    }
-  }
-}
-
-/* Optimize transforms for mobile Safari */
-@media (max-width: 768px) {
-  .casino-logo:hover {
-    /* Simpler hover effect on mobile */
-    box-shadow: 0 0 0 2px #68D08B;
-  }
-  
-  .optimized-hover:hover {
-    /* Reduced scale on mobile for better performance */
-    transform: translateZ(0) scale(1.01);
-  }
 } 
