@@ -330,11 +330,11 @@ export default function Home() {
       />
 
       <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
-        <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold text-center mt-1 mb-8 sm:mb-12 px-4">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold text-center mt-1 mb-8 sm:mb-12">
           Bitcoin Casino Bonuses {currentYear}
         </h1>
         
-        <div className="mb-6 sm:mb-8 md:mb-12 px-4" data-filter-section>
+        <div className="mb-6 sm:mb-8 md:mb-12" data-filter-section>
           <FilterControls
             key={`filter-controls-${initialized}`}
             filters={filters}
@@ -343,7 +343,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredBonuses.map(bonus => (
             <CasinoCard
               key={`${bonus.id}`}
@@ -375,11 +375,11 @@ export default function Home() {
               </span>
             </div>
             
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 sm:mb-6 bg-gradient-to-r from-white to-[#a4a5b0] bg-clip-text text-transparent leading-tight py-2 px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 sm:mb-6 bg-gradient-to-r from-white to-[#a4a5b0] bg-clip-text text-transparent leading-tight py-2">
               Welcome to CryptoBonuses
             </h2>
             
-            <p className="text-[#a4a5b0] max-w-3xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed mb-6 sm:mb-8 px-4">
+            <p className="text-[#a4a5b0] max-w-3xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed mb-6 sm:mb-8">
               Discover the best Bitcoin casino bonuses and promotional bonuses in {currentYear}. Our expertly curated list includes trusted crypto casinos offering generous welcome packages, exclusive bonus codes, and free spins.
             </p>
             
@@ -412,7 +412,7 @@ export default function Home() {
           </div>
 
           {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             <div className="bg-[#3e4050] rounded-xl p-4 sm:p-6 border border-[#404055] hover:border-[#68D08B]/30 transition-[border-color] duration-300 will-change-[border-color]">
               <div className="w-12 h-12 bg-[#68D08B]/10 rounded-lg flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68D08B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

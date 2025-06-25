@@ -3,16 +3,15 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Get offer trackings from the last 10 minutes (to catch recent activity)
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    // Get offer trackings from the last 30 minutes for better coverage  
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
     
-    // Debug: Log the query parameters for troubleshooting
-    console.log('[NotificationsDebug] Querying for recent claims since:', tenMinutesAgo.toISOString());
+    console.log('[Notifications] Querying for real claims since:', thirtyMinutesAgo.toISOString());
     
     const recentTrackings = await prisma.offerTracking.findMany({
       where: {
         createdAt: {
-          gte: tenMinutesAgo
+          gte: thirtyMinutesAgo
         },
         // Only include trackings that actually represent claims
         actionType: {
@@ -40,20 +39,15 @@ export async function GET() {
       take: 20 // Limit to recent claims
     });
 
-    // Debug: Log the raw results
-    console.log('[NotificationsDebug] Found', recentTrackings.length, 'recent trackings');
-    console.log('[NotificationsDebug] Action types found:', [...new Set(recentTrackings.map(t => t.actionType))]);
+    console.log('[Notifications] Found', recentTrackings.length, 'real tracking entries');
     
-    // Log some sample tracking data for debugging
     if (recentTrackings.length > 0) {
-      console.log('[NotificationsDebug] Sample tracking data:', {
+      console.log('[Notifications] Sample real claim:', {
         id: recentTrackings[0].id,
         actionType: recentTrackings[0].actionType,
-        createdAt: recentTrackings[0].createdAt,
-        casinoId: recentTrackings[0].casinoId,
-        bonusId: recentTrackings[0].bonusId,
-        hasCasino: !!recentTrackings[0].casino,
-        hasBonus: !!recentTrackings[0].bonus
+        casinoName: recentTrackings[0].casino?.name,
+        bonusTitle: recentTrackings[0].bonus?.title,
+        createdAt: recentTrackings[0].createdAt
       });
     }
 
@@ -70,9 +64,9 @@ export async function GET() {
         createdAt: tracking.createdAt.toISOString()
       }));
 
-    console.log('[NotificationsDebug] Transformed to', claims.length, 'valid claims');
+    console.log('[Notifications] Returning', claims.length, 'real claims for notifications');
     if (claims.length > 0) {
-      console.log('[NotificationsDebug] Sample claim:', claims[0]);
+      console.log('[Notifications] Sample claim for notification:', claims[0]);
     }
 
     return NextResponse.json({ claims });
