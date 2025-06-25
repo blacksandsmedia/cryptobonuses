@@ -63,9 +63,7 @@ const nextConfig = {
       },
     ];
   },
-  // Railway build environment handling
   env: {
-    SKIP_ENV_VALIDATION: process.env.SKIP_ENV_VALIDATION || '',
     DATABASE_URL: process.env.DATABASE_URL || '',
   },
 };

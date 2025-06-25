@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "build:railway": "DATABASE_URL='postgresql://dummy:dummy@localhost:5432/dummy' prisma generate && SKIP_ENV_VALIDATION=true next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "create-admin": "node scripts/create-admin.js",
