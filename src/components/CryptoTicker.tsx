@@ -11,50 +11,6 @@ interface CryptoData {
   image: string;
 }
 
-// Fallback crypto data when API fails
-const FALLBACK_CRYPTO_DATA: CryptoData[] = [
-  {
-    id: 'bitcoin',
-    symbol: 'btc',
-    name: 'Bitcoin',
-    current_price: 67000,
-    price_change_percentage_24h: 2.5,
-    image: 'https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png'
-  },
-  {
-    id: 'ethereum',
-    symbol: 'eth',
-    name: 'Ethereum',
-    current_price: 3500,
-    price_change_percentage_24h: 1.8,
-    image: 'https://coin-images.coingecko.com/coins/images/279/large/ethereum.png'
-  },
-  {
-    id: 'cardano',
-    symbol: 'ada',
-    name: 'Cardano',
-    current_price: 0.45,
-    price_change_percentage_24h: -0.8,
-    image: 'https://coin-images.coingecko.com/coins/images/975/large/cardano.png'
-  },
-  {
-    id: 'solana',
-    symbol: 'sol',
-    name: 'Solana',
-    current_price: 140,
-    price_change_percentage_24h: 3.2,
-    image: 'https://coin-images.coingecko.com/coins/images/4128/large/solana.png'
-  },
-  {
-    id: 'dogecoin',
-    symbol: 'doge',
-    name: 'Dogecoin',
-    current_price: 0.08,
-    price_change_percentage_24h: 1.5,
-    image: 'https://coin-images.coingecko.com/coins/images/5/large/dogecoin.png'
-  }
-];
-
 export default function CryptoTicker() {
   const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +18,6 @@ export default function CryptoTicker() {
   const [isHidden, setIsHidden] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [usingFallback, setUsingFallback] = useState(false);
   const MAX_RETRIES = 3;
 
   useEffect(() => {
@@ -117,9 +72,7 @@ export default function CryptoTicker() {
           .join(',');
 
         if (!coinGeckoIds) {
-          console.warn('No valid cryptocurrencies selected for ticker - using fallback data');
-          setCryptoData(FALLBACK_CRYPTO_DATA);
-          setUsingFallback(true);
+          console.warn('No valid cryptocurrencies selected for ticker');
           setIsLoading(false);
           return;
         }
@@ -147,7 +100,6 @@ export default function CryptoTicker() {
         }
         
         setCryptoData(data);
-        setUsingFallback(false);
         setRetryCount(0); // Reset retry count on success
         setIsLoading(false);
         
@@ -155,7 +107,7 @@ export default function CryptoTicker() {
         console.error('Error fetching crypto data:', error);
         setError(error instanceof Error ? error.message : 'Unknown error');
         
-        // If we have retries left, don't show fallback yet
+        // If we have retries left, try again
         if (retryCount < MAX_RETRIES) {
           setRetryCount(prev => prev + 1);
           // Retry after a delay (exponential backoff)
@@ -165,10 +117,9 @@ export default function CryptoTicker() {
           return;
         }
         
-        // Max retries reached - use fallback data
-        console.warn('Max retries reached - using fallback crypto data');
-        setCryptoData(FALLBACK_CRYPTO_DATA);
-        setUsingFallback(true);
+        // Max retries reached - hide the widget completely
+        console.warn('Max retries reached - hiding crypto ticker');
+        setCryptoData([]);
         setIsLoading(false);
       }
     };
@@ -217,7 +168,7 @@ export default function CryptoTicker() {
     return null;
   }
 
-  // If no data available (shouldn't happen with fallback), return null
+  // If no data available, hide the widget completely
   if (cryptoData.length === 0) {
     return null;
   }
@@ -262,13 +213,6 @@ export default function CryptoTicker() {
                 </span>
               </div>
             ))}
-            
-            {/* Show fallback indicator */}
-            {usingFallback && (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-md whitespace-nowrap text-xs">
-                <span className="text-yellow-400">📊 Live prices unavailable</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
