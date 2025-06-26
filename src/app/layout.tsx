@@ -75,17 +75,13 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch settings including favicon and Google Analytics ID
+  // Fetch settings for favicon
   let faviconUrl = '/favicon.ico'; // Default
-  let googleAnalyticsId: string | null = null;
   
   try {
     const settings = await prisma.settings.findFirst();
     if (settings?.faviconUrl) {
       faviconUrl = settings.faviconUrl;
-    }
-    if (settings?.googleAnalyticsId) {
-      googleAnalyticsId = settings.googleAnalyticsId;
     }
   } catch (error) {
     console.error('Error fetching settings:', error);
@@ -108,36 +104,20 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#343541" />
         
-        {/* Google Analytics */}
-        {googleAnalyticsId && !googleAnalyticsId.includes('XXXXXXXXXX') && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${googleAnalyticsId}', {
-                  page_title: document.title,
-                  page_location: window.location.href
-                });
-                console.log('Google Analytics initialized with ID: ${googleAnalyticsId}');
-              `}
-            </Script>
-          </>
-        )}
-        
-        {/* Debug message for invalid GA ID */}
-        {googleAnalyticsId && googleAnalyticsId.includes('XXXXXXXXXX') && (
-          <Script id="ga-debug" strategy="afterInteractive">
-            {`
-              console.warn('Google Analytics not loaded: Please set a valid GA4 tracking ID in admin settings. Current ID: ${googleAnalyticsId}');
-            `}
-          </Script>
-        )}
+        {/* Google Analytics - Hardcoded GA4 */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-4RD7RLHE26"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-4RD7RLHE26');
+            console.log('Google Analytics initialized with hardcoded ID: G-4RD7RLHE26');
+          `}
+        </Script>
       </head>
       <body className={`${inter.className} bg-[#343541] text-white overflow-x-hidden`}>
         {/* Global Schema Markup for Crypto Bonuses Organization */}
