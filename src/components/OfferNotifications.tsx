@@ -137,13 +137,19 @@ export default function OfferNotifications() {
 
   const fetchRecentClaims = useCallback(async () => {
     try {
-      console.log('[Notifications] Fetching recent claims...');
+      console.log('[Notifications] Fetching recent claims...', {
+        environment: process.env.NODE_ENV,
+        baseUrl: window.location.origin,
+        timestamp: new Date().toISOString()
+      });
       
       const response = await fetch('/api/recent-claims', {
         headers: {
           'Cache-Control': 'no-cache',
         }
       });
+      
+      console.log('[Notifications] API response status:', response.status, response.statusText);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -152,7 +158,12 @@ export default function OfferNotifications() {
       const data = await response.json();
       const recentClaims: OfferClaim[] = data.claims || [];
       
-      console.log('[Notifications] API returned', recentClaims.length, 'claims');
+      console.log('[Notifications] API returned', recentClaims.length, 'claims', {
+        meta: data.meta,
+        claims: recentClaims,
+        seenClaimsCount: seenClaimsRef.current.size,
+        seenClaimIds: Array.from(seenClaimsRef.current)
+      });
       
       // API is working if we get a successful response (even if empty)
       setApiWorking(true);
@@ -167,23 +178,43 @@ export default function OfferNotifications() {
           const isRecent = claimTime > new Date(Date.now() - 3600000); // Extended to 1 hour window
           const isUnseen = !seenClaimsRef.current.has(claim.id);
           
+          console.log('[Notifications] Evaluating claim:', {
+            id: claim.id,
+            casinoName: claim.casinoName,
+            claimTime: claimTime.toISOString(),
+            isRecent,
+            isUnseen,
+            ageInMinutes: Math.floor((Date.now() - claimTime.getTime()) / 60000)
+          });
+          
           if (isRecent && isUnseen) {
             seenClaimsRef.current.add(claim.id);
-            console.log('[Notifications] New recent claim found:', claim.casinoName, claimTime.toISOString());
+            console.log('[Notifications] ✅ New recent claim found:', claim.casinoName, claimTime.toISOString());
             return true;
           }
           
           return false;
         });
         
+        console.log('[Notifications] Found', newClaims.length, 'new claims to show');
+        
         // Show up to 2 notifications per API call instead of just 1
         if (newClaims.length > 0) {
           const claimsToShow = newClaims.slice(0, 2);
+          console.log('[Notifications] Showing notifications for:', claimsToShow.map(c => c.casinoName));
+          
           claimsToShow.forEach(claim => {
             // Add small delay between multiple notifications
-            setTimeout(() => addNotification(claim, false), claimsToShow.indexOf(claim) * 1000);
+            setTimeout(() => {
+              console.log('[Notifications] Adding notification for:', claim.casinoName);
+              addNotification(claim, false);
+            }, claimsToShow.indexOf(claim) * 1000);
           });
+        } else {
+          console.log('[Notifications] No new claims to show (all filtered out)');
         }
+      } else {
+        console.log('[Notifications] No claims returned from API');
       }
       
     } catch (error) {
@@ -191,7 +222,10 @@ export default function OfferNotifications() {
       
       // Only set API as not working if we've had multiple consecutive failures
       const timeSinceLastSuccess = Date.now() - lastSuccessfulApiCall.getTime();
+      console.log('[Notifications] Time since last success:', Math.floor(timeSinceLastSuccess / 1000), 'seconds');
+      
       if (timeSinceLastSuccess > 120000) { // 2 minutes of failures
+        console.log('[Notifications] Setting API as not working due to consecutive failures');
         setApiWorking(false);
       }
     }

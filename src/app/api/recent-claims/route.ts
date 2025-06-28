@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
+    // Log environment info
+    console.log('[Recent Claims] Environment:', process.env.NODE_ENV);
+    console.log('[Recent Claims] Starting API call at:', new Date().toISOString());
+    
     // Get offer trackings from the last 2 hours for better coverage  
     const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
     
@@ -52,6 +56,8 @@ export async function GET() {
         bonusTitle: recentTrackings[0].bonus?.title,
         createdAt: recentTrackings[0].createdAt
       });
+    } else {
+      console.log('[Notifications] No tracking entries found in the last 2 hours');
     }
 
     // Helper function to normalize image path
@@ -99,19 +105,41 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       claims,
       meta: {
         totalTrackings: recentTrackings.length,
         uniqueClaims: claims.length,
-        timeRange: `${twoHoursAgo.toISOString()} to ${new Date().toISOString()}`
+        timeRange: `${twoHoursAgo.toISOString()} to ${new Date().toISOString()}`,
+        environment: process.env.NODE_ENV,
+        timestamp: new Date().toISOString()
       }
     });
+
+    // Set comprehensive headers to prevent caching and ensure proper access
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    response.headers.set('Vary', 'Authorization, Cookie');
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Cache-Control');
+
+    return response;
   } catch (error) {
     console.error('Error fetching recent claims:', error);
-    return NextResponse.json({ 
+    const errorResponse = NextResponse.json({ 
       claims: [],
-      error: 'Failed to fetch recent claims'
-    });
+      error: 'Failed to fetch recent claims',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
+
+    // Add CORS headers even to error responses
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+    errorResponse.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    
+    return errorResponse;
   }
 } 
