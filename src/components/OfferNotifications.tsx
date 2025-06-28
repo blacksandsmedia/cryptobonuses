@@ -52,7 +52,7 @@ const DEMO_NOTIFICATIONS: OfferClaim[] = [
 ];
 
 let demoIndex = 0;
-const DEMO_INTERVAL = 45000; // Show demo notification every 45 seconds (less frequent)
+const DEMO_INTERVAL = 45000; // Show demo notification every 45 seconds
 const API_TIMEOUT = 300000; // 5 minutes before considering API completely down
 
 export default function OfferNotifications() {
@@ -60,7 +60,9 @@ export default function OfferNotifications() {
   const [lastSuccessfulApiCall, setLastSuccessfulApiCall] = useState<Date>(new Date());
   const [hasEverReceivedApiData, setHasEverReceivedApiData] = useState<boolean>(false);
   const [apiWorking, setApiWorking] = useState<boolean>(true);
-  const seenClaimsRef = useRef<Set<string>>(new Set());
+  
+  // Use a more robust tracking system - store claim IDs that have been shown as notifications
+  const shownNotificationsRef = useRef<Set<string>>(new Set());
   const lastNotificationTimeRef = useRef<number>(0);
   const router = useRouter();
   const { setHasActiveNotifications } = useNotifications();
@@ -83,12 +85,22 @@ export default function OfferNotifications() {
   }, []);
 
   const addNotification = useCallback((claim: OfferClaim, isDemo: boolean = false) => {
-    // Reduced rate limiting to allow more frequent notifications
+    // Check if we've already shown a notification for this claim ID
+    if (shownNotificationsRef.current.has(claim.id)) {
+      console.log('[Notifications] ⏭️ Skipping duplicate notification for claim:', claim.id, claim.casinoName);
+      return;
+    }
+
+    // Rate limiting - prevent notifications too close together
     const now = Date.now();
-    if (now - lastNotificationTimeRef.current < 3000) { // Reduced to 3 seconds between notifications
+    if (now - lastNotificationTimeRef.current < 2000) { // 2 seconds between notifications
+      console.log('[Notifications] ⏳ Rate limited, skipping notification for:', claim.casinoName);
       return;
     }
     lastNotificationTimeRef.current = now;
+
+    // Mark this claim as shown
+    shownNotificationsRef.current.add(claim.id);
 
     const notification: Notification = {
       ...claim,
@@ -98,26 +110,31 @@ export default function OfferNotifications() {
       isDemo,
     };
     
-    console.log('[Notifications] Adding notification:', notification.notificationId, notification.casinoName, isDemo ? '(DEMO)' : '(REAL)');
+    console.log('[Notifications] ✅ Adding NEW notification:', {
+      notificationId: notification.notificationId,
+      claimId: claim.id,
+      casinoName: notification.casinoName,
+      type: isDemo ? 'DEMO' : 'REAL',
+      totalShown: shownNotificationsRef.current.size
+    });
     
     setNotifications(prev => [...prev, notification]);
     
-    // Auto-remove after 8 seconds
+    // Auto-remove after exactly 10 seconds as requested
     setTimeout(() => {
+      console.log('[Notifications] ⏰ Auto-removing notification after 10s:', notification.notificationId);
       removeNotification(notification.notificationId);
-    }, 8000);
+    }, 10000);
   }, [removeNotification]);
       
   // Show demo notification - only when API is completely unavailable
   const showDemoNotification = useCallback(() => {
     const timeSinceLastSuccess = Date.now() - lastSuccessfulApiCall.getTime();
     
-    // Only show demo if:
-    // 1. API hasn't worked for more than 5 minutes AND
-    // 2. We've never received any API data OR API has been down for a very long time
+    // Only show demo if API hasn't worked for more than 5 minutes
     if (!apiWorking && timeSinceLastSuccess > API_TIMEOUT && (!hasEverReceivedApiData || timeSinceLastSuccess > 600000)) {
       const demo = DEMO_NOTIFICATIONS[demoIndex % DEMO_NOTIFICATIONS.length];
-      console.log('[Notifications] API completely down, showing demo notification:', demo.casinoName);
+      console.log('[Notifications] 🤖 API down, showing demo notification:', demo.casinoName);
       
       addNotification({
         ...demo,
@@ -130,26 +147,20 @@ export default function OfferNotifications() {
   }, [apiWorking, lastSuccessfulApiCall, hasEverReceivedApiData, addNotification]);
 
   const handleNotificationClick = useCallback((notification: Notification) => {
-    console.log('[Notifications] Notification clicked:', notification.casinoSlug);
+    console.log('[Notifications] 🖱️ Notification clicked:', notification.casinoSlug);
     router.push(`/${notification.casinoSlug}`);
     removeNotification(notification.notificationId);
   }, [router, removeNotification]);
 
   const fetchRecentClaims = useCallback(async () => {
     try {
-      console.log('[Notifications] Fetching recent claims...', {
-        environment: process.env.NODE_ENV,
-        baseUrl: window.location.origin,
-        timestamp: new Date().toISOString()
-      });
+      console.log('[Notifications] 🔍 Fetching recent claims...');
       
       const response = await fetch('/api/recent-claims', {
         headers: {
           'Cache-Control': 'no-cache',
         }
       });
-      
-      console.log('[Notifications] API response status:', response.status, response.statusText);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -158,103 +169,75 @@ export default function OfferNotifications() {
       const data = await response.json();
       const recentClaims: OfferClaim[] = data.claims || [];
       
-      console.log('[Notifications] API returned', recentClaims.length, 'claims', {
-        meta: data.meta,
-        claims: recentClaims,
-        seenClaimsCount: seenClaimsRef.current.size,
-        seenClaimIds: Array.from(seenClaimsRef.current)
-      });
+      console.log('[Notifications] 📥 API returned', recentClaims.length, 'claims');
       
-      // API is working if we get a successful response (even if empty)
+      // API is working if we get a successful response
       setApiWorking(true);
       setLastSuccessfulApiCall(new Date());
       
       if (recentClaims.length > 0) {
         setHasEverReceivedApiData(true);
         
-        // Show notifications for recent claims that we haven't seen before
+        // Only show notifications for claims we haven't shown before
         const newClaims = recentClaims.filter(claim => {
           const claimTime = new Date(claim.createdAt);
-          const isRecent = claimTime > new Date(Date.now() - 3600000); // Extended to 1 hour window
-          const isUnseen = !seenClaimsRef.current.has(claim.id);
+          const isRecent = claimTime > new Date(Date.now() - 1800000); // 30 minutes window
+          const notShownBefore = !shownNotificationsRef.current.has(claim.id);
           
-          console.log('[Notifications] Evaluating claim:', {
+          console.log('[Notifications] 🔍 Evaluating claim:', {
             id: claim.id,
             casinoName: claim.casinoName,
             claimTime: claimTime.toISOString(),
+            ageInMinutes: Math.floor((Date.now() - claimTime.getTime()) / 60000),
             isRecent,
-            isUnseen,
-            ageInMinutes: Math.floor((Date.now() - claimTime.getTime()) / 60000)
+            notShownBefore,
+            shouldShow: isRecent && notShownBefore
           });
           
-          if (isRecent && isUnseen) {
-            seenClaimsRef.current.add(claim.id);
-            console.log('[Notifications] ✅ New recent claim found:', claim.casinoName, claimTime.toISOString());
-            return true;
-          }
-          
-          return false;
+          return isRecent && notShownBefore;
         });
         
-        console.log('[Notifications] Found', newClaims.length, 'new claims to show');
+        console.log('[Notifications] 🎯 Found', newClaims.length, 'NEW claims to show');
         
-        // Show up to 2 notifications per API call instead of just 1
+        // Show only the most recent new claim to avoid spam
         if (newClaims.length > 0) {
-          const claimsToShow = newClaims.slice(0, 2);
-          console.log('[Notifications] Showing notifications for:', claimsToShow.map(c => c.casinoName));
-          
-          claimsToShow.forEach(claim => {
-            // Add small delay between multiple notifications
-            setTimeout(() => {
-              console.log('[Notifications] Adding notification for:', claim.casinoName);
-              addNotification(claim, false);
-            }, claimsToShow.indexOf(claim) * 1000);
-          });
+          const claimToShow = newClaims[0]; // Only show the newest one
+          console.log('[Notifications] 🚀 Showing notification for:', claimToShow.casinoName);
+          addNotification(claimToShow, false);
         } else {
-          console.log('[Notifications] No new claims to show (all filtered out)');
+          console.log('[Notifications] 💤 No new claims to show (all previously shown or too old)');
         }
       } else {
-        console.log('[Notifications] No claims returned from API');
+        console.log('[Notifications] 📭 No claims returned from API');
       }
       
     } catch (error) {
-      console.error('[Notifications] Error fetching recent claims:', error);
+      console.error('[Notifications] ❌ Error fetching recent claims:', error);
       
-      // Only set API as not working if we've had multiple consecutive failures
       const timeSinceLastSuccess = Date.now() - lastSuccessfulApiCall.getTime();
-      console.log('[Notifications] Time since last success:', Math.floor(timeSinceLastSuccess / 1000), 'seconds');
-      
       if (timeSinceLastSuccess > 120000) { // 2 minutes of failures
-        console.log('[Notifications] Setting API as not working due to consecutive failures');
+        console.log('[Notifications] 🔴 Setting API as not working due to consecutive failures');
         setApiWorking(false);
       }
     }
   }, [lastSuccessfulApiCall, addNotification]);
 
-  // Initialize seen claims on mount - but only mark very old claims as seen
+  // Initialize and mark ALL existing claims as already shown to prevent initial spam
   useEffect(() => {
-    const initializeSeenClaims = async () => {
+    const initializeShownClaims = async () => {
       try {
+        console.log('[Notifications] 🔧 Initializing, marking existing claims as shown...');
         const response = await fetch('/api/recent-claims');
         if (response.ok) {
           const data = await response.json();
           const existingClaims: OfferClaim[] = data.claims || [];
           
-          // Only mark claims older than 10 minutes as seen, allow recent ones to show
-          const tenMinutesAgo = new Date(Date.now() - 600000);
+          // Mark ALL existing claims as already shown to prevent spam on page load
           existingClaims.forEach(claim => {
-            const claimTime = new Date(claim.createdAt);
-            if (claimTime < tenMinutesAgo) {
-              seenClaimsRef.current.add(claim.id);
-            }
+            shownNotificationsRef.current.add(claim.id);
           });
           
-          console.log('[Notifications] Initialized, marked', 
-            existingClaims.filter(c => new Date(c.createdAt) < tenMinutesAgo).length,
-            'old claims as seen, leaving', 
-            existingClaims.filter(c => new Date(c.createdAt) >= tenMinutesAgo).length,
-            'recent claims available'
-          );
+          console.log('[Notifications] ✅ Marked', existingClaims.length, 'existing claims as already shown');
           
           if (existingClaims.length > 0) {
             setHasEverReceivedApiData(true);
@@ -263,16 +246,16 @@ export default function OfferNotifications() {
           }
         }
       } catch (error) {
-        console.error('[Notifications] Error initializing:', error);
+        console.error('[Notifications] ❌ Error initializing:', error);
       }
     };
 
-    initializeSeenClaims();
+    initializeShownClaims();
   }, []);
 
-  // More frequent polling - check for new claims every 10 seconds
+  // Poll for new claims every 15 seconds (less frequent to reduce spam)
   useEffect(() => {
-    const pollInterval = setInterval(fetchRecentClaims, 10000);
+    const pollInterval = setInterval(fetchRecentClaims, 15000);
     return () => clearInterval(pollInterval);
   }, [fetchRecentClaims]);
 
@@ -316,9 +299,9 @@ export default function OfferNotifications() {
       {/* Debug indicator in development */}
       {process.env.NODE_ENV === 'development' && (
         <div className="fixed top-4 right-4 z-50 bg-black/80 text-white px-3 py-1 rounded text-xs">
-          {apiWorking ? '🟢 API Mode' : '🔴 API Down'} | 
-          {hasEverReceivedApiData ? ' Has Data' : ' No Data'} | 
-          {notifications.length} active
+          {apiWorking ? '🟢 API' : '🔴 Down'} | 
+          Shown: {shownNotificationsRef.current.size} | 
+          Active: {notifications.length}
         </div>
       )}
       
