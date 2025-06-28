@@ -83,9 +83,9 @@ export default function OfferNotifications() {
   }, []);
 
   const addNotification = useCallback((claim: OfferClaim, isDemo: boolean = false) => {
-    // Rate limit notifications to prevent spam
+    // Reduced rate limiting to allow more frequent notifications
     const now = Date.now();
-    if (now - lastNotificationTimeRef.current < 8000) { // Minimum 8 seconds between notifications
+    if (now - lastNotificationTimeRef.current < 3000) { // Reduced to 3 seconds between notifications
       return;
     }
     lastNotificationTimeRef.current = now;
@@ -102,10 +102,10 @@ export default function OfferNotifications() {
     
     setNotifications(prev => [...prev, notification]);
     
-    // Auto-remove after 10 seconds
+    // Auto-remove after 8 seconds
     setTimeout(() => {
       removeNotification(notification.notificationId);
-    }, 10000);
+    }, 8000);
   }, [removeNotification]);
       
   // Show demo notification - only when API is completely unavailable
@@ -164,7 +164,7 @@ export default function OfferNotifications() {
         // Show notifications for recent claims that we haven't seen before
         const newClaims = recentClaims.filter(claim => {
           const claimTime = new Date(claim.createdAt);
-          const isRecent = claimTime > new Date(Date.now() - 1800000); // Last 30 minutes
+          const isRecent = claimTime > new Date(Date.now() - 3600000); // Extended to 1 hour window
           const isUnseen = !seenClaimsRef.current.has(claim.id);
           
           if (isRecent && isUnseen) {
@@ -176,10 +176,13 @@ export default function OfferNotifications() {
           return false;
         });
         
-        // Show a maximum of 1 notification per API call to avoid spam
+        // Show up to 2 notifications per API call instead of just 1
         if (newClaims.length > 0) {
-          const randomClaim = newClaims[Math.floor(Math.random() * newClaims.length)];
-          addNotification(randomClaim, false);
+          const claimsToShow = newClaims.slice(0, 2);
+          claimsToShow.forEach(claim => {
+            // Add small delay between multiple notifications
+            setTimeout(() => addNotification(claim, false), claimsToShow.indexOf(claim) * 1000);
+          });
         }
       }
       
@@ -194,7 +197,7 @@ export default function OfferNotifications() {
     }
   }, [lastSuccessfulApiCall, addNotification]);
 
-  // Initialize seen claims on mount
+  // Initialize seen claims on mount - but only mark very old claims as seen
   useEffect(() => {
     const initializeSeenClaims = async () => {
       try {
@@ -203,12 +206,21 @@ export default function OfferNotifications() {
           const data = await response.json();
           const existingClaims: OfferClaim[] = data.claims || [];
           
-          // Mark all existing claims as seen to avoid showing them as notifications
+          // Only mark claims older than 10 minutes as seen, allow recent ones to show
+          const tenMinutesAgo = new Date(Date.now() - 600000);
           existingClaims.forEach(claim => {
-            seenClaimsRef.current.add(claim.id);
+            const claimTime = new Date(claim.createdAt);
+            if (claimTime < tenMinutesAgo) {
+              seenClaimsRef.current.add(claim.id);
+            }
           });
           
-          console.log('[Notifications] Initialized with', existingClaims.length, 'existing claims');
+          console.log('[Notifications] Initialized, marked', 
+            existingClaims.filter(c => new Date(c.createdAt) < tenMinutesAgo).length,
+            'old claims as seen, leaving', 
+            existingClaims.filter(c => new Date(c.createdAt) >= tenMinutesAgo).length,
+            'recent claims available'
+          );
           
           if (existingClaims.length > 0) {
             setHasEverReceivedApiData(true);
@@ -224,9 +236,9 @@ export default function OfferNotifications() {
     initializeSeenClaims();
   }, []);
 
-  // Main polling effect - check for new claims every 20 seconds
+  // More frequent polling - check for new claims every 10 seconds
   useEffect(() => {
-    const pollInterval = setInterval(fetchRecentClaims, 20000);
+    const pollInterval = setInterval(fetchRecentClaims, 10000);
     return () => clearInterval(pollInterval);
   }, [fetchRecentClaims]);
 
