@@ -341,8 +341,8 @@ export default function Home() {
           </div>
           
           <h1 className="relative">
-            {/* Main heading with gradient */}
-            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#68D08B] to-white bg-clip-text text-transparent leading-tight mb-4">
+            {/* Main heading with white text */}
+            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 text-white">
               Bitcoin Casino Bonuses
             </span>
             
