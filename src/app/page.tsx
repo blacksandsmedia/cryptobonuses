@@ -331,10 +331,54 @@ export default function Home() {
       />
 
       <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
-        <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold text-center mt-1 mb-8 sm:mb-12">
-          Bitcoin Casino Bonuses {currentYear}
-        </h1>
-        
+        {/* Enhanced Hero Heading */}
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="inline-flex items-center gap-2 bg-[#68D08B]/10 border border-[#68D08B]/20 rounded-full px-4 py-2 mb-6">
+            <div className="w-2 h-2 bg-[#68D08B] rounded-full animate-pulse"></div>
+            <span className="text-[#68D08B] text-sm font-medium">
+              {currentYear} Edition
+            </span>
+          </div>
+          
+          <h1 className="relative">
+            {/* Main heading with gradient */}
+            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#68D08B] to-white bg-clip-text text-transparent leading-tight mb-4">
+              Bitcoin Casino Bonuses
+            </span>
+            
+            {/* Subheading with accent color */}
+            <span className="block text-lg sm:text-xl md:text-2xl font-semibold text-[#68D08B] mb-6">
+              Discover the Best Crypto Rewards {currentYear}
+            </span>
+            
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-20 h-1 bg-gradient-to-r from-transparent via-[#68D08B] to-transparent opacity-60"></div>
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-4 w-32 h-0.5 bg-gradient-to-r from-transparent via-[#68D08B]/50 to-transparent"></div>
+          </h1>
+          
+          {/* Feature badges */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+            <div className="flex items-center gap-2 text-[#a7a9b4] text-sm">
+              <svg className="w-4 h-4 text-[#68D08B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Verified Daily</span>
+            </div>
+            <div className="flex items-center gap-2 text-[#a7a9b4] text-sm">
+              <svg className="w-4 h-4 text-[#68D08B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span>Instant Access</span>
+            </div>
+            <div className="flex items-center gap-2 text-[#a7a9b4] text-sm">
+              <svg className="w-4 h-4 text-[#68D08B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+              </svg>
+              <span>No Hidden Fees</span>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-6 sm:mb-8 md:mb-12" data-filter-section>
           <FilterControls
             key={`filter-controls-${initialized}`}
