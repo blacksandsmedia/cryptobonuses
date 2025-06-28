@@ -63,89 +63,89 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Admin Functions */}
-      <div className="bg-[#292932] shadow-md rounded-lg p-6 border border-[#404055]">
-        <h2 className="text-2xl font-bold text-white mb-4">Admin Functions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="admin-container">
+        <h2 className="admin-heading">Admin Functions</h2>
+        <div className="admin-grid">
           <Link
             href="/admin/casinos"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Casinos</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage casino listings and details</p>
           </Link>
           <Link
             href="/admin/newsletter"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Newsletter</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage newsletter subscribers and exports</p>
           </Link>
           <Link
             href="/admin/reviews"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Reviews</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage user reviews and feedback</p>
           </Link>
           <Link
             href="/admin/reports"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Reports</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage user-submitted casino reports</p>
           </Link>
           <Link
             href="/admin/analytics"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Analytics</h3>
             <p className="mt-2 text-[#a7a9b4]">Track offer copies, clicks and engagement</p>
           </Link>
           <Link
             href="/admin/search-analytics"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Search Analytics</h3>
             <p className="mt-2 text-[#a7a9b4]">Monitor search queries and user behavior</p>
           </Link>
           <Link
             href="/admin/page-checks"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Page Checks</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage page checks and verification</p>
           </Link>
           <Link
             href="/admin/pages"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Pages</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage website pages and content</p>
           </Link>
           <Link
             href="/admin/enquiries"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Enquiries</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage contact form submissions</p>
           </Link>
           <Link
             href="/admin/users"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Users</h3>
             <p className="mt-2 text-[#a7a9b4]">Manage user accounts and permissions</p>
           </Link>
           <Link
             href="/admin/redirects"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Redirects</h3>
             <p className="mt-2 text-[#a7a9b4]">Create manual 301 redirects and view automatic ones</p>
           </Link>
           <Link
             href="/admin/settings"
-            className="block p-6 bg-[#373946] border border-[#404055] rounded-lg shadow-md hover:bg-[#3c3f4a] transition-colors"
+            className="admin-card block"
           >
             <h3 className="text-lg font-semibold text-white">Settings</h3>
             <p className="mt-2 text-[#a7a9b4]">Configure site settings and preferences</p>

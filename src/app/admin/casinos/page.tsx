@@ -418,9 +418,10 @@ export default function CasinosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      {/* Header - Mobile Responsive */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white">Casinos</h2>
+          <h2 className="admin-heading">Casinos</h2>
           <p className="text-[#a7a9b4] mt-1">
             Total: {filteredCasinos.length}
             {isDragging && <span className="ml-2 text-yellow-400">(Dragging...)</span>}
@@ -431,24 +432,25 @@ export default function CasinosPage() {
             </p>
           )}
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           {hasChanges && (
             <button
               onClick={saveNewOrder}
-              className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
+              disabled={isSaving}
+              className="w-full sm:w-auto px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors disabled:opacity-50"
             >
-              Save New Order
+              {isSaving ? 'Saving...' : 'Save New Order'}
             </button>
           )}
           <button
             onClick={() => setShowImportModal(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
           >
             Import CSV
           </button>
           <Link
             href="/admin/casinos/new"
-            className="px-4 py-2 bg-[#68D08B] text-white rounded-md hover:bg-[#5abc7a] transition-colors"
+            className="w-full sm:w-auto px-4 py-2 bg-[#68D08B] text-white rounded-md hover:bg-[#5abc7a] transition-colors text-center"
           >
             Add New Casino
           </Link>
@@ -461,9 +463,9 @@ export default function CasinosPage() {
         </div>
       )}
 
-      {/* Search bar and view toggle */}
-      <div className="flex items-center space-x-4">
-        <div className="flex-grow">
+      {/* Search bar and controls - Mobile Responsive */}
+      <div className="space-y-4">
+        <div>
           <input
             type="text"
             placeholder="Search casinos by name, slug, or description..."
@@ -472,215 +474,216 @@ export default function CasinosPage() {
             className="w-full px-4 py-2 bg-[#1d1d25] border border-[#404055] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#68D08B]"
           />
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-[#a7a9b4]">Quick Edit:</span>
-          <button
-            onClick={() => setDetailedView(!detailedView)}
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              detailedView 
-                ? 'bg-[#68D08B] text-white' 
-                : 'bg-[#373946] text-[#a7a9b4] hover:bg-[#454655]'
-            }`}
-          >
-            {detailedView ? 'Enabled' : 'Disabled'}
-          </button>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-[#a7a9b4] whitespace-nowrap">Quick Edit:</span>
+            <button
+              onClick={() => setDetailedView(!detailedView)}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                detailedView 
+                  ? 'bg-[#68D08B] text-white' 
+                  : 'bg-[#373946] text-[#a7a9b4] hover:bg-[#454655]'
+              }`}
+            >
+              {detailedView ? 'Enabled' : 'Disabled'}
+            </button>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <button
+              onClick={handleSearch}
+              className="w-full sm:w-auto px-4 py-2 bg-[#373946] text-white rounded-md hover:bg-[#454655] transition-colors"
+            >
+              Search
+            </button>
+            {selectedCasinos.length > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              >
+                Delete Selected ({selectedCasinos.length})
+              </button>
+            )}
+          </div>
         </div>
-        <button
-          onClick={handleSearch}
-          className="px-4 py-2 bg-[#373946] text-white rounded-md hover:bg-[#454655] transition-colors"
-        >
-          Search
-        </button>
-        {selectedCasinos.length > 0 && (
-          <button
-            onClick={handleBulkDelete}
-            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-          >
-            Delete Selected ({selectedCasinos.length})
-          </button>
-        )}
       </div>
 
-      <div className="bg-[#292932] shadow-md rounded-lg overflow-hidden border border-[#404055]">
-        <DragDropContext 
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={onDragEnd}
-        >
-          <Droppable droppableId="casinos">
-            {(provided) => (
-              <table 
-                className="min-w-full divide-y divide-[#404055]"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                <thead className="bg-[#373946]">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider w-8">
-                      Order
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider w-16">
-                      Logo
-                    </th>
-                    <th className="px-2 py-3 text-center">
-                      <input
-                        type="checkbox"
-                        checked={selectAll}
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
-                      />
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
-                      Name & Slug
-                    </th>
-                    {detailedView && (
-                      <>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
-                          Website
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
-                          Affiliate Link
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
-                          Bonus Code
-                        </th>
-                      </>
-                    )}
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
-                      Rating <span className="text-xs font-normal opacity-75">(from reviews)</span>
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-[#a7a9b4] uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-[#292932] divide-y divide-[#404055]">
-                  {filteredCasinos.map((casino, index) => (
-                    <Draggable key={casino.id} draggableId={casino.id} index={index}>
-                      {(provided, snapshot) => (
-                        <tr
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          className={snapshot.isDragging ? "bg-[#373946] opacity-80" : "hover:bg-[#323240] cursor-pointer"}
-                          onClick={(e) => {
-                            // Don't navigate if clicking on interactive elements
-                            const target = e.target as HTMLElement;
-                            if (
-                              (target instanceof HTMLInputElement) ||
-                              target.closest('button') ||
-                              target.closest('[data-rbd-drag-handle-draggable-id]') ||
-                              target.closest('input')
-                            ) {
-                              return;
-                            }
-                            router.push(`/admin/casinos/${casino.id}`);
-                          }}
-                        >
-                          <td 
-                            className="px-6 py-4 whitespace-nowrap cursor-move w-10"
-                            {...provided.dragHandleProps}
-                          >
-                            <div className="flex items-center justify-center w-6 h-6 bg-[#373946] rounded-md text-white">
-                              {index + 1}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="w-10 h-10 rounded overflow-hidden bg-[#2c2f3a] flex items-center justify-center">
-                              {casino.logo ? (
-                                <Image
-                                  src={normalizeImagePath(casino.logo)}
-                                  alt={`${casino.name || 'Casino'} Logo`}
-                                  width={40}
-                                  height={40}
-                                  className="object-contain"
-                                  onError={(e) => {
-                                    // Fallback to initials when image fails to load
-                                    e.currentTarget.style.display = 'none';
-                                    const name = casino.name || 'Casino';
-                                    const parentElement = e.currentTarget.parentElement;
-                                    if (parentElement) {
-                                      parentElement.innerHTML = name.substring(0, 2).toUpperCase();
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <span className="text-white text-sm font-medium">
-                                  {(casino.name || 'Casino').substring(0, 2).toUpperCase()}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-2 py-4 whitespace-nowrap text-center">
-                            <input
-                              type="checkbox"
-                              checked={selectedCasinos.includes(casino.id)}
-                              onChange={() => toggleSelectCasino(casino.id)}
-                              className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
-                            />
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {detailedView ? (
-                              <div className="space-y-1">
-                                {renderEditableField(casino, 'name', casino.name || '', 'Casino name')}
-                                {renderEditableField(casino, 'slug', casino.slug || '', 'URL slug')}
-                              </div>
-                            ) : (
-                              <div>
-                                <div className="text-sm font-medium text-white">
-                                  {casino.name || 'Unnamed Casino'}
-                                </div>
-                                <div className="text-sm text-[#a7a9b4]">{casino.slug || 'no-slug'}</div>
-                              </div>
-                            )}
-                          </td>
-                          {detailedView && (
-                            <>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {renderEditableField(casino, 'website', casino.website || '', 'Website URL')}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {renderEditableField(casino, 'affiliateLink', casino.affiliateLink || '', 'Affiliate link')}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {renderEditableField(casino, 'bonusCode', casino.bonusCode || '', 'Bonus code')}
-                              </td>
-                            </>
-                          )}
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-white">
-                              {casino.rating ? `${casino.rating.toFixed(1)}/5` : '0.0/5'}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button
-                              onClick={() => router.push(`/admin/casinos/${casino.id}`)}
-                              className="text-[#68D08B] hover:text-[#5abc7a] mr-3"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(casino.id)}
-                              className="text-red-400 hover:text-red-300"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                  {filteredCasinos.length === 0 && (
+      {/* Table Container - Mobile Responsive */}
+      <div className="admin-container p-0">
+        <div className="admin-table-wrapper">
+          <DragDropContext 
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={onDragEnd}
+          >
+            <Droppable droppableId="casinos">
+              {(provided) => (
+                <table 
+                  className="admin-table"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  <thead className="bg-[#373946]">
                     <tr>
-                      <td colSpan={detailedView ? 10 : 7} className="px-6 py-8 text-center text-[#a7a9b4]">
-                        {searchTerm ? "No casinos found matching your search." : "No casinos found. Create your first casino by clicking the \"Add New Casino\" button."}
-                      </td>
+                      <th className="admin-table-th-mobile">
+                        Order
+                      </th>
+                      <th className="admin-table-th-mobile">
+                        Logo
+                      </th>
+                      <th className="px-2 py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={toggleSelectAll}
+                          className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
+                        />
+                      </th>
+                      <th className="admin-table-th-mobile">
+                        Name & Slug
+                      </th>
+                      {detailedView && (
+                        <>
+                          <th className="admin-table-th-mobile hidden md:table-cell">
+                            Website
+                          </th>
+                          <th className="admin-table-th-mobile hidden lg:table-cell">
+                            Affiliate Link
+                          </th>
+                          <th className="admin-table-th-mobile hidden lg:table-cell">
+                            Bonus Code
+                          </th>
+                        </>
+                      )}
+                      <th className="admin-table-th-mobile">
+                        Rating <span className="text-xs font-normal opacity-75 hidden sm:inline">(from reviews)</span>
+                      </th>
+                      <th className="admin-table-th-mobile text-right">
+                        Actions
+                      </th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            )}
-          </Droppable>
-        </DragDropContext>
+                  </thead>
+                  <tbody className="bg-[#292932] divide-y divide-[#404055]">
+                    {filteredCasinos.map((casino, index) => (
+                      <Draggable key={casino.id} draggableId={casino.id} index={index}>
+                        {(provided, snapshot) => (
+                          <tr
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={snapshot.isDragging ? "bg-[#373946] opacity-80" : "hover:bg-[#323240]"}
+                          >
+                            <td 
+                              className="admin-table-td-mobile cursor-move"
+                              {...provided.dragHandleProps}
+                            >
+                              <div className="flex items-center justify-center w-6 h-6 bg-[#373946] rounded-md text-white text-xs">
+                                {index + 1}
+                              </div>
+                            </td>
+                            <td className="admin-table-td-mobile">
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded overflow-hidden bg-[#2c2f3a] flex items-center justify-center">
+                                {casino.logo ? (
+                                  <Image
+                                    src={normalizeImagePath(casino.logo)}
+                                    alt={`${casino.name || 'Casino'} Logo`}
+                                    width={32}
+                                    height={32}
+                                    className="object-contain sm:w-10 sm:h-10"
+                                    onError={(e) => {
+                                      // Fallback to initials when image fails to load
+                                      e.currentTarget.style.display = 'none';
+                                      const name = casino.name || 'Casino';
+                                      const parentElement = e.currentTarget.parentElement;
+                                      if (parentElement) {
+                                        parentElement.innerHTML = name.substring(0, 2).toUpperCase();
+                                      }
+                                    }}
+                                  />
+                                ) : (
+                                  <span className="text-white text-xs font-medium">
+                                    {(casino.name || 'Casino').substring(0, 2).toUpperCase()}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-2 py-3 sm:py-4 whitespace-nowrap text-center">
+                              <input
+                                type="checkbox"
+                                checked={selectedCasinos.includes(casino.id)}
+                                onChange={() => toggleSelectCasino(casino.id)}
+                                className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
+                              />
+                            </td>
+                            <td className="admin-table-td-mobile">
+                              {detailedView ? (
+                                <div className="space-y-1">
+                                  {renderEditableField(casino, 'name', casino.name || '', 'Casino name')}
+                                  {renderEditableField(casino, 'slug', casino.slug || '', 'URL slug')}
+                                </div>
+                              ) : (
+                                <div 
+                                  className="cursor-pointer"
+                                  onClick={() => router.push(`/admin/casinos/${casino.id}`)}
+                                >
+                                  <div className="text-sm font-medium text-white truncate max-w-[120px] sm:max-w-[200px]">
+                                    {casino.name || 'Unnamed Casino'}
+                                  </div>
+                                  <div className="text-xs sm:text-sm text-[#a7a9b4] truncate max-w-[120px] sm:max-w-[200px]">
+                                    {casino.slug || 'no-slug'}
+                                  </div>
+                                </div>
+                              )}
+                            </td>
+                            {detailedView && (
+                              <>
+                                <td className="admin-table-td-mobile hidden md:table-cell">
+                                  {renderEditableField(casino, 'website', casino.website || '', 'Website URL')}
+                                </td>
+                                <td className="admin-table-td-mobile hidden lg:table-cell">
+                                  {renderEditableField(casino, 'affiliateLink', casino.affiliateLink || '', 'Affiliate link')}
+                                </td>
+                                <td className="admin-table-td-mobile hidden lg:table-cell">
+                                  {renderEditableField(casino, 'bonusCode', casino.bonusCode || '', 'Bonus code')}
+                                </td>
+                              </>
+                            )}
+                            <td className="admin-table-td-mobile">
+                              <div className="text-xs sm:text-sm text-white">
+                                {casino.rating ? `${casino.rating.toFixed(1)}/5` : '0.0/5'}
+                              </div>
+                            </td>
+                            <td className="admin-table-td-mobile text-right">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-1 sm:gap-3">
+                                <button
+                                  onClick={() => router.push(`/admin/casinos/${casino.id}`)}
+                                  className="text-[#68D08B] hover:text-[#5abc7a] text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(casino.id)}
+                                  className="text-red-400 hover:text-red-300 text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                    {filteredCasinos.length === 0 && (
+                      <tr>
+                        <td colSpan={detailedView ? 10 : 7} className="px-3 sm:px-6 py-8 text-center text-[#a7a9b4] text-sm">
+                          {searchTerm ? "No casinos found matching your search." : "No casinos found. Create your first casino by clicking the \"Add New Casino\" button."}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </div>
       </div>
 
       <CSVImportModal
