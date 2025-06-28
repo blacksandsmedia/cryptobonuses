@@ -5,30 +5,61 @@ export async function GET() {
   try {
     console.log('Fetching real statistics...');
     
+    // Debug: Check what tracking data exists
+    const allTrackingData = await prisma.offerTracking.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        actionType: true,
+        path: true,
+        casinoId: true,
+        bonusId: true,
+        createdAt: true
+      }
+    });
+    console.log('Sample tracking data:', allTrackingData);
+    
+    // Get total tracking count
+    const totalTrackingCount = await prisma.offerTracking.count();
+    console.log('Total tracking entries:', totalTrackingCount);
+    
     // Get actual unique users (using unique paths as proxy for unique visitors)
+    // Filter out null paths to get meaningful count
     const uniqueUsersResult = await prisma.$queryRaw`
       SELECT COUNT(DISTINCT "path") as unique_users
       FROM "OfferTracking"
+      WHERE "path" IS NOT NULL AND "path" != ''
     `;
     const totalUsers = Number((uniqueUsersResult as any)[0]?.unique_users || 0);
+    console.log('Unique users (non-null paths):', totalUsers);
     
-    // Get actual total bonus claims (code_copy actions represent real claims)
-    const totalBonusesClaimed = await prisma.offerTracking.count({
+    // Get actual total bonus claims (both code_copy and offer_click represent user engagement)
+    const codeCopyCount = await prisma.offerTracking.count({
       where: {
         actionType: 'code_copy'
       }
     });
+    const offerClickCount = await prisma.offerTracking.count({
+      where: {
+        actionType: 'offer_click'
+      }
+    });
+    // Use code_copy as primary metric, but include offer_click if no code_copy exists
+    const totalBonusesClaimed = codeCopyCount > 0 ? codeCopyCount : offerClickCount;
+    console.log('Code copy count:', codeCopyCount, 'Offer click count:', offerClickCount);
 
     // Get total number of active casinos
     const activeCasinos = await prisma.casino.count();
 
     // Get total number of active bonuses
     const totalOffersAvailable = await prisma.bonus.count();
+    console.log('Total bonuses in database:', totalOffersAvailable);
     
     console.log('Real stats:', { totalUsers, totalBonusesClaimed, activeCasinos, totalOffersAvailable });
 
-    // Get most claimed offer (based on actual code copies)
-    const mostClaimedOfferData = await prisma.offerTracking.groupBy({
+    // Get most claimed offer (based on actual code copies first, then offer clicks)
+    let mostClaimedOfferData = await prisma.offerTracking.groupBy({
       by: ['bonusId'],
       where: {
         actionType: 'code_copy',
@@ -46,6 +77,30 @@ export async function GET() {
       },
       take: 1
     });
+    
+    // If no code_copy data, try offer_click
+    if (mostClaimedOfferData.length === 0) {
+      console.log('No code_copy data found, trying offer_click...');
+      const offerClickData = await prisma.offerTracking.groupBy({
+        by: ['bonusId'],
+        where: {
+          actionType: 'offer_click',
+          bonusId: {
+            not: null
+          }
+        },
+        _count: {
+          bonusId: true
+        },
+        orderBy: {
+          _count: {
+            bonusId: 'desc'
+          }
+        },
+        take: 1
+      });
+      mostClaimedOfferData = offerClickData;
+    }
 
     let mostClaimedOffer: {
       name: string;
@@ -53,6 +108,7 @@ export async function GET() {
       claimCount: number;
       logoUrl: string | null;
     } | null = null;
+    
     if (mostClaimedOfferData.length > 0) {
       const bonusId = mostClaimedOfferData[0].bonusId;
       const claimCount = mostClaimedOfferData[0]._count.bonusId;
@@ -86,15 +142,18 @@ export async function GET() {
       }
     }
 
-    // If no code_copy data, try to get most active casino by any action type
+    // If no bonus-specific data, try to get most active casino by any action type
     if (!mostClaimedOffer) {
-      console.log('No code_copy tracking data found, checking for most active casino...');
+      console.log('No bonus tracking data found, checking for most active casino...');
       
       const fallbackData = await prisma.offerTracking.groupBy({
         by: ['casinoId'],
         where: {
           casinoId: {
             not: null
+          },
+          actionType: {
+            in: ['code_copy', 'offer_click']
           }
         },
         _count: {
@@ -164,6 +223,8 @@ export async function GET() {
       const basicCasinoCount = await prisma.casino.count();
       const basicBonusCount = await prisma.bonus.count();
       const basicTrackingCount = await prisma.offerTracking.count();
+      
+      console.log('Fallback counts:', { basicCasinoCount, basicBonusCount, basicTrackingCount });
       
       return NextResponse.json({
         totalUsers: basicTrackingCount,
