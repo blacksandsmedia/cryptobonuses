@@ -227,17 +227,18 @@ export default function AdminReportsPage() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-2">Casino Reports</h1>
-        <p className="text-[#a4a5b0]">Review and verify user-submitted reports about casinos</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="admin-heading">Casino Reports</h1>
+        <p className="text-[#a7a9b4]">Review and verify user-submitted reports about casinos</p>
       </div>
 
-      {/* Filters and Bulk Actions */}
-      <div className="bg-[#2c2f3a] rounded-xl p-4 mb-6 border border-[#404055]">
+      {/* Filters and Bulk Actions - Mobile Responsive */}
+      <div className="admin-container">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <label className="text-white font-medium">Filter by status:</label>
               <select
                 value={statusFilter}
@@ -245,7 +246,7 @@ export default function AdminReportsPage() {
                   setStatusFilter(e.target.value);
                   setPagination(prev => ({ ...prev, page: 1 }));
                 }}
-                className="bg-[#1a1a27] border border-[#404055] text-white rounded-lg px-3 py-2 focus:border-[#68D08B] focus:outline-none"
+                className="w-full sm:w-auto bg-[#3c3f4a] border border-[#404055] text-white rounded-lg px-3 py-2 focus:border-[#68D08B] focus:outline-none"
               >
                 <option value="">All statuses</option>
                 <option value="PENDING">Pending</option>
@@ -253,51 +254,53 @@ export default function AdminReportsPage() {
               </select>
             </div>
             
-            <div className="text-sm text-[#a4a5b0]">
+            <div className="text-sm text-[#a7a9b4]">
               Total reports: {pagination.total}
             </div>
           </div>
 
           {/* Bulk Actions */}
           {selectedReports.size > 0 && (
-            <div className="flex items-center gap-3 p-3 bg-[#1a1a27] rounded-lg border-l-4 border-[#68D08B]">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 bg-[#373946] rounded-lg border-l-4 border-[#68D08B]">
               <span className="text-white font-medium">
                 {selectedReports.size} report{selectedReports.size !== 1 ? 's' : ''} selected
               </span>
-              <button
-                onClick={handleBulkDelete}
-                disabled={isDeleting}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-[#404055] text-white disabled:text-[#6b6b7d] px-3 py-1 rounded-lg text-sm font-medium transition-colors"
-              >
-                {isDeleting ? 'Deleting...' : 'Delete Selected'}
-              </button>
-              <button
-                onClick={() => setSelectedReports(new Set())}
-                className="text-[#a4a5b0] hover:text-white text-sm"
-              >
-                Clear Selection
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={isDeleting}
+                  className="bg-red-600 hover:bg-red-700 disabled:bg-[#404055] text-white disabled:text-[#6b6b7d] px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Selected'}
+                </button>
+                <button
+                  onClick={() => setSelectedReports(new Set())}
+                  className="text-[#a7a9b4] hover:text-white text-sm px-3 py-2"
+                >
+                  Clear Selection
+                </button>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Reports List */}
-      <div className="bg-[#2c2f3a] rounded-xl border border-[#404055] overflow-hidden">
+      {/* Reports List - Mobile Responsive */}
+      <div className="admin-container p-0">
         {loading ? (
           <div className="p-8 text-center">
-            <div className="text-[#a4a5b0]">Loading reports...</div>
+            <div className="admin-spinner mx-auto"></div>
           </div>
         ) : reports.length === 0 ? (
           <div className="p-8 text-center">
-            <div className="text-[#a4a5b0]">No reports found</div>
+            <div className="text-[#a7a9b4]">No reports found</div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#1a1a27] border-b border-[#404055]">
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead className="bg-[#373946] border-b border-[#404055]">
                 <tr>
-                  <th className="text-left p-4 text-white font-medium w-12">
+                  <th className="admin-table-th-mobile w-12">
                     <input
                       type="checkbox"
                       checked={reports.length > 0 && selectedReports.size === reports.length}
@@ -305,11 +308,11 @@ export default function AdminReportsPage() {
                       className="w-4 h-4 text-[#68D08B] bg-[#2c2f3a] border-[#404055] rounded focus:ring-[#68D08B] focus:ring-2"
                     />
                   </th>
-                  <th className="text-left p-4 text-white font-medium">Casino</th>
-                  <th className="text-left p-4 text-white font-medium">Reason</th>
-                  <th className="text-left p-4 text-white font-medium">Status</th>
-                  <th className="text-left p-4 text-white font-medium">Date</th>
-                  <th className="text-left p-4 text-white font-medium">Actions</th>
+                  <th className="admin-table-th-mobile">Casino</th>
+                  <th className="admin-table-th-mobile hidden md:table-cell">Reason</th>
+                  <th className="admin-table-th-mobile">Status</th>
+                  <th className="admin-table-th-mobile hidden sm:table-cell">Date</th>
+                  <th className="admin-table-th-mobile text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -318,7 +321,7 @@ export default function AdminReportsPage() {
                     key={report.id} 
                     className={`border-b border-[#404055]/30 hover:bg-[#343541] transition-colors ${index % 2 === 0 ? 'bg-[#2c2f3a]' : 'bg-[#262936]'}`}
                   >
-                    <td className="p-4">
+                    <td className="admin-table-td-mobile">
                       <input
                         type="checkbox"
                         checked={selectedReports.has(report.id)}
@@ -326,52 +329,56 @@ export default function AdminReportsPage() {
                         className="w-4 h-4 text-[#68D08B] bg-[#2c2f3a] border-[#404055] rounded focus:ring-[#68D08B] focus:ring-2"
                       />
                     </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
+                    <td className="admin-table-td-mobile">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         {report.casino.logo && (
                           <Image
                             src={normalizeImagePath(report.casino.logo)}
                             alt={report.casino.name}
-                            width={32}
-                            height={32}
-                            className="rounded object-cover"
+                            width={24}
+                            height={24}
+                            className="rounded object-cover sm:w-8 sm:h-8 flex-shrink-0"
                           />
                         )}
-                        <div>
-                          <div className="text-white font-medium">{report.casino.name}</div>
-                          <div className="text-[#a4a5b0] text-sm">{report.casino.slug}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-white font-medium text-sm sm:text-base truncate">{report.casino.name}</div>
+                          <div className="text-[#a7a9b4] text-xs sm:text-sm truncate sm:hidden">{report.casino.slug}</div>
+                          <div className="text-[#a7a9b4] text-xs md:hidden">
+                            {reasonLabels[report.reason as keyof typeof reasonLabels]?.split(' ').slice(0, 2).join(' ') || report.reason}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4">
-                      <div className="text-white font-medium">
+                    <td className="admin-table-td-mobile hidden md:table-cell">
+                      <div className="text-white font-medium text-sm">
                         {reasonLabels[report.reason as keyof typeof reasonLabels] || report.reason}
                       </div>
                       {report.description && (
-                        <div className="text-[#a4a5b0] text-sm mt-1 line-clamp-2">
+                        <div className="text-[#a7a9b4] text-xs mt-1 line-clamp-2">
                           {report.description}
                         </div>
                       )}
                     </td>
-                    <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${statusColors[report.status]}`}>
+                    <td className="admin-table-td-mobile">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${statusColors[report.status]}`}>
                         {report.status}
                       </span>
                     </td>
-                    <td className="p-4">
-                      <div className="text-[#a4a5b0] text-sm">
+                    <td className="admin-table-td-mobile hidden sm:table-cell">
+                      <div className="text-[#a7a9b4] text-sm">
                         {new Date(report.createdAt).toLocaleDateString()}
                       </div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex gap-2">
+                    <td className="admin-table-td-mobile text-right">
+                      <div className="flex flex-col sm:flex-row sm:justify-end gap-1 sm:gap-2">
                         {report.status === 'PENDING' && (
                           <button
                             onClick={() => handleVerifyReport(report.id)}
                             disabled={isUpdating || isDeleting}
-                            className="bg-[#68D08B] hover:bg-[#7ee095] disabled:bg-[#404055] text-[#1a1a1a] disabled:text-[#6b6b7d] px-3 py-1 rounded text-sm font-medium transition-colors"
+                            className="bg-[#68D08B] hover:bg-[#7ee095] disabled:bg-[#404055] text-[#1a1a1a] disabled:text-[#6b6b7d] px-2 py-1 rounded text-xs font-medium transition-colors"
                           >
-                            ✓ Verify
+                            <span className="sm:hidden">✓</span>
+                            <span className="hidden sm:inline">✓ Verify</span>
                           </button>
                         )}
                         <button
@@ -381,14 +388,14 @@ export default function AdminReportsPage() {
                             setAdminNotes(report.adminNotes || '');
                           }}
                           disabled={isDeleting}
-                          className="bg-[#404055] hover:bg-[#4a5160] disabled:bg-[#2a2a2a] text-white disabled:text-[#6b6b7d] px-3 py-1 rounded text-sm font-medium transition-colors"
+                          className="bg-[#404055] hover:bg-[#4a5160] disabled:bg-[#2a2a2a] text-white disabled:text-[#6b6b7d] px-2 py-1 rounded text-xs font-medium transition-colors"
                         >
                           View
                         </button>
                         <button
                           onClick={() => handleDeleteReport(report.id)}
                           disabled={isDeleting || isUpdating}
-                          className="bg-red-600 hover:bg-red-700 disabled:bg-[#404055] text-white disabled:text-[#6b6b7d] px-3 py-1 rounded text-sm font-medium transition-colors"
+                          className="bg-red-600 hover:bg-red-700 disabled:bg-[#404055] text-white disabled:text-[#6b6b7d] px-2 py-1 rounded text-xs font-medium transition-colors"
                         >
                           {isDeleting ? '...' : '🗑️'}
                         </button>
@@ -402,25 +409,25 @@ export default function AdminReportsPage() {
         )}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination - Mobile Responsive */}
       {pagination.pages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
           <button
             onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
             disabled={pagination.page === 1}
-            className="px-3 py-2 bg-[#2c2f3a] border border-[#404055] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#252831]"
+            className="w-full sm:w-auto px-4 py-2 bg-[#373946] border border-[#404055] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#454655]"
           >
             Previous
           </button>
           
-          <span className="text-[#a4a5b0] px-4">
+          <span className="text-[#a7a9b4] px-4 text-sm">
             Page {pagination.page} of {pagination.pages}
           </span>
           
           <button
             onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.pages, prev.page + 1) }))}
             disabled={pagination.page === pagination.pages}
-            className="px-3 py-2 bg-[#2c2f3a] border border-[#404055] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#252831]"
+            className="w-full sm:w-auto px-4 py-2 bg-[#373946] border border-[#404055] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#454655]"
           >
             Next
           </button>

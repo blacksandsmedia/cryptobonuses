@@ -254,28 +254,28 @@ export default function AnalyticsPage() {
     const topCasino = data.casinoAnalytics.length > 0 ? data.casinoAnalytics[0] : null;
     
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-[#2b2d36] p-4 rounded-lg">
+      <div className="admin-grid">
+        <div className="admin-card">
           <div className="text-[#a7a9b4] text-sm">Total Actions</div>
-          <div className="text-white text-2xl font-bold mt-1">
+          <div className="text-white text-xl sm:text-2xl font-bold mt-1">
             {data.overall.totalActions}
           </div>
         </div>
-        <div className="bg-[#2b2d36] p-4 rounded-lg">
+        <div className="admin-card">
           <div className="text-[#a7a9b4] text-sm">Code Copies</div>
-          <div className="text-white text-2xl font-bold mt-1">
+          <div className="text-white text-xl sm:text-2xl font-bold mt-1">
             {data.overall.totalCopies}
           </div>
         </div>
-        <div className="bg-[#2b2d36] p-4 rounded-lg">
+        <div className="admin-card">
           <div className="text-[#a7a9b4] text-sm">Offer Clicks</div>
-          <div className="text-white text-2xl font-bold mt-1">
+          <div className="text-white text-xl sm:text-2xl font-bold mt-1">
             {data.overall.totalClicks}
           </div>
         </div>
-        <div className="bg-[#2b2d36] p-4 rounded-lg">
+        <div className="admin-card">
           <div className="text-[#a7a9b4] text-sm">Top Offer</div>
-          <div className="text-white text-2xl font-bold mt-1">
+          <div className="text-white text-xl sm:text-2xl font-bold mt-1 truncate">
             {topCasino ? topCasino.name : 'N/A'}
           </div>
         </div>
@@ -285,54 +285,54 @@ export default function AnalyticsPage() {
 
   const renderCasinoTable = () => {
     if (!data?.casinoAnalytics || data.casinoAnalytics.length === 0) {
-      return <p className="text-gray-400">No casino data available</p>;
+      return <p className="text-[#a7a9b4] text-center py-8">No casino data available</p>;
     }
 
     return (
-      <div className="overflow-x-auto mt-4">
-        <table className="w-full border-collapse">
+      <div className="admin-table-wrapper">
+        <table className="admin-table">
           <thead>
-            <tr className="bg-[#2b2d36] text-[#a7a9b4]">
-              <th className="p-3 text-left">Casino</th>
-              <th className="p-3 text-right">Total</th>
-              <th className="p-3 text-right">Copies</th>
-              <th className="p-3 text-right">Clicks</th>
-              <th className="p-3 text-center">Details</th>
+            <tr className="bg-[#373946] text-[#a7a9b4]">
+              <th className="admin-table-th-mobile">Casino</th>
+              <th className="admin-table-th-mobile text-right">Total</th>
+              <th className="admin-table-th-mobile text-right hidden sm:table-cell">Copies</th>
+              <th className="admin-table-th-mobile text-right hidden sm:table-cell">Clicks</th>
+              <th className="admin-table-th-mobile text-center">Details</th>
             </tr>
           </thead>
           <tbody>
             {data.casinoAnalytics.map((casino) => (
               <tr 
                 key={casino.id} 
-                className="border-b border-[#404055] hover:bg-[#2b2d36] cursor-pointer"
+                className="border-b border-[#404055] hover:bg-[#323240] cursor-pointer"
                 onClick={() => fetchCasinoDetails(casino.id)}
               >
-                <td className="p-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 relative">
+                <td className="admin-table-td-mobile">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 relative flex-shrink-0">
                       {casino.logo ? (
                         <Image
                           src={normalizeImagePath(casino.logo)}
                           alt={casino.name}
-                          width={32}
-                          height={32}
-                          className="rounded-md object-contain"
+                          width={24}
+                          height={24}
+                          className="rounded-md object-contain sm:w-8 sm:h-8"
                         />
                       ) : (
-                        <div className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-700 rounded-md flex items-center justify-center">
                           <span className="text-xs">{casino.name.charAt(0)}</span>
                         </div>
                       )}
                     </div>
-                    <span className="text-white">{casino.name}</span>
+                    <span className="text-white text-sm sm:text-base truncate">{casino.name}</span>
                   </div>
                 </td>
-                <td className="p-3 text-right text-white">{casino.totalActions}</td>
-                <td className="p-3 text-right text-white">{casino.copies}</td>
-                <td className="p-3 text-right text-white">{casino.clicks}</td>
-                <td className="p-3 text-center">
+                <td className="admin-table-td-mobile text-right text-white text-sm sm:text-base">{casino.totalActions}</td>
+                <td className="admin-table-td-mobile text-right text-white text-sm sm:text-base hidden sm:table-cell">{casino.copies}</td>
+                <td className="admin-table-td-mobile text-right text-white text-sm sm:text-base hidden sm:table-cell">{casino.clicks}</td>
+                <td className="admin-table-td-mobile text-center">
                   <button 
-                    className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded text-sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 sm:px-3 rounded text-xs sm:text-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       fetchCasinoDetails(casino.id);
