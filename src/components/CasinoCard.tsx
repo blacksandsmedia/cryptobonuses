@@ -187,7 +187,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
       {bonus.promoCode && (
         <button
           onClick={handleCopy}
-          className={`absolute right-4 sm:right-5 top-5 z-10 bg-[#2c2f3a] text-white px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg text-xs sm:text-sm border border-transparent transition-[background-color,box-shadow,border-color] duration-200 flex items-center gap-1 sm:gap-1.5 group will-change-[background-color] ${
+          className={`absolute right-4 sm:right-5 top-5 z-10 bg-[#2c2f3a] text-white px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg border border-transparent transition-[background-color,box-shadow,border-color] duration-200 flex items-center gap-1 sm:gap-1.5 group will-change-[background-color] text-caption sm:text-body-xs ${
             isMobile ? '' : 'hover:bg-[#343747] hover:shadow-lg hover:border-[#68D08B]'
           }`}
           title={bonus.promoCode}
@@ -227,14 +227,14 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
                   />
                 </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-center text-lg font-semibold px-1">
+                <div className="w-full h-full flex items-center justify-center text-center font-semibold px-1 text-body-sm">
                   {getInitials(bonus.casinoName)}
                 </div>
               )}
             </div>
             <div className="min-w-0">
-              <h2 className={`text-xl font-bold truncate ${bonus.promoCode ? 'pr-16 sm:pr-20' : 'pr-4'}`}>{bonus.casinoName}</h2>
-              <p className="text-[#68D08B] text-lg font-medium mt-1">{bonus.bonusText}</p>
+              <h2 className={`font-bold truncate ${bonus.promoCode ? 'pr-16 sm:pr-20' : 'pr-4'} text-h5 sm:text-h4`}>{bonus.casinoName}</h2>
+              <p className="text-[#68D08B] font-medium mt-1 text-body-md sm:text-body-lg">{bonus.bonusText}</p>
             </div>
           </div>
         </a>
@@ -243,7 +243,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
           href={bonus.affiliateLink || '#'}
           target="_blank"
           rel="noopener noreferrer nofollow"
-          className={`w-full bg-[#68D08B] text-[#343541] font-bold py-3 px-4 rounded-lg text-center transition-[background-color] duration-300 block will-change-[background-color] ${
+          className={`w-full bg-[#68D08B] text-[#343541] font-bold py-3 px-4 rounded-lg text-center transition-[background-color] duration-300 block will-change-[background-color] text-button ${
             isMobile ? '' : 'hover:bg-[#5abc7a]'
           }`}
           onClick={handleGetBonusClick}

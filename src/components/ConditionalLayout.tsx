@@ -90,13 +90,13 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
           <nav className="hidden md:flex items-center space-x-6">
             <a 
               href="/spin" 
-              className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium"
+              className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium text-body-md"
             >
               Spin Wheel
             </a>
             <a 
               href="/contact" 
-              className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium"
+              className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium text-body-md"
             >
               Submit Bonus
             </a>
@@ -105,7 +105,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                 href="https://login.coinbase.com/signup?action=signup&clickId=xm1VZp24-xycU37VwcXve1RcUksVa3zP5Q0kWM0&client_id=258660e1-9cfe-4202-9eda-d3beedb3e118&locale=en&oauth_challenge=fdcffb12-d2e9-411c-a129-7b9e5135f8cf&utm_campaign=rt_p_m_w_d_acq_imp_gro_aff_Black+Sands+Media&utm_content=552039&utm_creative=Online+Tracking+Link&utm_medium=growthp&utm_source=impact"
                 target="_blank"
                 rel="nofollow noopener noreferrer"
-                className="bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-medium px-2.5 py-1.5 rounded-md transition-colors duration-200 text-sm flex items-center gap-1.5"
+                className="bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-medium px-2.5 py-1.5 rounded-md transition-colors duration-200 flex items-center gap-1.5 text-body-sm"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
@@ -115,7 +115,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
             )}
             <button
               onClick={() => setSearchModalOpen(true)}
-              className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium flex items-center gap-2"
+              className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium flex items-center gap-2 text-body-md"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -149,7 +149,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                     setSearchModalOpen(true);
                     setMobileMenuOpen(false);
                   }}
-                  className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs"
+                  className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs text-body-md"
                 >
                   <div className="flex items-center justify-center gap-3">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,19 +160,19 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                 </button>
                 <a 
                   href="/spin" 
-                  className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs"
+                  className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs text-body-md"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <div className="flex items-center justify-center gap-3">
                     <span>Spin Wheel</span>
-                    <div className="bg-[#68D08B]/20 text-[#68D08B] rounded-full px-2 py-0.5 text-xs font-bold">
+                    <div className="bg-[#68D08B]/20 text-[#68D08B] rounded-full px-2 py-0.5 font-bold text-caption">
                       WIN!
                     </div>
                   </div>
                 </a>
                 <a 
                   href="/contact" 
-                  className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs"
+                  className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs text-body-md"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <div className="flex items-center justify-center gap-3">
@@ -188,7 +188,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                     href="https://login.coinbase.com/signup?action=signup&clickId=xm1VZp24-xycU37VwcXve1RcUksVa3zP5Q0kWM0&client_id=258660e1-9cfe-4202-9eda-d3beedb3e118&locale=en&oauth_challenge=fdcffb12-d2e9-411c-a129-7b9e5135f8cf&utm_campaign=rt_p_m_w_d_acq_imp_gro_aff_Black+Sands+Media&utm_content=552039&utm_creative=Online+Tracking+Link&utm_medium=growthp&utm_source=impact"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
-                    className="bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-center w-full max-w-xs text-sm"
+                    className="bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-center w-full max-w-xs text-body-sm"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -196,7 +196,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                         <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                       </svg>
                       <span>Buy Crypto</span>
-                      <div className="bg-[#343541]/30 text-[#343541] rounded-full px-1.5 py-0.5 text-xs font-bold">
+                      <div className="bg-[#343541]/30 text-[#343541] rounded-full px-1.5 py-0.5 font-bold text-caption">
                         SECURE
                       </div>
                     </div>
@@ -206,7 +206,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
               
               {/* Menu Footer */}
               <div className="mt-6 pt-4 border-t border-[#404055] text-center">
-                <p className="text-xs text-[#a4a5b0]">
+                <p className="text-caption text-[#a4a5b0]">
                   CryptoBonuses.com
                 </p>
               </div>
@@ -234,10 +234,10 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-6 sm:mb-0">
-              <a href="/" className="text-[#68D08B] hover:text-[#5abc7a] transition-all duration-200 hover:translate-y-[-1px] font-medium text-center sm:text-left">
+              <a href="/" className="text-[#68D08B] hover:text-[#5abc7a] transition-all duration-200 hover:translate-y-[-1px] font-medium text-center sm:text-left text-body-md">
                 CryptoBonuses.com
               </a>
-              <div className="flex items-center justify-center sm:justify-start gap-6 text-sm mt-4 sm:mt-0">
+              <div className="flex items-center justify-center sm:justify-start gap-6 mt-4 sm:mt-0 text-body-sm">
                 <a href="/privacy" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
                   Privacy Policy
                 </a>
@@ -249,7 +249,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                 </a>
               </div>
             </div>
-            <div className="text-xs text-center sm:text-right opacity-70">
+            <div className="text-center sm:text-right opacity-70 text-caption">
               © {currentYear} CryptoBonuses. All rights reserved.
             </div>
           </div>

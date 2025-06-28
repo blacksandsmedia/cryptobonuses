@@ -2,7 +2,8 @@
 
 /* Form elements */
 input, textarea, select {
-  @apply mt-1 block w-full rounded-lg bg-[#3c3f4a] border border-[#404055] text-white shadow-sm focus:border-[#68D08B] focus:ring-2 focus:ring-[#68D08B]/20 sm:text-sm px-4 py-3 transition-colors duration-200;
+  @apply mt-1 block w-full rounded-lg bg-[#3c3f4a] border border-[#404055] text-white shadow-sm focus:border-[#68D08B] focus:ring-2 focus:ring-[#68D08B]/20 transition-colors duration-200;
+  @apply text-body-sm sm:text-body-md px-4 py-3;
 }
 
 /* Form groups */
@@ -11,26 +12,31 @@ input, textarea, select {
 }
 
 .form-label {
-  @apply block text-sm font-medium text-white mb-2;
+  @apply block font-medium text-white mb-2;
+  @apply text-body-sm sm:text-body-md;
 }
 
 /* Buttons */
 .btn-primary {
   @apply px-4 py-3 bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-semibold rounded-lg transition-colors duration-300;
+  @apply text-button;
 }
 
 .btn-secondary {
-  @apply px-4 py-3 bg-[#343541] border border-[#404055] hover:border-[#68D08B]/30 rounded-lg text-sm font-medium text-white hover:bg-[#3c3f4a] transition-all duration-300;
+  @apply px-4 py-3 bg-[#343541] border border-[#404055] hover:border-[#68D08B]/30 rounded-lg font-medium text-white hover:bg-[#3c3f4a] transition-all duration-300;
+  @apply text-button;
 }
 
 .btn-danger {
   @apply px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300 shadow-lg hover:shadow-xl;
+  @apply text-button;
 }
 
 /* Mobile responsive buttons */
 @media (max-width: 640px) {
   .btn-primary, .btn-secondary, .btn-danger {
-    @apply px-3 py-2 text-sm;
+    @apply px-3 py-2;
+    @apply text-body-sm;
   }
 }
 
@@ -64,7 +70,8 @@ input, textarea, select {
 }
 
 .admin-table th {
-  @apply px-6 py-4 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider;
+  @apply px-6 py-4 text-left font-medium text-[#a7a9b4] uppercase tracking-wider;
+  @apply text-caption;
 }
 
 .admin-table tbody {
@@ -73,17 +80,22 @@ input, textarea, select {
 
 .admin-table td {
   @apply px-6 py-4 whitespace-nowrap;
+  @apply text-body-sm sm:text-body-md;
 }
 
 /* Mobile responsive tables */
 @media (max-width: 640px) {
   .admin-table th,
   .admin-table td {
-    @apply px-3 py-3 text-sm;
+    @apply px-3 py-3;
   }
   
   .admin-table th {
-    @apply text-xs;
+    @apply text-caption;
+  }
+  
+  .admin-table td {
+    @apply text-body-xs;
   }
 }
 
@@ -104,24 +116,28 @@ input, textarea, select {
 
 /* Headings */
 .admin-heading {
-  @apply text-2xl font-bold text-white mb-6;
+  @apply font-bold text-white mb-6;
+  @apply text-h3 sm:text-h2;
 }
 
 /* Mobile responsive headings */
 @media (max-width: 640px) {
   .admin-heading {
-    @apply text-xl mb-4;
+    @apply mb-4;
+    @apply text-h4;
   }
 }
 
 /* Links and interactive elements */
 .admin-link {
-  @apply text-[#68D08B] hover:text-[#5abc7a];
+  @apply text-[#68D08B] hover:text-[#5abc7a] transition-colors duration-200;
+  @apply text-body-sm sm:text-body-md;
 }
 
 /* Error messages */
 .admin-error {
-  @apply mt-1 text-sm text-red-400;
+  @apply mt-1 text-red-400;
+  @apply text-body-xs sm:text-body-sm;
 }
 
 /* Loading spinner */
@@ -158,7 +174,12 @@ input, textarea, select {
   }
   
   input, textarea, select {
-    @apply py-2 px-3 text-sm;
+    @apply py-2 px-3;
+    @apply text-body-xs;
+  }
+  
+  .form-label {
+    @apply text-body-xs;
   }
 }
 
@@ -175,19 +196,52 @@ input, textarea, select {
 
 /* Mobile-specific table classes */
 .admin-table-th-mobile {
-  @apply px-6 py-3 text-left text-xs font-medium text-[#a7a9b4] uppercase tracking-wider;
+  @apply px-6 py-3 text-left font-medium text-[#a7a9b4] uppercase tracking-wider;
+  @apply text-caption;
 }
 
 .admin-table-td-mobile {
   @apply px-6 py-4 whitespace-nowrap;
+  @apply text-body-sm;
 }
 
 @media (max-width: 640px) {
   .admin-table-th-mobile {
-    @apply px-3 py-2 text-xs;
+    @apply px-3 py-2;
+    @apply text-caption;
   }
   
   .admin-table-td-mobile {
     @apply px-3 py-3;
+    @apply text-body-xs;
   }
+}
+
+/* Enhanced typography utilities for admin */
+.admin-text-primary {
+  @apply text-white;
+}
+
+.admin-text-secondary {
+  @apply text-[#a7a9b4];
+}
+
+.admin-text-accent {
+  @apply text-[#68D08B];
+}
+
+.admin-text-muted {
+  @apply text-gray-400;
+}
+
+.admin-text-success {
+  @apply text-green-400;
+}
+
+.admin-text-warning {
+  @apply text-yellow-400;
+}
+
+.admin-text-error {
+  @apply text-red-400;
 } 
