@@ -544,7 +544,7 @@ export default function RichContent({
           const number = trimmedLine.match(/^([0-9]+)\./)?.[1];
           return (
             <div key={index} className="flex items-start gap-3 mb-4">
-              <span className="flex-shrink-0 text-[#68D08B] font-bold text-body-md min-w-[1.5rem]">
+              <span className="flex-shrink-0 text-[#68D08B] font-bold text-base min-w-[1.5rem]">
                 {number}.
               </span>
               <p className="text-[#a4a5b0] leading-relaxed flex-1">
