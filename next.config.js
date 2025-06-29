@@ -19,7 +19,7 @@ const nextConfig = {
       },
     ],
   },
-  trailingSlash: true, // Enable trailing slash to prevent 308 redirects that interfere with casino redirects
+  trailingSlash: false, // Disable to let custom redirects handle trailing slash versions directly
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
     largePageDataBytes: 5 * 1024 * 1024, // 5MB
