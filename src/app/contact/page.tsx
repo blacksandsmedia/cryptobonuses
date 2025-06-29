@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { Metadata } from 'next';
 import ContactForm from '@/components/ContactForm';
+import DateDisplay from '@/components/DateDisplay';
+import SchemaMarkup from '@/components/SchemaMarkup';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -12,28 +14,39 @@ export async function generateMetadata(): Promise<Metadata> {
       where: { slug: 'contact' }
     });
 
-    if (!legalPage) {
-      return {
-        title: 'Contact Us - CryptoBonuses',
-        description: 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
-        robots: 'index, follow',
-        alternates: {
-          canonical: 'https://cryptobonuses.com/contact',
-        },
-      };
-    }
-
-    const pageData = legalPage as any; // Temporary type assertion until types update
-
-    return {
-      title: pageData.metaTitle || `${legalPage.title} - CryptoBonuses`,
-      description: pageData.metaDescription || 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
+    const baseMetadata = {
+      title: 'Contact Us - CryptoBonuses',
+      description: 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
       robots: 'index, follow',
       alternates: {
         canonical: 'https://cryptobonuses.com/contact',
       },
+    };
+
+    if (!legalPage) {
+      return {
+        ...baseMetadata,
+        other: {
+          'article:published_time': '2024-01-01T00:00:00Z',
+          'article:modified_time': new Date().toISOString(),
+        },
+      };
+    }
+
+    return {
+      ...baseMetadata,
+      title: `${legalPage.title} - CryptoBonuses`,
+      openGraph: {
+        title: `${legalPage.title} - CryptoBonuses`,
+        description: baseMetadata.description,
+        url: 'https://cryptobonuses.com/contact',
+        type: 'article',
+        publishedTime: legalPage.createdAt?.toISOString(),
+        modifiedTime: legalPage.updatedAt?.toISOString(),
+      },
       other: {
-        'last-modified': pageData.lastModified?.toISOString() || new Date().toISOString(),
+        'article:published_time': legalPage.createdAt?.toISOString() || '2024-01-01T00:00:00Z',
+        'article:modified_time': legalPage.updatedAt?.toISOString() || new Date().toISOString(),
       },
     };
   } catch (error) {
@@ -44,6 +57,10 @@ export async function generateMetadata(): Promise<Metadata> {
       robots: 'index, follow',
       alternates: {
         canonical: 'https://cryptobonuses.com/contact',
+      },
+      other: {
+        'article:published_time': '2024-01-01T00:00:00Z',
+        'article:modified_time': new Date().toISOString(),
       },
     };
   }
@@ -72,6 +89,18 @@ export default async function ContactPage() {
 
     return (
       <main className="min-h-screen bg-[#343541] text-white py-8">
+        {/* Schema Markup for Contact Page */}
+        <SchemaMarkup 
+          type="website" 
+          data={{
+            pageTitle: legalPage?.title || 'Contact Us - CryptoBonuses',
+            pageDescription: 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
+            pageUrl: 'https://cryptobonuses.com/contact',
+            datePublished: legalPage?.createdAt?.toISOString() || '2024-01-01T00:00:00Z',
+            dateModified: legalPage?.updatedAt?.toISOString() || new Date().toISOString()
+          }}
+        />
+
         <div className="mx-auto w-[90%] md:w-[95%] max-w-[1400px] px-4 md:px-6">
           <div className="mb-8">
             <div className="max-w-4xl mx-auto">
@@ -93,6 +122,13 @@ export default async function ContactPage() {
                   Get in touch with our team
                 </p>
               </div>
+
+              {/* Date Display */}
+              <DateDisplay 
+                publishedAt={legalPage?.createdAt}
+                modifiedAt={legalPage?.updatedAt}
+                className="mb-6"
+              />
             </div>
           </div>
 

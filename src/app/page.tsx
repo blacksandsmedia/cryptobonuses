@@ -377,7 +377,9 @@ export default function Home() {
         type="website" 
         data={{
           pageTitle: `CryptoBonuses - Best Bitcoin Casino Bonuses ${currentYear}`,
-          pageDescription: `Discover the best Bitcoin casino bonuses and promotional offers in ${currentYear}. Our expertly curated list includes trusted crypto casinos offering generous welcome packages, exclusive bonus codes, and free spins.`
+          pageDescription: `Discover the best Bitcoin casino bonuses and promotional offers in ${currentYear}. Our expertly curated list includes trusted crypto casinos offering generous welcome packages, exclusive bonus codes, and free spins.`,
+          datePublished: '2024-01-01T00:00:00Z',
+          dateModified: new Date().toISOString()
         }}
       />
 

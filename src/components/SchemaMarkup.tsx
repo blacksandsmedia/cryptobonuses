@@ -41,6 +41,8 @@ interface SchemaMarkupProps {
     pageTitle?: string;
     pageDescription?: string;
     pageUrl?: string;
+    datePublished?: string;
+    dateModified?: string;
   };
 }
 
@@ -84,10 +86,10 @@ const getOrganizationSchema = () => {
 };
 
 // Website Schema with search action
-const getWebsiteSchema = (pageTitle?: string, pageDescription?: string) => {
+const getWebsiteSchema = (pageTitle?: string, pageDescription?: string, datePublished?: string, dateModified?: string) => {
   const currentYear = new Date().getFullYear();
   
-  return {
+  const schema: any = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': 'https://cryptobonuses.com/#website',
@@ -108,10 +110,20 @@ const getWebsiteSchema = (pageTitle?: string, pageDescription?: string) => {
     },
     'inLanguage': 'en-US'
   };
+
+  // Add dates if provided
+  if (datePublished) {
+    schema.datePublished = datePublished;
+  }
+  if (dateModified) {
+    schema.dateModified = dateModified;
+  }
+
+  return schema;
 };
 
 // Enhanced Casino Schema with reviews and aggregate rating
-const getCasinoSchema = (casino: Casino, bonus?: Bonus, reviews?: Review[]) => {
+const getCasinoSchema = (casino: Casino, bonus?: Bonus, reviews?: Review[], datePublished?: string, dateModified?: string) => {
   // Helper function to create absolute URLs for schema markup
   const createAbsoluteImageUrl = (imagePath: string | null | undefined): string => {
     if (!imagePath) return 'https://cryptobonuses.com/logo.png';
@@ -178,6 +190,14 @@ const getCasinoSchema = (casino: Casino, bonus?: Bonus, reviews?: Review[]) => {
       'url': 'https://cryptobonuses.com'
     }
   };
+
+  // Add dates if provided
+  if (datePublished) {
+    schema.datePublished = datePublished;
+  }
+  if (dateModified) {
+    schema.dateModified = dateModified;
+  }
 
   // Add founding date if available
   if (casino.foundedYear) {
@@ -287,12 +307,12 @@ export default function SchemaMarkup({ type, data = {} }: SchemaMarkupProps) {
       schemaId = 'organization-schema';
       break;
     case 'website':
-      schema = getWebsiteSchema(data.pageTitle, data.pageDescription);
+      schema = getWebsiteSchema(data.pageTitle, data.pageDescription, data.datePublished, data.dateModified);
       schemaId = 'website-schema';
       break;
     case 'casino':
       if (!data.casino) return null;
-      schema = getCasinoSchema(data.casino, data.bonus, data.reviews);
+      schema = getCasinoSchema(data.casino, data.bonus, data.reviews, data.datePublished, data.dateModified);
       schemaId = 'casino-schema';
       break;
     case 'breadcrumbs':

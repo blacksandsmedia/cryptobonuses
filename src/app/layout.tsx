@@ -57,9 +57,6 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: 'https://cryptobonuses.com',
     },
-    other: {
-      'last-modified': new Date().toISOString(),
-    },
     icons: {
       icon: [
         { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },

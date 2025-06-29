@@ -22,6 +22,7 @@ import { getCodeTermLabel } from '@/lib/settings';
 import RecentlyViewed from '@/components/RecentlyViewed';
 import RecentlyViewedTracker from '@/components/RecentlyViewedTracker';
 import SchemaMarkup from '@/components/SchemaMarkup';
+import DateDisplay from '@/components/DateDisplay';
 
 // Add export const dynamic = 'force-dynamic' to disable caching
 export const dynamic = 'force-dynamic';
@@ -261,9 +262,11 @@ export async function generateMetadata(
       title,
       description,
       url: `https://cryptobonuses.com/${slug}`,
-      type: 'website',
+      type: 'article',
       images: [imageUrl],
       siteName: 'CryptoBonuses',
+      publishedTime: casino.createdAt?.toISOString(),
+      modifiedTime: casino.updatedAt?.toISOString(),
     },
     twitter: {
       card: 'summary_large_image',
@@ -275,7 +278,8 @@ export async function generateMetadata(
       canonical: `https://cryptobonuses.com/${slug}`,
     },
     other: {
-      'last-modified': new Date().toISOString(),
+      'article:published_time': casino.createdAt?.toISOString() || new Date().toISOString(),
+      'article:modified_time': casino.updatedAt?.toISOString() || new Date().toISOString(),
     },
   };
 }
@@ -599,7 +603,9 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
             rating: review.rating,
             createdAt: review.date,
             verified: review.verified
-          }))
+          })),
+          datePublished: dbCasino.createdAt?.toISOString(),
+          dateModified: dbCasino.updatedAt?.toISOString()
         }}
       />
 
@@ -673,6 +679,13 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
               </div>
             </div>
           </div>
+
+          {/* Date Display */}
+          <DateDisplay 
+            publishedAt={dbCasino.createdAt}
+            modifiedAt={dbCasino.updatedAt}
+            className="mb-6"
+          />
 
           {/* Table of Contents */}
           <TableOfContents items={tocItems} />
