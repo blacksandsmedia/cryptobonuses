@@ -24,12 +24,14 @@ interface SimplifiedCasino {
   description: string;
   rating: number;
   displayOrder?: number;
+  foundedYear?: number | null;
   createdAt: Date;
   updatedAt: Date;
   affiliateLink: string | null;
   website?: string | null;
   wageringRequirement?: string | null;
   minimumDeposit?: string | null;
+  codeTermLabel?: string | null;
   screenshots?: string[] | null;
   bonuses: {
     id: string;
@@ -97,6 +99,7 @@ function transformCasinoDataForUI(casino: any) {
     description: casino.description || "",
     rating: typeof casino.rating === 'number' ? casino.rating : 0,
     displayOrder: typeof casino.displayOrder === 'number' ? casino.displayOrder : 0,
+    foundedYear: casino.foundedYear || null,
     bonusType: bonusTypes[0], // Keep for backward compatibility
     bonusTypes: bonusTypes, // New field with all types
     bonusValue: parseFloat(firstBonus?.value || '0') || 0,
@@ -109,7 +112,14 @@ function transformCasinoDataForUI(casino: any) {
     casinoId: casino.id,
     bonusId: firstBonus?.id,
     // Include original bonuses array if available
-    bonuses: Array.isArray(casino.bonuses) ? casino.bonuses : []
+    bonuses: Array.isArray(casino.bonuses) ? casino.bonuses : [],
+    // Add additional casino metadata
+    website: casino.website || null,
+    wageringRequirement: casino.wageringRequirement || null,
+    minimumDeposit: casino.minimumDeposit || null,
+    codeTermLabel: casino.codeTermLabel || 'bonus code',
+    createdAt: casino.createdAt,
+    updatedAt: casino.updatedAt
   };
 }
 

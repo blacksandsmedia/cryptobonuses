@@ -36,20 +36,24 @@ interface Casino {
   createdAt: string;
   foundedYear?: number;
   codeTermLabel?: string;
+  website?: string | null;
+  wageringRequirement?: string | null;
+  minimumDeposit?: string | null;
+  updatedAt?: string;
 }
 
 // Transform the database data into the format expected by the UI
 // Only show one card per casino, using the first bonus for each casino
 // Casinos are already sorted by displayOrder from the API
 const transformCasinoDataForUI = (casinos: Casino[]) => {
-  console.log('Transforming casino data for UI, count:', casinos.length);
+  console.log('🔄 Transforming casino data for UI, count:', casinos.length);
   
   if (casinos.length === 0) {
-    console.warn('No casinos data available to transform');
+    console.warn('⚠️ No casinos data available to transform');
     return [];
   }
   
-  return casinos.map(casino => {
+  const transformedData = casinos.map(casino => {
     // Use the first bonus or create a placeholder if no bonuses
     const bonus = casino.bonuses.length > 0 ? casino.bonuses[0] : {
       id: 'placeholder',
@@ -73,7 +77,6 @@ const transformCasinoDataForUI = (casinos: Casino[]) => {
     
     // Clean up the logo URL
     const logoUrl = casino.logo || '';
-    console.log(`Casino ${casino.name} logo URL: ${logoUrl}`);
     
     const transformedCasino = {
       id: casino.slug,
@@ -94,9 +97,17 @@ const transformCasinoDataForUI = (casinos: Casino[]) => {
       codeTermLabel: casino.codeTermLabel || 'bonus code'
     };
     
-    console.log(`Transformed casino: ${casino.name}, slug: ${casino.slug}, logo: ${transformedCasino.logoUrl}`);
+    console.log(`🎰 Transformed: ${casino.name} - slug: ${casino.slug}, casinoId: ${casino.id}, foundedYear: ${casino.foundedYear}`);
     return transformedCasino;
   });
+  
+  console.log('✅ Transformation complete. Sample of first casino:', {
+    id: transformedData[0]?.id,
+    casinoId: transformedData[0]?.casinoId,
+    casinoName: transformedData[0]?.casinoName
+  });
+  
+  return transformedData;
 };
 
 export default function Home() {
@@ -268,60 +279,78 @@ export default function Home() {
         if (filters.sortBy === 'newest') {
           // Sort by founded year (newest first)
           console.log('🔄 SORTING BY NEWEST founded year');
+          console.log('🗃️ Total casinos in array:', casinos.length);
+          console.log('🎯 Looking for casinoIds:', { aId: a.casinoId, bId: b.casinoId });
+          
           const casinoA = casinos.find(c => c.id === a.casinoId);
           const casinoB = casinos.find(c => c.id === b.casinoId);
+          
+          console.log('🏢 Found casinos:', { 
+            casinoA: casinoA ? `${casinoA.name} (${casinoA.id})` : 'NOT FOUND',
+            casinoB: casinoB ? `${casinoB.name} (${casinoB.id})` : 'NOT FOUND'
+          });
+          
           const yearA = casinoA?.foundedYear || 0;
           const yearB = casinoB?.foundedYear || 0;
           
-          console.log(`  Comparing: ${casinoA?.name} (${yearA}) vs ${casinoB?.name} (${yearB})`);
+          console.log(`📅 Founded years: ${casinoA?.name || 'Unknown'} (${yearA}) vs ${casinoB?.name || 'Unknown'} (${yearB})`);
           
           // If both have years, sort by year (newest first)
           if (yearA > 0 && yearB > 0) {
             const result = yearB - yearA;
-            console.log(`    Both have years: ${result > 0 ? casinoB?.name : casinoA?.name} comes first`);
+            console.log(`✅ Both have years: ${result > 0 ? casinoB?.name : casinoA?.name} comes first (result: ${result})`);
             return result;
           }
           // If only one has a year, put it first
           if (yearA > 0 && yearB === 0) {
-            console.log(`    Only ${casinoA?.name} has year, comes first`);
+            console.log(`✅ Only ${casinoA?.name} has year, comes first`);
             return -1;
           }
           if (yearB > 0 && yearA === 0) {
-            console.log(`    Only ${casinoB?.name} has year, comes first`);
+            console.log(`✅ Only ${casinoB?.name} has year, comes first`);
             return 1;
           }
           // If neither has a year, sort by display order
-          console.log(`    Neither has year, using display order`);
+          console.log(`⚠️ Neither has year, using display order`);
           return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
         }
         
         if (filters.sortBy === 'oldest') {
           // Sort by founded year (oldest first)
           console.log('🔄 SORTING BY OLDEST founded year');
+          console.log('🗃️ Total casinos in array:', casinos.length);
+          console.log('🎯 Looking for casinoIds:', { aId: a.casinoId, bId: b.casinoId });
+          
           const casinoA = casinos.find(c => c.id === a.casinoId);
           const casinoB = casinos.find(c => c.id === b.casinoId);
+          
+          console.log('🏢 Found casinos:', { 
+            casinoA: casinoA ? `${casinoA.name} (${casinoA.id})` : 'NOT FOUND',
+            casinoB: casinoB ? `${casinoB.name} (${casinoB.id})` : 'NOT FOUND'
+          });
+          
           const yearA = casinoA?.foundedYear || 0;
           const yearB = casinoB?.foundedYear || 0;
           
-          console.log(`  Comparing: ${casinoA?.name} (${yearA}) vs ${casinoB?.name} (${yearB})`);
+          console.log(`📅 Founded years: ${casinoA?.name || 'Unknown'} (${yearA}) vs ${casinoB?.name || 'Unknown'} (${yearB})`);
           
           // If both have years, sort by year (oldest first)
           if (yearA > 0 && yearB > 0) {
             const result = yearA - yearB;
-            console.log(`    Both have years: ${result < 0 ? casinoA?.name : casinoB?.name} comes first`);
+            console.log(`✅ Both have years: ${result < 0 ? casinoA?.name : casinoB?.name} comes first (result: ${result})`);
             return result;
           }
           // If only one has a year, put it first
           if (yearA > 0 && yearB === 0) {
-            console.log(`    Only ${casinoA?.name} has year, comes first`);
+            console.log(`✅ Only ${casinoA?.name} has year, comes first`);
             return -1;
           }
           if (yearB > 0 && yearA === 0) {
-            console.log(`    Only ${casinoB?.name} has year, comes first`);
+            console.log(`✅ Only ${casinoB?.name} has year, comes first`);
             return 1;
           }
           // If neither has a year, sort by display order
-          console.log(`    Neither has year, using display order`);
+          console.log(`⚠️ Neither has year, using display order`);
           return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
         }
         
