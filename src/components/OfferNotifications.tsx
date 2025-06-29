@@ -159,6 +159,7 @@ export default function OfferNotifications() {
       const response = await fetch('/api/recent-claims', {
         headers: {
           'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
       });
       
@@ -181,7 +182,7 @@ export default function OfferNotifications() {
         // Only show notifications for claims we haven't shown before
         const newClaims = recentClaims.filter(claim => {
           const claimTime = new Date(claim.createdAt);
-          const isRecent = claimTime > new Date(Date.now() - 1800000); // 30 minutes window
+          const isVeryRecent = claimTime > new Date(Date.now() - 600000); // 10 minutes window for instant notifications
           const notShownBefore = !shownNotificationsRef.current.has(claim.id);
           
           console.log('[Notifications] 🔍 Evaluating claim:', {
@@ -189,12 +190,12 @@ export default function OfferNotifications() {
             casinoName: claim.casinoName,
             claimTime: claimTime.toISOString(),
             ageInMinutes: Math.floor((Date.now() - claimTime.getTime()) / 60000),
-            isRecent,
+            isVeryRecent,
             notShownBefore,
-            shouldShow: isRecent && notShownBefore
+            shouldShow: isVeryRecent && notShownBefore
           });
           
-          return isRecent && notShownBefore;
+          return isVeryRecent && notShownBefore;
         });
         
         console.log('[Notifications] 🎯 Found', newClaims.length, 'NEW claims to show');
@@ -253,9 +254,9 @@ export default function OfferNotifications() {
     initializeShownClaims();
   }, []);
 
-  // Poll for new claims every 15 seconds (less frequent to reduce spam)
+  // Poll for new claims every 5 seconds for instant notifications
   useEffect(() => {
-    const pollInterval = setInterval(fetchRecentClaims, 15000);
+    const pollInterval = setInterval(fetchRecentClaims, 5000);
     return () => clearInterval(pollInterval);
   }, [fetchRecentClaims]);
 
@@ -331,7 +332,18 @@ export default function OfferNotifications() {
                   className="w-12 h-12 rounded-lg object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = '/images/CryptoBonuses Logo.png';
+                    // Try fallback to /uploads/ path if /images/ fails
+                    if (target.src.includes('/images/') && !target.src.includes('CryptoBonuses')) {
+                      const filename = target.src.split('/').pop()?.split('?')[0];
+                      target.src = `/uploads/${filename}?v=${Date.now()}`;
+                    } else if (!target.src.includes('CryptoBonuses')) {
+                      // Final fallback to site logo
+                      target.src = '/images/CryptoBonuses Logo.png';
+                    }
+                  }}
+                  onLoad={() => {
+                    // Force refresh after a successful load to ensure we have the latest image
+                    console.log('[Notifications] 🖼️ Logo loaded for:', notification.casinoName);
                   }}
                 />
               </div>
