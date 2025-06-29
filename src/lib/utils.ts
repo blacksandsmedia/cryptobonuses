@@ -1,58 +1,17 @@
-export function normalizeImagePath(path: string | null | undefined): string {
-  if (!path) {
-    // If no image path is provided, use a fallback image
-    return '/images/Simplified Logo.png';
-  }
+export function normalizeSimpleImagePath(path: string | null | undefined): string {
+  if (!path) return '/placeholder.png';
   
-  // Handle absolute URLs (http/https) - return as is
-  if (path.startsWith('http')) {
+  // If the path already starts with http:// or https://, return it as is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
   
-  // Fix ONLY clearly broken paths that include 'public/images'
-  if (path.includes('public/images/')) {
-    return path.replace('/images/public/images/', '/images/').replace('public/images/', '/images/');
-  }
-  
-  // If path already starts with /images/, preserve it exactly as is
-  if (path.startsWith('/images/')) {
-    return path;
-  }
-  
-  // If path starts with /uploads/, preserve it (for Railway volume storage)
-  if (path.startsWith('/uploads/')) {
-    return path;
-  }
-  
-  // Fix paths that include just 'images/' without leading slash
-  if (path.startsWith('images/')) {
+  // If the path doesn't start with /, add it
+  if (!path.startsWith('/')) {
     return `/${path}`;
   }
   
-  // If it's just a filename, try to determine if it's a logo or upload
-  if (!path.includes('/')) {
-    // If it looks like an upload ID (UUID-like), treat as upload
-    if (path.match(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i)) {
-      return `/uploads/${path}`;
-    }
-    
-    // If it contains 'Logo' or looks like a logo filename, use images folder
-    if (path.includes('Logo') || path.toLowerCase().includes('logo')) {
-      const filename = path.endsWith('.png') ? path : `${path}.png`;
-      return `/images/${filename}`;
-    }
-    
-    // Default to uploads for other filenames
-    return `/uploads/${path}`;
-  }
-  
-  // If the path starts with /, return as is
-  if (path.startsWith('/')) {
-    return path;
-  }
-  
-  // If all else fails, assume it's in the images folder
-  return `/images/${path}`;
+  return path;
 }
 
 /**

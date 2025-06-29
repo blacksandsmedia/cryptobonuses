@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { normalizeImagePath } from '@/lib/utils';
-import { getAlternativeLogoPaths } from '@/lib/image-utils';
+import { normalizeImagePath } from '@/lib/image-utils';
 import ClickableBonusCode from './ClickableBonusCode';
 
 // Define the bonus type directly here to avoid import issues
@@ -34,6 +32,7 @@ interface CasinoCardProps {
 export default function CasinoCard({ bonus }: CasinoCardProps) {
   const [copied, setCopied] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
   const [imagePath, setImagePath] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   
@@ -122,6 +121,18 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
     return name.substring(0, 2).toUpperCase();
   };
 
+  // Load alternative logo paths to try
+  const getAlternativeLogoPaths = (casinoName: string, originalPath: string) => {
+    const cleanName = casinoName.replace(/[^a-zA-Z0-9]/g, '');
+    return [
+      `/images/${casinoName} Logo.png`,
+      `/images/${casinoName.replace(/\s+/g, '')} Logo.png`,
+      `/images/${cleanName} Logo.png`,
+      `/images/${cleanName}Logo.png`,
+      '/images/Simplified Logo.png'
+    ];
+  };
+
   // Try next image in case of error
   const handleImageError = () => {
     console.error(`Image failed to load: ${imagePath}`);
@@ -134,12 +145,21 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
       // Try next alternative
       const nextPath = alternativePaths[currentIndex + 1];
       console.log(`Trying alternative logo path: ${nextPath}`);
+      setImageLoading(true); // Reset loading state for new image
       setImagePath(nextPath);
     } else {
       // All alternatives failed, show initials
       console.log(`All logo paths failed for ${bonus.casinoName}, showing initials`);
       setImageError(true);
+      setImageLoading(false);
     }
+  };
+
+  // Handle successful image load
+  const handleImageLoad = () => {
+    console.log(`Image loaded successfully for ${bonus.casinoName}: ${imagePath}`);
+    setImageLoading(false);
+    setImageError(false);
   };
 
   // Check for mobile on mount and resize
@@ -160,10 +180,12 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
       const normalizedPath = normalizeImagePath(bonus.logoUrl);
       setImagePath(normalizedPath);
       setImageError(false); // Reset error state when path changes
+      setImageLoading(true); // Reset loading state when path changes
       console.log(`Set image path for ${bonus.casinoName}: ${normalizedPath}`);
     } catch (error) {
       console.error(`Error setting image path for ${bonus.casinoName}:`, error);
       setImageError(true);
+      setImageLoading(false);
     }
   }, [bonus.logoUrl, bonus.casinoName]);
 
@@ -204,21 +226,30 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
         >
           <div className="flex items-start gap-4 mb-4">
             <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#2c2f3a] flex items-center justify-center casino-logo">
-              {!imageError ? (
+              {imageError ? (
+                // Show initials when all images fail to load
+                <div className="w-full h-full flex items-center justify-center text-center font-semibold px-1 text-sm">
+                  {getInitials(bonus.casinoName)}
+                </div>
+              ) : (
                 <div className="relative w-full h-full">
+                  {/* Show loading placeholder while image loads */}
+                  {imageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center text-center font-semibold px-1 text-sm bg-[#2c2f3a] z-10">
+                      {getInitials(bonus.casinoName)}
+                    </div>
+                  )}
+                  {/* Actual image */}
                   <Image
                     src={imagePath}
                     alt={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
                     width={64}
                     height={64}
-                    className="object-cover w-full h-full"
+                    className={`object-cover w-full h-full transition-opacity duration-200 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
                     onError={handleImageError}
+                    onLoad={handleImageLoad}
                     priority={true}
                   />
-                </div>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-center font-semibold px-1 text-sm">
-                  {getInitials(bonus.casinoName)}
                 </div>
               )}
             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import { normalizeImagePath } from '@/lib/utils';
+import { normalizeImagePath } from '@/lib/image-utils';
 
 interface Casino {
   id: string;

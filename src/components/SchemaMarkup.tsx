@@ -1,5 +1,5 @@
 import Script from 'next/script';
-import { normalizeImagePath } from '@/lib/utils';
+import { normalizeImagePath } from '@/lib/image-utils';
 
 interface Review {
   id: string;

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { normalizeImagePath } from '@/lib/utils';
+import { normalizeImagePath } from '@/lib/image-utils';
 
 interface PopularCasino {
   id: string;

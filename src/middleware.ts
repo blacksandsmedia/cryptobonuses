@@ -24,7 +24,7 @@ function verifyJWT(token: string, secret: string): any {
   }
 }
 
-// Casino redirect mappings for trailing slash handling
+// Casino redirect mappings - comprehensive list from database
 const CASINO_REDIRECTS = new Map([
   ['betplay', 'betplay.io'],
   ['bitstarz', 'bitstarz.com'],
@@ -72,21 +72,39 @@ const CASINO_REDIRECTS = new Map([
   ['sirwin', 'sirwin.com'],
   ['primedice', 'primedice.com'],
   ['destinyx', 'destinyx.com'],
+  ['lottery', 'spin'],
 ]);
 
-// Middleware that handles admin routes and casino trailing slash redirects for SEO
+// Middleware that handles admin routes, API routes, and casino redirects
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
-  // Handle casino redirects with trailing slash ONLY (for SEO)
-  // This must happen BEFORE Next.js processes trailing slash normalization
+  // Handle casino redirects BEFORE Next.js processes trailing slashes
+  // This prevents double redirects (308 for trailing slash removal + 301 for casino redirect)
+  
+  // Check for casino redirects with trailing slash (e.g., /stake/)
   if (pathname.endsWith('/') && pathname.length > 1) {
-    const casinoSlug = pathname.slice(1, -1); // Remove leading and trailing slash
+    const casinoSlug = pathname.slice(1, -1); // Remove leading slash and trailing slash
     if (CASINO_REDIRECTS.has(casinoSlug)) {
       const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
-      console.log(`[Middleware] Casino SEO redirect: ${pathname} → /${targetDomain}`);
+      console.log(`[Middleware] Casino redirect (trailing slash): ${pathname} → /${targetDomain}`);
       
-      // Return direct 301 redirect for SEO purposes
+      // Return direct 301 redirect to prevent double redirects
+      return NextResponse.redirect(
+        new URL(`/${targetDomain}`, request.url), 
+        { status: 301 }
+      );
+    }
+  }
+  
+  // Check for casino redirects without trailing slash (e.g., /stake)
+  if (pathname.startsWith('/') && !pathname.endsWith('/') && pathname.split('/').length === 2) {
+    const casinoSlug = pathname.slice(1); // Remove leading slash
+    if (CASINO_REDIRECTS.has(casinoSlug)) {
+      const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
+      console.log(`[Middleware] Casino redirect (no trailing slash): ${pathname} → /${targetDomain}`);
+      
+      // Return direct 301 redirect
       return NextResponse.redirect(
         new URL(`/${targetDomain}`, request.url), 
         { status: 301 }

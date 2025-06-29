@@ -19,7 +19,7 @@ const nextConfig = {
       },
     ],
   },
-  trailingSlash: false, // Disable to let custom redirects handle trailing slash versions directly
+  trailingSlash: false, // Prevent automatic trailing slash addition to avoid redirect conflicts
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
     largePageDataBytes: 5 * 1024 * 1024, // 5MB

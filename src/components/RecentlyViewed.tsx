@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getRecentlyViewed, type RecentlyViewedCasino } from '@/utils/recentlyViewed';
-import { normalizeImagePath } from '@/lib/utils';
+import { normalizeImagePath } from '@/lib/image-utils';
 
 interface RecentlyViewedProps {
   currentCasinoSlug?: string;

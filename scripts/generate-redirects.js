@@ -29,29 +29,25 @@ async function generateRedirects() {
     }
 
     // Generate Next.js redirects configuration
-    // IMPORTANT: Trailing slash versions MUST come FIRST for proper SEO
-    // This ensures Google finds 301s easily for old /casino/ URLs
+    // Create both regular and trailing slash versions for each redirect
+    // IMPORTANT: Trailing slash versions come FIRST to take priority over Next.js normalization
     const nextjsRedirects = [];
     
-    // First, add all trailing slash versions (highest priority for SEO)
     redirects.forEach(redirect => {
+      // Trailing slash version FIRST (takes priority)
       nextjsRedirects.push({
         source: `/${redirect.oldSlug}/`,
         destination: `/${redirect.newSlug}`,
-        permanent: true, // 301 redirect for SEO
-        statusCode: 301, // Explicit 301 status
-        basePath: false // Bypass basePath processing
+        permanent: true, // 301 redirect
+        statusCode: 301  // Explicitly set 301 instead of 308
       });
-    });
-    
-    // Then, add non-trailing slash versions
-    redirects.forEach(redirect => {
+      
+      // Original redirect (without trailing slash) SECOND
       nextjsRedirects.push({
         source: `/${redirect.oldSlug}`,
         destination: `/${redirect.newSlug}`,
         permanent: true, // 301 redirect
-        statusCode: 301, // Explicit 301 status
-        basePath: false // Bypass basePath processing
+        statusCode: 301  // Explicitly set 301 instead of 308
       });
     });
 
@@ -75,7 +71,7 @@ module.exports = {
     console.log(`📈 Total redirects: ${nextjsRedirects.length} (with trailing slash versions)`);
     
     // Show sample redirects
-    console.log('\n Sample redirects (trailing slash FIRST for priority):');
+    console.log('\n�� Sample redirects (trailing slash FIRST for priority):');
     redirects.slice(0, 3).forEach(redirect => {
       console.log(`   /${redirect.oldSlug}/ → /${redirect.newSlug}`);
       console.log(`   /${redirect.oldSlug} → /${redirect.newSlug}`);

@@ -14,7 +14,7 @@ import UsageCounter from '@/components/UsageCounter';
 import ClientStickyWrapper from '@/components/ClientStickyWrapper';
 import ScreenshotGallery from '@/components/ScreenshotGallery';
 import Script from 'next/script';
-import { normalizeImagePath } from '@/lib/utils';
+import { normalizeImagePath } from '@/lib/image-utils';
 import ShareIcons from '@/components/ShareIcons';
 import TableOfContents from '@/components/TableOfContents';
 import RichContent from "@/components/casino/RichContent";
