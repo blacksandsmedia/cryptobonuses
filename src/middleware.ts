@@ -24,7 +24,7 @@ function verifyJWT(token: string, secret: string): any {
   }
 }
 
-// Casino redirect mappings - comprehensive list from database
+// Casino redirect mappings for trailing slash handling
 const CASINO_REDIRECTS = new Map([
   ['betplay', 'betplay.io'],
   ['bitstarz', 'bitstarz.com'],
@@ -72,12 +72,27 @@ const CASINO_REDIRECTS = new Map([
   ['sirwin', 'sirwin.com'],
   ['primedice', 'primedice.com'],
   ['destinyx', 'destinyx.com'],
-  ['lottery', 'spin'],
 ]);
 
-// Middleware that handles admin routes and API routes
+// Middleware that handles admin routes and casino trailing slash redirects for SEO
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  
+  // Handle casino redirects with trailing slash ONLY (for SEO)
+  // This must happen BEFORE Next.js processes trailing slash normalization
+  if (pathname.endsWith('/') && pathname.length > 1) {
+    const casinoSlug = pathname.slice(1, -1); // Remove leading and trailing slash
+    if (CASINO_REDIRECTS.has(casinoSlug)) {
+      const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
+      console.log(`[Middleware] Casino SEO redirect: ${pathname} → /${targetDomain}`);
+      
+      // Return direct 301 redirect for SEO purposes
+      return NextResponse.redirect(
+        new URL(`/${targetDomain}`, request.url), 
+        { status: 301 }
+      );
+    }
+  }
   
   // Handle preflight OPTIONS requests for CORS
   if (request.method === 'OPTIONS') {
