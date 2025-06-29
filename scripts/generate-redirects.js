@@ -29,17 +29,32 @@ async function generateRedirects() {
     }
 
     // Generate Next.js redirects configuration
-    const nextjsRedirects = redirects.map(redirect => ({
-      source: `/${redirect.oldSlug}`,
-      destination: `/${redirect.newSlug}`,
-      permanent: true, // 301 redirect
-      statusCode: 301  // Explicitly set 301 instead of 308
-    }));
+    // Create both regular and trailing slash versions for each redirect
+    const nextjsRedirects = [];
+    
+    redirects.forEach(redirect => {
+      // Original redirect (without trailing slash)
+      nextjsRedirects.push({
+        source: `/${redirect.oldSlug}`,
+        destination: `/${redirect.newSlug}`,
+        permanent: true, // 301 redirect
+        statusCode: 301  // Explicitly set 301 instead of 308
+      });
+      
+      // Trailing slash version
+      nextjsRedirects.push({
+        source: `/${redirect.oldSlug}/`,
+        destination: `/${redirect.newSlug}`,
+        permanent: true, // 301 redirect
+        statusCode: 301  // Explicitly set 301 instead of 308
+      });
+    });
 
     // Create the configuration content
     const configContent = `// Auto-generated redirects from database
 // Generated on: ${new Date().toISOString()}
-// Total redirects: ${redirects.length}
+// Database entries: ${redirects.length}
+// Total redirects: ${nextjsRedirects.length} (includes trailing slash versions)
 
 module.exports = {
   redirects: ${JSON.stringify(nextjsRedirects, null, 2)}
@@ -51,16 +66,18 @@ module.exports = {
 
     console.log('✅ Generated redirects configuration:');
     console.log(`📁 File: ${redirectsPath}`);
-    console.log(`📈 Redirects: ${redirects.length}`);
+    console.log(`📊 Database entries: ${redirects.length}`);
+    console.log(`📈 Total redirects: ${nextjsRedirects.length} (with trailing slash versions)`);
     
     // Show sample redirects
-    console.log('\n📋 Sample redirects:');
-    redirects.slice(0, 5).forEach(redirect => {
+    console.log('\n📋 Sample redirects (showing both versions):');
+    redirects.slice(0, 3).forEach(redirect => {
       console.log(`   /${redirect.oldSlug} → /${redirect.newSlug}`);
+      console.log(`   /${redirect.oldSlug}/ → /${redirect.newSlug}`);
     });
 
-    if (redirects.length > 5) {
-      console.log(`   ... and ${redirects.length - 5} more`);
+    if (redirects.length > 3) {
+      console.log(`   ... and ${(redirects.length - 3) * 2} more redirects`);
     }
 
     console.log('\n📚 Next steps:');
