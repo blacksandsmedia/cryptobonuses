@@ -167,6 +167,13 @@ export default function Home() {
           casinosData.forEach((casino: Casino, index: number) => {
             console.log(`${index + 1}. ${casino.name} (slug: ${casino.slug}, order: ${casino.displayOrder})`);
           });
+          
+          // Log founded years for debugging oldest/newest filter
+          const casinosWithFoundedYears = casinosData.filter((casino: Casino) => casino.foundedYear);
+          console.log(`\nCasinos with founded years (${casinosWithFoundedYears.length}/${casinosData.length}):`);
+          casinosWithFoundedYears.forEach((casino: Casino) => {
+            console.log(`  - ${casino.name}: ${casino.foundedYear}`);
+          });
         }
         
         setCasinos(casinosData);
@@ -262,16 +269,34 @@ export default function Home() {
           const casinoB = casinos.find(c => c.id === b.casinoId);
           const yearA = casinoA?.foundedYear || 0;
           const yearB = casinoB?.foundedYear || 0;
-          return yearB - yearA;
+          
+          // If both have years, sort by year (newest first)
+          if (yearA > 0 && yearB > 0) {
+            return yearB - yearA;
+          }
+          // If only one has a year, put it first
+          if (yearA > 0 && yearB === 0) return -1;
+          if (yearB > 0 && yearA === 0) return 1;
+          // If neither has a year, sort by display order
+          return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
         }
         
         if (filters.sortBy === 'oldest') {
           // Sort by founded year (oldest first)
           const casinoA = casinos.find(c => c.id === a.casinoId);
           const casinoB = casinos.find(c => c.id === b.casinoId);
-          const yearA = casinoA?.foundedYear || 9999; // Put casinos without founded year at end
-          const yearB = casinoB?.foundedYear || 9999;
-          return yearA - yearB;
+          const yearA = casinoA?.foundedYear || 0;
+          const yearB = casinoB?.foundedYear || 0;
+          
+          // If both have years, sort by year (oldest first)
+          if (yearA > 0 && yearB > 0) {
+            return yearA - yearB;
+          }
+          // If only one has a year, put it first
+          if (yearA > 0 && yearB === 0) return -1;
+          if (yearB > 0 && yearA === 0) return 1;
+          // If neither has a year, sort by display order
+          return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
         }
         
         if (filters.sortBy === 'highest_rated') {
@@ -329,6 +354,9 @@ export default function Home() {
           pageDescription: `Discover the best Bitcoin casino bonuses and promotional offers in ${currentYear}. Our expertly curated list includes trusted crypto casinos offering generous welcome packages, exclusive bonus codes, and free spins.`
         }}
       />
+
+      {/* Brand Schema for Crypto Bonuses */}
+      <SchemaMarkup type="brand" />
 
       <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
         {/* Enhanced Hero Heading */}
