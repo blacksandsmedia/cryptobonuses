@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface CryptoData {
   id: string;
@@ -18,6 +18,8 @@ export default function CryptoTicker() {
   const [isHidden, setIsHidden] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const MAX_RETRIES = 3;
 
   useEffect(() => {
@@ -173,8 +175,8 @@ export default function CryptoTicker() {
     return null;
   }
 
-  // Duplicate the data for seamless loop
-  const duplicatedData = [...cryptoData, ...cryptoData];
+  // Triple the data for seamless infinite loop
+  const loopedData = [...cryptoData, ...cryptoData, ...cryptoData];
 
   return (
     <div className={`bg-[#2c2f3a] border-b border-[#404055] overflow-hidden transition-transform duration-300 ${
@@ -187,12 +189,22 @@ export default function CryptoTicker() {
         {/* Right fade - extended to reach header content edges */}
         <div className="absolute -right-4 top-0 bottom-0 w-20 bg-gradient-to-l from-[#2c2f3a] via-[#2c2f3a] to-transparent z-10 pointer-events-none"></div>
         
-        <div className="py-2 overflow-hidden">
-          <div className="animate-scroll-left flex items-center gap-8 w-fit">
-            {duplicatedData.map((crypto, index) => (
+        <div 
+          ref={scrollContainerRef}
+          className="py-2 overflow-x-auto scrollbar-hide"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <div 
+            className="flex items-center gap-8 w-fit animate-crypto-scroll"
+            style={{
+              animationPlayState: isPaused ? 'paused' : 'running'
+            }}
+          >
+            {loopedData.map((crypto, index) => (
               <div
                 key={`${crypto.id}-${index}`}
-                className="flex items-center gap-2 px-3 py-1 rounded-md whitespace-nowrap"
+                className="flex items-center gap-2 px-3 py-1 rounded-md whitespace-nowrap flex-shrink-0"
               >
                 <img 
                   src={crypto.image} 
@@ -216,6 +228,30 @@ export default function CryptoTicker() {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes crypto-scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-33.333%);
+          }
+        }
+        
+        .animate-crypto-scroll {
+          animation: crypto-scroll 60s linear infinite;
+        }
+        
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 } 

@@ -1,7 +1,7 @@
 // Auto-generated redirects from database
-// Generated on: 2025-06-29T13:00:43.972Z
-// Database entries: 106
-// Total redirects: 212 (includes trailing slash versions)
+// Generated on: 2025-06-29T13:16:40.997Z
+// Database entries: 108
+// Total redirects: 216 (includes trailing slash versions)
 
 module.exports = {
   redirects: [
@@ -1274,6 +1274,30 @@ module.exports = {
   {
     "source": "/advertising-disclosure/",
     "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/contact/",
+    "destination": "/contact",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/contact//",
+    "destination": "/contact",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/terms/",
+    "destination": "/terms",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/terms//",
+    "destination": "/terms",
     "permanent": true,
     "statusCode": 301
   }

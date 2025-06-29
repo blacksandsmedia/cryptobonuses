@@ -6,12 +6,16 @@ interface FilterControlsProps {
   filters: FilterState;
   onFilterChange: (filters: Partial<FilterState>) => void;
   casinos: string[];
+  casinoCount?: number;
   className?: string;
 }
 
-export default function FilterControls({ filters, onFilterChange, casinos, className = '' }: FilterControlsProps) {
+export default function FilterControls({ filters, onFilterChange, casinos, casinoCount = 0, className = '' }: FilterControlsProps) {
   const searchInputDesktopRef = useRef<HTMLInputElement>(null);
   const searchInputMobileRef = useRef<HTMLInputElement>(null);
+
+  // Create dynamic placeholder text
+  const placeholderText = casinoCount > 0 ? `Search ${casinoCount} casinos...` : 'Search bonuses...';
 
   // Track search terms with debouncing
   useEffect(() => {
@@ -76,7 +80,7 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
           <input
             ref={searchInputDesktopRef}
             type="search"
-            placeholder="Search bonuses..."
+            placeholder={placeholderText}
             value={filters.searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
             onClick={() => handleSearchInteraction(filters.searchTerm)}
@@ -130,7 +134,7 @@ export default function FilterControls({ filters, onFilterChange, casinos, class
             <input
               ref={searchInputMobileRef}
               type="search"
-              placeholder="Search bonuses..."
+              placeholder={placeholderText}
               value={filters.searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
               onClick={() => handleSearchInteraction(filters.searchTerm)}

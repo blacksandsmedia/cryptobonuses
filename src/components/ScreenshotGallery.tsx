@@ -10,6 +10,29 @@ interface ScreenshotGalleryProps {
   casinoName: string;
 }
 
+// Helper function to extract filename from URL
+const getImageFilename = (url: string): string => {
+  if (!url) return '';
+  
+  // Remove query parameters and hash
+  const cleanUrl = url.split('?')[0].split('#')[0];
+  
+  // Extract filename from path
+  const filename = cleanUrl.split('/').pop() || '';
+  
+  // Remove extension and clean up the name for display
+  const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+  
+  // Convert dashes and underscores to spaces and capitalize words
+  const cleanName = nameWithoutExt
+    .replace(/[-_]/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+  
+  return cleanName || 'Screenshot';
+};
+
 export default function ScreenshotGallery({ screenshots, casinoName }: ScreenshotGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
@@ -156,9 +179,12 @@ export default function ScreenshotGallery({ screenshots, casinoName }: Screensho
             </svg>
           </button>
 
-          {/* Image Counter */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 px-3 py-1 rounded-full text-white/90 text-sm">
-            {currentIndex + 1} / {screenshots.length}
+          {/* Image Counter and Caption */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white/90 text-sm text-center">
+            <div className="font-medium mb-1">{getImageFilename(screenshots[currentIndex])}</div>
+            <div className="text-xs text-white/70">
+              {currentIndex + 1} / {screenshots.length}
+            </div>
           </div>
         </div>
       )}

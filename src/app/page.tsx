@@ -359,6 +359,7 @@ export default function Home() {
             filters={filters}
             onFilterChange={handleFilterChange}
             casinos={casinoNames}
+            casinoCount={casinos.length}
           />
         </div>
 
