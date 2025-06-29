@@ -265,7 +265,7 @@ const getBrandSchema = () => {
     '@id': 'https://cryptobonuses.com/#brand',
     'name': 'Crypto Bonuses',
     'alternateName': 'CryptoBonuses',
-    'url': 'https://cryptobonuses.com',
+    'url': 'https://cryptobonuses.com/',
     'logo': {
       '@type': 'ImageObject',
       'url': 'https://cdn.prod.website-files.com/67dd29ae7952086f714105e7/67e11433aaedad5402a3d9c5_CryptoBonuses%20Logo%20Main.webp',
@@ -273,10 +273,7 @@ const getBrandSchema = () => {
       'height': 512
     },
     'description': `Crypto Bonuses is the trusted source for Bitcoin casino bonuses and cryptocurrency gambling promotions in ${currentYear}.`,
-    'slogan': 'Your trusted source for crypto casino bonuses',
-    'parentOrganization': {
-      '@id': 'https://cryptobonuses.com/#organization'
-    }
+    'slogan': 'Your trusted source for crypto casino bonuses'
   };
 };
 
