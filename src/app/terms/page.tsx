@@ -6,7 +6,10 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Terms of Service - CryptoBonuses',
   description: 'Terms of Service for CryptoBonuses - Read our terms and conditions for using our crypto casino bonus platform and services.',
-  robots: 'index, follow'
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://cryptobonuses.com/terms',
+  },
 };
 
 export const dynamic = 'force-dynamic';

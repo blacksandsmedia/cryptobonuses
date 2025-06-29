@@ -82,6 +82,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images: user.profilePicture || user.image ? [user.profilePicture || user.image || ""] : [],
     },
+    alternates: {
+      canonical: `https://cryptobonuses.com/user/${params.username}`,
+    },
   };
 }
 

@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: 'Crypto Bonus Spin Wheel - Win Random Casino Bonuses',
   description: `The Crypto Bonus Spin Wheel gives users instant access to random casino bonuses in ${new Date().getFullYear()}. Spin to discover exclusive offers from top-rated crypto casinos.`,
   keywords: 'casino bonus, spin wheel, random bonus, crypto casino, gambling offers',
+  alternates: {
+    canonical: 'https://cryptobonuses.com/spin',
+  },
 };
 
 export default async function SpinPage() {

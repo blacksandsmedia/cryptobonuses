@@ -7,7 +7,10 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Contact Us - CryptoBonuses',
   description: 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
-  robots: 'index, follow'
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://cryptobonuses.com/contact',
+  },
 };
 
 export const dynamic = 'force-dynamic';
