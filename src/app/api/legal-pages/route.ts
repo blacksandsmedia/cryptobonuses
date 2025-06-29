@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { slug, title, content } = await request.json();
+    const { slug, title, metaTitle, metaDescription, content } = await request.json();
     
     if (!slug || !title || !content) {
       return NextResponse.json(
@@ -77,8 +77,20 @@ export async function POST(request: NextRequest) {
     // Upsert the legal page (create or update)
     const legalPage = await prisma.legalPage.upsert({
       where: { slug },
-      update: { title, content },
-      create: { slug, title, content }
+      update: { 
+        title, 
+        metaTitle: metaTitle || null,
+        metaDescription: metaDescription || null,
+        content,
+        lastModified: new Date()
+      },
+      create: { 
+        slug, 
+        title, 
+        metaTitle: metaTitle || null,
+        metaDescription: metaDescription || null,
+        content 
+      }
     });
     
     return NextResponse.json(legalPage);

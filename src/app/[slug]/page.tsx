@@ -274,6 +274,9 @@ export async function generateMetadata(
     alternates: {
       canonical: `https://cryptobonuses.com/${slug}`,
     },
+    other: {
+      'last-modified': new Date().toISOString(),
+    },
   };
 }
 

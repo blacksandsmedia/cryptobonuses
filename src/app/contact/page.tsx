@@ -4,16 +4,50 @@ import { Metadata } from 'next';
 import ContactForm from '@/components/ContactForm';
 import Link from 'next/link';
 
-export const metadata: Metadata = {
-  title: 'Contact Us - CryptoBonuses',
-  description: 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
-  robots: 'index, follow',
-  alternates: {
-    canonical: 'https://cryptobonuses.com/contact',
-  },
-};
-
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const legalPage = await prisma.legalPage.findUnique({
+      where: { slug: 'contact' }
+    });
+
+    if (!legalPage) {
+      return {
+        title: 'Contact Us - CryptoBonuses',
+        description: 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
+        robots: 'index, follow',
+        alternates: {
+          canonical: 'https://cryptobonuses.com/contact',
+        },
+      };
+    }
+
+    const pageData = legalPage as any; // Temporary type assertion until types update
+
+    return {
+      title: pageData.metaTitle || `${legalPage.title} - CryptoBonuses`,
+      description: pageData.metaDescription || 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
+      robots: 'index, follow',
+      alternates: {
+        canonical: 'https://cryptobonuses.com/contact',
+      },
+      other: {
+        'last-modified': pageData.lastModified?.toISOString() || new Date().toISOString(),
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching contact page metadata:', error);
+    return {
+      title: 'Contact Us - CryptoBonuses',
+      description: 'Contact CryptoBonuses - Get in touch with our team for questions about crypto casino bonuses, partnerships, or website feedback.',
+      robots: 'index, follow',
+      alternates: {
+        canonical: 'https://cryptobonuses.com/contact',
+      },
+    };
+  }
+}
 
 interface LegalPage {
   id: string;

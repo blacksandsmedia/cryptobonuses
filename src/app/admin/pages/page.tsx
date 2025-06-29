@@ -8,6 +8,8 @@ interface Page {
   id: string;
   slug: string;
   title: string;
+  metaTitle?: string;
+  metaDescription?: string;
   content: string;
   createdAt: string;
   updatedAt: string;
@@ -27,6 +29,8 @@ export default function PagesAdmin() {
   const [formData, setFormData] = useState({
     slug: '',
     title: '',
+    metaTitle: '',
+    metaDescription: '',
     content: ''
   });
   const [loading, setLoading] = useState(true);
@@ -90,6 +94,8 @@ export default function PagesAdmin() {
     setFormData({
       slug: page.slug,
       title: page.title,
+      metaTitle: page.metaTitle || '',
+      metaDescription: page.metaDescription || '',
       content: page.content
     });
     setIsEditing(true);
@@ -100,6 +106,8 @@ export default function PagesAdmin() {
     setFormData({
       slug: '',
       title: '',
+      metaTitle: '',
+      metaDescription: '',
       content: ''
     });
     setIsEditing(true);
@@ -107,7 +115,7 @@ export default function PagesAdmin() {
 
   const handleSave = async () => {
     if (!formData.slug || !formData.title || !formData.content) {
-      toast.error('Please fill in all fields');
+      toast.error('Please fill in the required fields (slug, title, content)');
       return;
     }
 
@@ -140,7 +148,7 @@ export default function PagesAdmin() {
   const handleCancel = () => {
     setIsEditing(false);
     setSelectedPage(null);
-    setFormData({ slug: '', title: '', content: '' });
+    setFormData({ slug: '', title: '', metaTitle: '', metaDescription: '', content: '' });
   };
 
   const handleDeletePage = async (pageId: string) => {
@@ -417,6 +425,28 @@ export default function PagesAdmin() {
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       className="w-full px-4 py-2 bg-[#2c2f3a] border border-[#404055] rounded-lg focus:outline-none focus:border-[#68D08B] transition-colors duration-200"
                       placeholder="Page title"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Meta Title</label>
+                    <input
+                      type="text"
+                      value={formData.metaTitle}
+                      onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                      className="w-full px-4 py-2 bg-[#2c2f3a] border border-[#404055] rounded-lg focus:outline-none focus:border-[#68D08B] transition-colors duration-200"
+                      placeholder="Meta title"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Meta Description</label>
+                    <input
+                      type="text"
+                      value={formData.metaDescription}
+                      onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                      className="w-full px-4 py-2 bg-[#2c2f3a] border border-[#404055] rounded-lg focus:outline-none focus:border-[#68D08B] transition-colors duration-200"
+                      placeholder="Meta description"
                     />
                   </div>
 
