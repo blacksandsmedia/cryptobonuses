@@ -75,42 +75,9 @@ const CASINO_REDIRECTS = new Map([
   ['lottery', 'spin'],
 ]);
 
-// Middleware that handles admin routes, API routes, and casino redirects
+// Middleware that handles admin routes and API routes
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  
-  // Handle casino redirects BEFORE Next.js processes trailing slashes
-  // This prevents double redirects (308 for trailing slash removal + 301 for casino redirect)
-  
-  // Check for casino redirects with trailing slash (e.g., /stake/)
-  if (pathname.endsWith('/') && pathname.length > 1) {
-    const casinoSlug = pathname.slice(1, -1); // Remove leading slash and trailing slash
-    if (CASINO_REDIRECTS.has(casinoSlug)) {
-      const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
-      console.log(`[Middleware] Casino redirect (trailing slash): ${pathname} → /${targetDomain}`);
-      
-      // Return direct 301 redirect to prevent double redirects
-      return NextResponse.redirect(
-        new URL(`/${targetDomain}`, request.url), 
-        { status: 301 }
-      );
-    }
-  }
-  
-  // Check for casino redirects without trailing slash (e.g., /stake)
-  if (pathname.startsWith('/') && !pathname.endsWith('/') && pathname.split('/').length === 2) {
-    const casinoSlug = pathname.slice(1); // Remove leading slash
-    if (CASINO_REDIRECTS.has(casinoSlug)) {
-      const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
-      console.log(`[Middleware] Casino redirect (no trailing slash): ${pathname} → /${targetDomain}`);
-      
-      // Return direct 301 redirect
-      return NextResponse.redirect(
-        new URL(`/${targetDomain}`, request.url), 
-        { status: 301 }
-      );
-    }
-  }
   
   // Handle preflight OPTIONS requests for CORS
   if (request.method === 'OPTIONS') {

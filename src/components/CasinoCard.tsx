@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { normalizeImagePath } from '@/lib/image-utils';
+import Link from 'next/link';
+import { normalizeImagePath } from '@/lib/utils';
+import { getAlternativeLogoPaths } from '@/lib/image-utils';
 import ClickableBonusCode from './ClickableBonusCode';
 
 // Define the bonus type directly here to avoid import issues
@@ -118,18 +120,6 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
 
   const getInitials = (name: string) => {
     return name.substring(0, 2).toUpperCase();
-  };
-
-  // Load alternative logo paths to try
-  const getAlternativeLogoPaths = (casinoName: string, originalPath: string) => {
-    const cleanName = casinoName.replace(/[^a-zA-Z0-9]/g, '');
-    return [
-      `/images/${casinoName} Logo.png`,
-      `/images/${casinoName.replace(/\s+/g, '')} Logo.png`,
-      `/images/${cleanName} Logo.png`,
-      `/images/${cleanName}Logo.png`,
-      '/images/Simplified Logo.png'
-    ];
   };
 
   // Try next image in case of error
