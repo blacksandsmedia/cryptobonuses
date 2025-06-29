@@ -2,8 +2,13 @@ import { mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-// Get upload directory from environment or default to Railway volume
-export const UPLOAD_DIR = process.env.UPLOAD_DIR || '/data/uploads';
+// Get upload directory from environment or default based on environment
+const isDevelopment = process.env.NODE_ENV === 'development';
+const defaultUploadDir = isDevelopment 
+  ? path.join(process.cwd(), 'public', 'uploads')  // Use local public/uploads for development
+  : '/data/uploads';  // Use Railway volume for production
+
+export const UPLOAD_DIR = process.env.UPLOAD_DIR || defaultUploadDir;
 
 /**
  * Ensure the upload directory exists
