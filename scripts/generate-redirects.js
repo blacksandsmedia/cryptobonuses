@@ -41,7 +41,7 @@ async function generateRedirects() {
         statusCode: 301  // Explicitly set 301 instead of 308
       });
       
-      // Trailing slash version
+      // Trailing slash version 
       nextjsRedirects.push({
         source: `/${redirect.oldSlug}/`,
         destination: `/${redirect.newSlug}`,

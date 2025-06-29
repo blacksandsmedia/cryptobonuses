@@ -19,7 +19,7 @@ const nextConfig = {
       },
     ],
   },
-  trailingSlash: false,
+  trailingSlash: true, // Allow trailing slashes to prevent automatic normalization
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
     largePageDataBytes: 5 * 1024 * 1024, // 5MB
