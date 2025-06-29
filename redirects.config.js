@@ -1,5 +1,5 @@
 // Auto-generated redirects from database
-// Generated on: 2025-06-29T13:16:40.997Z
+// Generated on: 2025-06-29T13:29:22.581Z
 // Database entries: 108
 // Total redirects: 216 (includes trailing slash versions)
 
@@ -990,18 +990,6 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/contact",
-    "destination": "/contact",
-    "permanent": true,
-    "statusCode": 301
-  },
-  {
-    "source": "/contact/",
-    "destination": "/contact",
-    "permanent": true,
-    "statusCode": 301
-  },
-  {
     "source": "/abra",
     "destination": "/",
     "permanent": true,
@@ -1298,6 +1286,18 @@ module.exports = {
   {
     "source": "/terms//",
     "destination": "/terms",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/privacy-policy/",
+    "destination": "/privacy",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/privacy-policy//",
+    "destination": "/privacy",
     "permanent": true,
     "statusCode": 301
   }
