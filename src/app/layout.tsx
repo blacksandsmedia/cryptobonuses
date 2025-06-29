@@ -8,6 +8,7 @@ import ConditionalLayout from '@/components/ConditionalLayout';
 import OfferNotifications from '@/components/OfferNotifications';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import { NotificationProvider } from '@/components/NotificationContext';
+import VisitorTracker from '@/components/VisitorTracker';
 import Script from 'next/script';
 // Initialize application startup (upload directory, etc.)
 import '@/lib/startup';
@@ -129,6 +130,7 @@ export default async function RootLayout({
               {children}
             </ConditionalLayout>
             <OfferNotifications />
+            <VisitorTracker />
           </AuthProvider>
         </NotificationProvider>
         <Toaster position="top-right" />

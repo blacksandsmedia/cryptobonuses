@@ -13,14 +13,25 @@ export async function GET() {
     const totalTrackingCount = await prisma.offerTracking.count();
     console.log('[Statistics] Total tracking entries in database:', totalTrackingCount);
     
-    // Get unique users count (using same pattern as notifications)
-    const uniqueUsersResult = await prisma.$queryRaw`
-      SELECT COUNT(DISTINCT "path") as unique_users
+    // Get unique visitors count from page visits (new visitor tracking system)
+    const uniqueVisitorsResult = await prisma.$queryRaw`
+      SELECT COUNT(DISTINCT "searchTerm") as unique_visitors
       FROM "OfferTracking"
-      WHERE "path" IS NOT NULL AND "path" != ''
+      WHERE "actionType" = 'page_visit' AND "searchTerm" IS NOT NULL
     `;
-    const totalUsers = Number((uniqueUsersResult as any)[0]?.unique_users || 0);
-    console.log('[Statistics] Unique users calculated:', totalUsers);
+    let totalUsers = Number((uniqueVisitorsResult as any)[0]?.unique_visitors || 0);
+    console.log('[Statistics] Unique visitors from page tracking:', totalUsers);
+    
+    // Fallback to old method if no page visits tracked yet
+    if (totalUsers === 0) {
+      const fallbackUsersResult = await prisma.$queryRaw`
+        SELECT COUNT(DISTINCT "path") as unique_users
+        FROM "OfferTracking"
+        WHERE "path" IS NOT NULL AND "path" != '' AND "actionType" IN ('code_copy', 'offer_click')
+      `;
+      totalUsers = Number((fallbackUsersResult as any)[0]?.unique_users || 0);
+      console.log('[Statistics] Using fallback user count:', totalUsers);
+    }
     
     // Get code_copy claims count (same pattern as notifications)
     const codeCopyCount = await prisma.offerTracking.count({
