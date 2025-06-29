@@ -680,13 +680,6 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
             </div>
           </div>
 
-          {/* Date Display */}
-          <DateDisplay 
-            publishedAt={dbCasino.createdAt}
-            modifiedAt={dbCasino.updatedAt}
-            className="mb-6"
-          />
-
           {/* Table of Contents */}
           <TableOfContents items={tocItems} />
 
@@ -1194,6 +1187,13 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
               />
             )}
           </div>
+
+          {/* Date Display */}
+          <DateDisplay 
+            publishedAt={dbCasino.createdAt}
+            modifiedAt={dbCasino.updatedAt}
+            className="mb-6"
+          />
 
           {/* Back Link */}
           <Link href="/" className="text-[#a4a5b0] hover:text-[#68D08B] flex items-center gap-2 px-1 transition-colors">

@@ -117,18 +117,18 @@ export default async function PrivacyPage() {
           </Link>
           
           <h1 className="text-4xl font-bold mb-4">{legalPage.title}</h1>
-          
-          {/* Date Display */}
-          <DateDisplay 
-            publishedAt={legalPage.createdAt}
-            modifiedAt={legalPage.updatedAt}
-            className="mb-6"
-          />
         </div>
 
         <div 
           className="legal-content-wrapper"
           dangerouslySetInnerHTML={{ __html: legalPage.content }}
+        />
+
+        {/* Date Display */}
+        <DateDisplay 
+          publishedAt={legalPage.createdAt}
+          modifiedAt={legalPage.updatedAt}
+          className="mb-6"
         />
       </div>
       

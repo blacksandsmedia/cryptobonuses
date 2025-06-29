@@ -123,12 +123,6 @@ export default async function ContactPage() {
                 </p>
               </div>
 
-              {/* Date Display */}
-              <DateDisplay 
-                publishedAt={legalPage?.createdAt}
-                modifiedAt={legalPage?.updatedAt}
-                className="mb-6"
-              />
             </div>
           </div>
 
@@ -154,6 +148,13 @@ export default async function ContactPage() {
                 />
               </div>
             )}
+
+            {/* Date Display */}
+            <DateDisplay 
+              publishedAt={legalPage?.createdAt}
+              modifiedAt={legalPage?.updatedAt}
+              className="mb-6"
+            />
           </div>
         </div>
 
