@@ -30,20 +30,21 @@ async function generateRedirects() {
 
     // Generate Next.js redirects configuration
     // Create both regular and trailing slash versions for each redirect
+    // IMPORTANT: Trailing slash versions come FIRST to take priority over Next.js normalization
     const nextjsRedirects = [];
     
     redirects.forEach(redirect => {
-      // Original redirect (without trailing slash)
+      // Trailing slash version FIRST (takes priority)
       nextjsRedirects.push({
-        source: `/${redirect.oldSlug}`,
+        source: `/${redirect.oldSlug}/`,
         destination: `/${redirect.newSlug}`,
         permanent: true, // 301 redirect
         statusCode: 301  // Explicitly set 301 instead of 308
       });
       
-      // Trailing slash version 
+      // Original redirect (without trailing slash) SECOND
       nextjsRedirects.push({
-        source: `/${redirect.oldSlug}/`,
+        source: `/${redirect.oldSlug}`,
         destination: `/${redirect.newSlug}`,
         permanent: true, // 301 redirect
         statusCode: 301  // Explicitly set 301 instead of 308
@@ -70,10 +71,10 @@ module.exports = {
     console.log(`📈 Total redirects: ${nextjsRedirects.length} (with trailing slash versions)`);
     
     // Show sample redirects
-    console.log('\n📋 Sample redirects (showing both versions):');
+    console.log('\n�� Sample redirects (trailing slash FIRST for priority):');
     redirects.slice(0, 3).forEach(redirect => {
-      console.log(`   /${redirect.oldSlug} → /${redirect.newSlug}`);
       console.log(`   /${redirect.oldSlug}/ → /${redirect.newSlug}`);
+      console.log(`   /${redirect.oldSlug} → /${redirect.newSlug}`);
     });
 
     if (redirects.length > 3) {

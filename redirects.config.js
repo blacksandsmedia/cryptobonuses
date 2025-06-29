@@ -1,16 +1,10 @@
 // Auto-generated redirects from database
-// Generated on: 2025-06-29T13:29:22.581Z
+// Generated on: 2025-06-29T13:59:22.952Z
 // Database entries: 108
 // Total redirects: 216 (includes trailing slash versions)
 
 module.exports = {
   redirects: [
-  {
-    "source": "/betplay",
-    "destination": "/betplay.io",
-    "permanent": true,
-    "statusCode": 301
-  },
   {
     "source": "/betplay/",
     "destination": "/betplay.io",
@@ -18,8 +12,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitstarz",
-    "destination": "/bitstarz.com",
+    "source": "/betplay",
+    "destination": "/betplay.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -30,8 +24,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/jackbit",
-    "destination": "/jackbit.com",
+    "source": "/bitstarz",
+    "destination": "/bitstarz.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -42,8 +36,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/luckybird",
-    "destination": "/luckybird.io",
+    "source": "/jackbit",
+    "destination": "/jackbit.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -54,8 +48,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/jacks-club",
-    "destination": "/jacksclub.io",
+    "source": "/luckybird",
+    "destination": "/luckybird.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -66,8 +60,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/betiro",
-    "destination": "/betiro.com",
+    "source": "/jacks-club",
+    "destination": "/jacksclub.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -78,8 +72,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/binance",
-    "destination": "/",
+    "source": "/betiro",
+    "destination": "/betiro.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -90,7 +84,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/lbank",
+    "source": "/binance",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -102,7 +96,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/casinos",
+    "source": "/lbank",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -114,7 +108,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/weex",
+    "source": "/casinos",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -126,7 +120,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/mexc",
+    "source": "/weex",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -138,8 +132,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/spinarium",
-    "destination": "/spinarium.com",
+    "source": "/mexc",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -150,8 +144,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/wild-io",
-    "destination": "/wild.io",
+    "source": "/spinarium",
+    "destination": "/spinarium.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -162,8 +156,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/ignition-casino",
-    "destination": "/ignitioncasino.eu",
+    "source": "/wild-io",
+    "destination": "/wild.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -174,8 +168,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/punt-casino",
-    "destination": "/",
+    "source": "/ignition-casino",
+    "destination": "/ignitioncasino.eu",
     "permanent": true,
     "statusCode": 301
   },
@@ -186,8 +180,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bc-game",
-    "destination": "/bc.game",
+    "source": "/punt-casino",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -198,8 +192,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bybit",
-    "destination": "/",
+    "source": "/bc-game",
+    "destination": "/bc.game",
     "permanent": true,
     "statusCode": 301
   },
@@ -210,7 +204,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/primexbt",
+    "source": "/bybit",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -222,7 +216,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/wallets",
+    "source": "/primexbt",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -234,8 +228,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/cloudbet",
-    "destination": "/cloudbet.com",
+    "source": "/wallets",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -246,8 +240,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/margex",
-    "destination": "/",
+    "source": "/cloudbet",
+    "destination": "/cloudbet.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -258,8 +252,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bets-io",
-    "destination": "/bets.io",
+    "source": "/margex",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -270,8 +264,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/mbitcasino",
-    "destination": "/mbitcasino.io",
+    "source": "/bets-io",
+    "destination": "/bets.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -282,8 +276,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/fortunejack",
-    "destination": "/fortunejack.com",
+    "source": "/mbitcasino",
+    "destination": "/mbitcasino.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -294,8 +288,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/betfury",
-    "destination": "/betfury.com",
+    "source": "/fortunejack",
+    "destination": "/fortunejack.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -306,8 +300,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/coins-game",
-    "destination": "/coins.game",
+    "source": "/betfury",
+    "destination": "/betfury.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -318,8 +312,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/gemini",
-    "destination": "/",
+    "source": "/coins-game",
+    "destination": "/coins.game",
     "permanent": true,
     "statusCode": 301
   },
@@ -330,8 +324,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/nanogames",
-    "destination": "/nanogames.io",
+    "source": "/gemini",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -342,8 +336,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/leebet",
-    "destination": "/leebet.io",
+    "source": "/nanogames",
+    "destination": "/nanogames.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -354,8 +348,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/stake-us",
-    "destination": "/stake.us",
+    "source": "/leebet",
+    "destination": "/leebet.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -366,8 +360,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bovada",
-    "destination": "/bovada.lv",
+    "source": "/stake-us",
+    "destination": "/stake.us",
     "permanent": true,
     "statusCode": 301
   },
@@ -378,8 +372,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/oshi",
-    "destination": "/oshi.io",
+    "source": "/bovada",
+    "destination": "/bovada.lv",
     "permanent": true,
     "statusCode": 301
   },
@@ -390,8 +384,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitcasino",
-    "destination": "/bitcasino.io",
+    "source": "/oshi",
+    "destination": "/oshi.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -402,8 +396,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/binance-us",
-    "destination": "/",
+    "source": "/bitcasino",
+    "destination": "/bitcasino.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -414,8 +408,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/trustdice",
-    "destination": "/trustdice.win",
+    "source": "/binance-us",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -426,8 +420,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitmart",
-    "destination": "/",
+    "source": "/trustdice",
+    "destination": "/trustdice.win",
     "permanent": true,
     "statusCode": 301
   },
@@ -438,7 +432,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitget",
+    "source": "/bitmart",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -450,8 +444,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/chips-gg",
-    "destination": "/chips.gg",
+    "source": "/bitget",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -462,8 +456,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/htx",
-    "destination": "/",
+    "source": "/chips-gg",
+    "destination": "/chips.gg",
     "permanent": true,
     "statusCode": 301
   },
@@ -474,7 +468,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/kcex",
+    "source": "/htx",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -486,7 +480,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/simpleswap",
+    "source": "/kcex",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -498,7 +492,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/swanbitcoin",
+    "source": "/simpleswap",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -510,7 +504,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/heybets",
+    "source": "/swanbitcoin",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -522,7 +516,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/moonbet",
+    "source": "/heybets",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -534,8 +528,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/7bit-casino",
-    "destination": "/7bitcasino.com",
+    "source": "/moonbet",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -546,8 +540,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/gamdom",
-    "destination": "/gamdom.com",
+    "source": "/7bit-casino",
+    "destination": "/7bitcasino.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -558,8 +552,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/betchain",
-    "destination": "/betchain.com",
+    "source": "/gamdom",
+    "destination": "/gamdom.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -570,8 +564,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/kucoin",
-    "destination": "/",
+    "source": "/betchain",
+    "destination": "/betchain.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -582,7 +576,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/csgoempire",
+    "source": "/kucoin",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -594,7 +588,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/crypto-com",
+    "source": "/csgoempire",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -606,8 +600,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/rollbit",
-    "destination": "/rollbit.com",
+    "source": "/crypto-com",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -618,8 +612,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/cryptoleo",
-    "destination": "/cryptoleo.com",
+    "source": "/rollbit",
+    "destination": "/rollbit.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -630,8 +624,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/1xbit",
-    "destination": "/1xbit1.com",
+    "source": "/cryptoleo",
+    "destination": "/cryptoleo.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -642,8 +636,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bingx",
-    "destination": "/",
+    "source": "/1xbit",
+    "destination": "/1xbit1.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -654,8 +648,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/metaspins",
-    "destination": "/metaspins.com",
+    "source": "/bingx",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -666,8 +660,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/datdrop",
-    "destination": "/",
+    "source": "/metaspins",
+    "destination": "/metaspins.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -678,8 +672,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/coinpoker",
-    "destination": "/coinpoker.com",
+    "source": "/datdrop",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -690,8 +684,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitfinex",
-    "destination": "/",
+    "source": "/coinpoker",
+    "destination": "/coinpoker.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -702,7 +696,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/phemex",
+    "source": "/bitfinex",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -714,7 +708,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/stormgain",
+    "source": "/phemex",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -726,8 +720,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/justbit",
-    "destination": "/justbit.io",
+    "source": "/stormgain",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -738,8 +732,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/roobet",
-    "destination": "/roobet.com",
+    "source": "/justbit",
+    "destination": "/justbit.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -750,8 +744,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/etoro",
-    "destination": "/",
+    "source": "/roobet",
+    "destination": "/roobet.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -762,7 +756,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/coinbase",
+    "source": "/etoro",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -774,8 +768,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/thunderpick",
-    "destination": "/thunderpick.io",
+    "source": "/coinbase",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -786,8 +780,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/okx",
-    "destination": "/",
+    "source": "/thunderpick",
+    "destination": "/thunderpick.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -798,7 +792,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/kraken",
+    "source": "/okx",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -810,8 +804,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/sportsbet",
-    "destination": "/sportsbet.io",
+    "source": "/kraken",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -822,8 +816,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/exchanges",
-    "destination": "/",
+    "source": "/sportsbet",
+    "destination": "/sportsbet.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -834,8 +828,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/vave",
-    "destination": "/vave.com",
+    "source": "/exchanges",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -846,8 +840,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/ledger",
-    "destination": "/",
+    "source": "/vave",
+    "destination": "/vave.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -858,7 +852,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/uphold",
+    "source": "/ledger",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -870,7 +864,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/futureplay",
+    "source": "/uphold",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -882,7 +876,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitrue",
+    "source": "/futureplay",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -894,7 +888,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/tapbit",
+    "source": "/bitrue",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -906,7 +900,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/btse",
+    "source": "/tapbit",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -918,7 +912,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/deribit",
+    "source": "/btse",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -930,7 +924,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/poloniex",
+    "source": "/deribit",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -942,7 +936,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitrefill",
+    "source": "/poloniex",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -954,7 +948,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/ebit",
+    "source": "/bitrefill",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -966,8 +960,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/tether-bet",
-    "destination": "/tether.bet",
+    "source": "/ebit",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -978,8 +972,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/stake",
-    "destination": "/stake.com",
+    "source": "/tether-bet",
+    "destination": "/tether.bet",
     "permanent": true,
     "statusCode": 301
   },
@@ -990,8 +984,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/abra",
-    "destination": "/",
+    "source": "/stake",
+    "destination": "/stake.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -1002,7 +996,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bet999",
+    "source": "/abra",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1014,7 +1008,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/whitebit",
+    "source": "/bet999",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1026,8 +1020,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bitsler",
-    "destination": "/bitsler.com",
+    "source": "/whitebit",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -1038,8 +1032,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/about",
-    "destination": "/",
+    "source": "/bitsler",
+    "destination": "/bitsler.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -1050,7 +1044,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/ellipal",
+    "source": "/about",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1062,8 +1056,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/crashino",
-    "destination": "/crashino.com/en",
+    "source": "/ellipal",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -1074,8 +1068,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/cryptogames",
-    "destination": "/crypto-games.io",
+    "source": "/crashino",
+    "destination": "/crashino.com/en",
     "permanent": true,
     "statusCode": 301
   },
@@ -1086,8 +1080,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/betpanda",
-    "destination": "/betpanda.io",
+    "source": "/cryptogames",
+    "destination": "/crypto-games.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -1098,8 +1092,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/sirwin",
-    "destination": "/sirwin.com",
+    "source": "/betpanda",
+    "destination": "/betpanda.io",
     "permanent": true,
     "statusCode": 301
   },
@@ -1110,8 +1104,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/primedice",
-    "destination": "/primedice.com",
+    "source": "/sirwin",
+    "destination": "/sirwin.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -1122,8 +1116,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/3commas",
-    "destination": "/",
+    "source": "/primedice",
+    "destination": "/primedice.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -1134,7 +1128,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/lolli",
+    "source": "/3commas",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1146,7 +1140,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/digifinex",
+    "source": "/lolli",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1158,7 +1152,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/bluebit",
+    "source": "/digifinex",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1170,7 +1164,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/coinstore",
+    "source": "/bluebit",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1182,7 +1176,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/apps",
+    "source": "/coinstore",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1194,8 +1188,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/destinyx",
-    "destination": "/destinyx.com",
+    "source": "/apps",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -1206,8 +1200,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/choise",
-    "destination": "/",
+    "source": "/destinyx",
+    "destination": "/destinyx.com",
     "permanent": true,
     "statusCode": 301
   },
@@ -1218,8 +1212,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/privacy-policy",
-    "destination": "/privacy",
+    "source": "/choise",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -1230,8 +1224,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/lottery",
-    "destination": "/spin",
+    "source": "/privacy-policy",
+    "destination": "/privacy",
     "permanent": true,
     "statusCode": 301
   },
@@ -1242,8 +1236,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/betnomi",
-    "destination": "/",
+    "source": "/lottery",
+    "destination": "/spin",
     "permanent": true,
     "statusCode": 301
   },
@@ -1254,7 +1248,7 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/advertising-disclosure",
+    "source": "/betnomi",
     "destination": "/",
     "permanent": true,
     "statusCode": 301
@@ -1266,8 +1260,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/contact/",
-    "destination": "/contact",
+    "source": "/advertising-disclosure",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   },
@@ -1278,8 +1272,8 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/terms/",
-    "destination": "/terms",
+    "source": "/contact/",
+    "destination": "/contact",
     "permanent": true,
     "statusCode": 301
   },
@@ -1290,13 +1284,19 @@ module.exports = {
     "statusCode": 301
   },
   {
-    "source": "/privacy-policy/",
-    "destination": "/privacy",
+    "source": "/terms/",
+    "destination": "/terms",
     "permanent": true,
     "statusCode": 301
   },
   {
     "source": "/privacy-policy//",
+    "destination": "/privacy",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/privacy-policy/",
     "destination": "/privacy",
     "permanent": true,
     "statusCode": 301
