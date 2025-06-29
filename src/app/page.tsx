@@ -256,6 +256,8 @@ export default function Home() {
         return bonus.casinoName.toLowerCase() === filters.casino.toLowerCase();
       })
       .sort((a, b) => {
+        console.log(`🔀 APPLYING SORT: "${filters.sortBy}" to ${bonusesData.length} items`);
+        
         if (!filters.sortBy) {
           // Default sort: use displayOrder from backend
           const casinoA = casinos.find(c => c.id === a.casinoId);
@@ -265,37 +267,61 @@ export default function Home() {
         
         if (filters.sortBy === 'newest') {
           // Sort by founded year (newest first)
+          console.log('🔄 SORTING BY NEWEST founded year');
           const casinoA = casinos.find(c => c.id === a.casinoId);
           const casinoB = casinos.find(c => c.id === b.casinoId);
           const yearA = casinoA?.foundedYear || 0;
           const yearB = casinoB?.foundedYear || 0;
           
+          console.log(`  Comparing: ${casinoA?.name} (${yearA}) vs ${casinoB?.name} (${yearB})`);
+          
           // If both have years, sort by year (newest first)
           if (yearA > 0 && yearB > 0) {
-            return yearB - yearA;
+            const result = yearB - yearA;
+            console.log(`    Both have years: ${result > 0 ? casinoB?.name : casinoA?.name} comes first`);
+            return result;
           }
           // If only one has a year, put it first
-          if (yearA > 0 && yearB === 0) return -1;
-          if (yearB > 0 && yearA === 0) return 1;
+          if (yearA > 0 && yearB === 0) {
+            console.log(`    Only ${casinoA?.name} has year, comes first`);
+            return -1;
+          }
+          if (yearB > 0 && yearA === 0) {
+            console.log(`    Only ${casinoB?.name} has year, comes first`);
+            return 1;
+          }
           // If neither has a year, sort by display order
+          console.log(`    Neither has year, using display order`);
           return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
         }
         
         if (filters.sortBy === 'oldest') {
           // Sort by founded year (oldest first)
+          console.log('🔄 SORTING BY OLDEST founded year');
           const casinoA = casinos.find(c => c.id === a.casinoId);
           const casinoB = casinos.find(c => c.id === b.casinoId);
           const yearA = casinoA?.foundedYear || 0;
           const yearB = casinoB?.foundedYear || 0;
           
+          console.log(`  Comparing: ${casinoA?.name} (${yearA}) vs ${casinoB?.name} (${yearB})`);
+          
           // If both have years, sort by year (oldest first)
           if (yearA > 0 && yearB > 0) {
-            return yearA - yearB;
+            const result = yearA - yearB;
+            console.log(`    Both have years: ${result < 0 ? casinoA?.name : casinoB?.name} comes first`);
+            return result;
           }
           // If only one has a year, put it first
-          if (yearA > 0 && yearB === 0) return -1;
-          if (yearB > 0 && yearA === 0) return 1;
+          if (yearA > 0 && yearB === 0) {
+            console.log(`    Only ${casinoA?.name} has year, comes first`);
+            return -1;
+          }
+          if (yearB > 0 && yearA === 0) {
+            console.log(`    Only ${casinoB?.name} has year, comes first`);
+            return 1;
+          }
           // If neither has a year, sort by display order
+          console.log(`    Neither has year, using display order`);
           return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
         }
         

@@ -24,9 +24,75 @@ function verifyJWT(token: string, secret: string): any {
   }
 }
 
-// Middleware that handles admin routes and API routes
+// Casino redirect mappings - comprehensive list from database
+const CASINO_REDIRECTS = new Map([
+  ['betplay', 'betplay.io'],
+  ['bitstarz', 'bitstarz.com'],
+  ['jackbit', 'jackbit.com'],
+  ['luckybird', 'luckybird.io'],
+  ['jacks-club', 'jacksclub.io'],
+  ['betiro', 'betiro.com'],
+  ['spinarium', 'spinarium.com'],
+  ['wild-io', 'wild.io'],
+  ['ignition-casino', 'ignitioncasino.eu'],
+  ['bc-game', 'bc.game'],
+  ['cloudbet', 'cloudbet.com'],
+  ['bets-io', 'bets.io'],
+  ['mbitcasino', 'mbitcasino.io'],
+  ['fortunejack', 'fortunejack.com'],
+  ['betfury', 'betfury.com'],
+  ['coins-game', 'coins.game'],
+  ['nanogames', 'nanogames.io'],
+  ['leebet', 'leebet.io'],
+  ['stake-us', 'stake.us'],
+  ['bovada', 'bovada.lv'],
+  ['oshi', 'oshi.io'],
+  ['bitcasino', 'bitcasino.io'],
+  ['trustdice', 'trustdice.win'],
+  ['chips-gg', 'chips.gg'],
+  ['7bit-casino', '7bitcasino.com'],
+  ['gamdom', 'gamdom.com'],
+  ['betchain', 'betchain.com'],
+  ['rollbit', 'rollbit.com'],
+  ['cryptoleo', 'cryptoleo.com'],
+  ['1xbit', '1xbit1.com'],
+  ['metaspins', 'metaspins.com'],
+  ['coinpoker', 'coinpoker.com'],
+  ['justbit', 'justbit.io'],
+  ['roobet', 'roobet.com'],
+  ['thunderpick', 'thunderpick.io'],
+  ['sportsbet', 'sportsbet.io'],
+  ['vave', 'vave.com'],
+  ['tether-bet', 'tether.bet'],
+  ['stake', 'stake.com'],
+  ['bitsler', 'bitsler.com'],
+  ['crashino', 'crashino.com/en'],
+  ['cryptogames', 'crypto-games.io'],
+  ['betpanda', 'betpanda.io'],
+  ['sirwin', 'sirwin.com'],
+  ['primedice', 'primedice.com'],
+  ['destinyx', 'destinyx.com'],
+  ['lottery', 'spin'],
+]);
+
+// Middleware that handles admin routes, API routes, and casino redirects
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  
+  // Handle casino redirects BEFORE Next.js processes trailing slashes
+  // Check if this is a casino redirect (with or without trailing slash)
+  const casinoSlug = pathname.replace(/^\/|\/$/g, ''); // Remove leading and trailing slashes
+  
+  if (CASINO_REDIRECTS.has(casinoSlug)) {
+    const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
+    console.log(`[Middleware] Casino redirect: ${pathname} → /${targetDomain}`);
+    
+    // Return direct 301 redirect to prevent double redirects
+    return NextResponse.redirect(
+      new URL(`/${targetDomain}`, request.url), 
+      { status: 301 }
+    );
+  }
   
   // Handle preflight OPTIONS requests for CORS
   if (request.method === 'OPTIONS') {
