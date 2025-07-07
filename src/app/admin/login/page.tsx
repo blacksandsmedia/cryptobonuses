@@ -101,14 +101,18 @@ export default function LoginPage() {
     console.log("localStorage items:");
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      console.log(`  ${key}: ${localStorage.getItem(key)}`);
+      if (key) {
+        console.log(`  ${key}: ${localStorage.getItem(key)}`);
+      }
     }
     
     // Show sessionStorage
     console.log("sessionStorage items:");
     for (let i = 0; i < sessionStorage.length; i++) {
       const key = sessionStorage.key(i);
-      console.log(`  ${key}: ${sessionStorage.getItem(key)}`);
+      if (key) {
+        console.log(`  ${key}: ${sessionStorage.getItem(key)}`);
+      }
     }
     
     // Test admin-token specifically

@@ -51,10 +51,11 @@ export default function ProfilePictureUpload({ userId, currentPicture, onUpdate 
       formData.append('profilePicture', file);
       formData.append('userId', userId);
 
+      const adminToken = localStorage.getItem('adminToken');
       const response = await fetch('/api/users/profile-picture', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+          'Authorization': `Bearer ${adminToken || ''}`,
         },
         body: formData,
       });
@@ -84,11 +85,12 @@ export default function ProfilePictureUpload({ userId, currentPicture, onUpdate 
     }
 
     try {
+      const adminToken = localStorage.getItem('adminToken');
       const response = await fetch(`/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+          'Authorization': `Bearer ${adminToken || ''}`,
         },
         body: JSON.stringify({
           profilePicture: null,
