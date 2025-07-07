@@ -5,11 +5,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { normalizeImagePath } from "@/lib/image-utils";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { BarChart3, Clock, ArrowDownUp, ArrowUp, BarChart2, PieChart, RefreshCw } from "lucide-react";
-import { CASINO_COLORS } from "@/lib/constants";
 import TimeframeSelector from "./TimeframeSelector";
 
 // Interfaces
