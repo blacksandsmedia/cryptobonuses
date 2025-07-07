@@ -160,7 +160,7 @@ async function getRelatedOffers(currentSlug: string): Promise<Array<{
     // Sort casinos according to the order in the recommendations array
     const sortedCasinos = recommendedSlugs
       .map(slug => recommendedCasinos.find(casino => casino.slug === slug))
-      .filter(casino => casino !== undefined);
+      .filter((casino): casino is NonNullable<typeof casino> => casino !== undefined);
     
     return sortedCasinos.map(casino => {
       const firstBonus = casino.bonuses[0] || { title: 'No bonus available', code: null };
