@@ -257,6 +257,9 @@ export async function generateMetadata(
 
   // Get dynamic modified time based on casino updates and page checks
   const dynamicModifiedTime = await getCasinoPageModifiedTime(casino.slug, casino.updatedAt);
+  
+  // Convert dynamic modified time string to Date object for DateDisplay component
+  const dynamicModifiedDate = new Date(dynamicModifiedTime);
 
   return {
     title,
@@ -418,6 +421,12 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
   const bonusTitle = bonus?.title || `${dbCasino.name} Bonus`;
   const bonusTypes = bonus?.types && bonus.types.length > 0 ? bonus.types.map((type: string) => type.toLowerCase()) : ["other"];
   const bonusType = bonusTypes[0]; // Keep for backward compatibility
+  
+  // Get dynamic modified time based on casino updates and page checks
+  const dynamicModifiedTime = await getCasinoPageModifiedTime(dbCasino.slug, dbCasino.updatedAt);
+  
+  // Convert dynamic modified time string to Date object for DateDisplay component
+  const dynamicModifiedDate = new Date(dynamicModifiedTime);
   
   // Convert Prisma Review objects to the format expected by ReviewSection
   const reviews = dbCasino.reviews
@@ -1195,7 +1204,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
           {/* Date Display */}
           <DateDisplay 
             publishedAt={dbCasino.createdAt}
-            modifiedAt={dbCasino.updatedAt}
+            modifiedAt={dynamicModifiedDate}
             className="mb-6"
           />
 
