@@ -1,7 +1,7 @@
 'use client';
 
 // Redeploy trigger: 2024-01-09 15:30:00
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FilterState } from '@/types/casino';
 import CasinoCard from '@/components/CasinoCard';
 import FilterControls from '@/components/FilterControls';
@@ -42,18 +42,11 @@ interface Casino {
   updatedAt?: string;
 }
 
-// Transform the database data into the format expected by the UI
-// Only show one card per casino, using the first bonus for each casino
-// Casinos are already sorted by displayOrder from the API
+// Memoized transform function for better performance
 const transformCasinoDataForUI = (casinos: Casino[]) => {
-  console.log('🔄 Transforming casino data for UI, count:', casinos.length);
+  if (casinos.length === 0) return [];
   
-  if (casinos.length === 0) {
-    console.warn('⚠️ No casinos data available to transform');
-    return [];
-  }
-  
-  const transformedData = casinos.map(casino => {
+  return casinos.map(casino => {
     // Use the first bonus or create a placeholder if no bonuses
     const bonus = casino.bonuses.length > 0 ? casino.bonuses[0] : {
       id: 'placeholder',
@@ -75,39 +68,23 @@ const transformCasinoDataForUI = (casinos: Casino[]) => {
       bonusTypes = [bonusType];
     }
     
-    // Clean up the logo URL
-    const logoUrl = casino.logo || '';
-    
-    const transformedCasino = {
+    return {
       id: casino.slug,
       casinoName: casino.name,
       bonusType: bonusType,
-      bonusTypes: bonusTypes, // New field with all types
+      bonusTypes: bonusTypes,
       bonusValue: parseFloat(bonus.value) || 0,
       bonusText: bonus.title,
-      logoUrl: logoUrl,
+      logoUrl: casino.logo || '',
       promoCode: bonus.code,
       affiliateLink: casino.affiliateLink || '',
       isActive: true,
-      // Add the casino ID for tracking usage
       casinoId: casino.id,
-      // Add the bonus ID for tracking usage
       bonusId: bonus.id,
-      // Add the casino-specific code term label
-      codeTermLabel: casino.codeTermLabel || 'bonus code'
+      codeTermLabel: casino.codeTermLabel || 'bonus code',
+      slug: casino.slug
     };
-    
-    console.log(`🎰 Transformed: ${casino.name} - slug: ${casino.slug}, casinoId: ${casino.id}, foundedYear: ${casino.foundedYear}`);
-    return transformedCasino;
   });
-  
-  console.log('✅ Transformation complete. Sample of first casino:', {
-    id: transformedData[0]?.id,
-    casinoId: transformedData[0]?.casinoId,
-    casinoName: transformedData[0]?.casinoName
-  });
-  
-  return transformedData;
 };
 
 export default function Home() {
@@ -122,10 +99,107 @@ export default function Home() {
     sortBy: ''
   });
   const [casinos, setCasinos] = useState<Casino[]>([]);
-  const [filteredBonuses, setFilteredBonuses] = useState<any[]>([]);
   const [totalUsers, setTotalUsers] = useState<number>(50000); // Default fallback
   // State for trending data
   const [trendingData, setTrendingData] = useState<Map<string, number>>(new Map());
+
+  // Memoize current year
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+
+  // Memoize plural form of code term label
+  const pluralCodeTermLabel = useMemo(() => {
+    return codeTermLabel.endsWith('e') ? `${codeTermLabel}s` : `${codeTermLabel}s`;
+  }, [codeTermLabel]);
+
+  // Memoize transformed casino data
+  const transformedBonuses = useMemo(() => {
+    if (!initialized || casinos.length === 0) return [];
+    return transformCasinoDataForUI(casinos);
+  }, [casinos, initialized]);
+
+  // Memoize casino names for filter dropdown
+  const casinoNames = useMemo(() => {
+    return Array.from(new Set(casinos.map(casino => casino.name))).sort();
+  }, [casinos]);
+
+  // Optimized filter and sort logic
+  const filteredBonuses = useMemo(() => {
+    if (!initialized || transformedBonuses.length === 0) return [];
+
+    let result = transformedBonuses;
+
+    // Apply filters
+    if (filters.searchTerm) {
+      const searchLower = filters.searchTerm.toLowerCase();
+      result = result.filter(bonus =>
+        bonus.casinoName.toLowerCase().includes(searchLower) ||
+        bonus.bonusText.toLowerCase().includes(searchLower) ||
+        (bonus.promoCode && bonus.promoCode.toLowerCase().includes(searchLower))
+      );
+    }
+
+    if (filters.bonusType) {
+      result = result.filter(bonus =>
+        bonus.bonusTypes && bonus.bonusTypes.includes(filters.bonusType)
+      );
+    }
+
+    if (filters.casino) {
+      result = result.filter(bonus =>
+        bonus.casinoName.toLowerCase() === filters.casino.toLowerCase()
+      );
+    }
+
+    // Apply sorting
+    result.sort((a, b) => {
+      if (!filters.sortBy) {
+        // Default sort: use displayOrder from backend
+        const casinoA = casinos.find(c => c.id === a.casinoId);
+        const casinoB = casinos.find(c => c.id === b.casinoId);
+        return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
+      }
+      
+      if (filters.sortBy === 'newest') {
+        const casinoA = casinos.find(c => c.id === a.casinoId);
+        const casinoB = casinos.find(c => c.id === b.casinoId);
+        const yearA = casinoA?.foundedYear || 0;
+        const yearB = casinoB?.foundedYear || 0;
+        
+        if (yearA > 0 && yearB > 0) return yearB - yearA;
+        if (yearA > 0 && yearB === 0) return -1;
+        if (yearB > 0 && yearA === 0) return 1;
+        return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
+      }
+      
+      if (filters.sortBy === 'oldest') {
+        const casinoA = casinos.find(c => c.id === a.casinoId);
+        const casinoB = casinos.find(c => c.id === b.casinoId);
+        const yearA = casinoA?.foundedYear || 0;
+        const yearB = casinoB?.foundedYear || 0;
+        
+        if (yearA > 0 && yearB > 0) return yearA - yearB;
+        if (yearA > 0 && yearB === 0) return -1;
+        if (yearB > 0 && yearA === 0) return 1;
+        return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
+      }
+      
+      if (filters.sortBy === 'highest_rated') {
+        const casinoA = casinos.find(c => c.id === a.casinoId);
+        const casinoB = casinos.find(c => c.id === b.casinoId);
+        return (casinoB?.rating || 0) - (casinoA?.rating || 0);
+      }
+      
+      if (filters.sortBy === 'trending') {
+        const trendingA = trendingData.get(a.casinoId || '') || 0;
+        const trendingB = trendingData.get(b.casinoId || '') || 0;
+        return trendingB - trendingA;
+      }
+      
+      return 0;
+    });
+
+    return result;
+  }, [transformedBonuses, filters, casinos, trendingData, initialized]);
 
   // Fetch settings on component mount
   useEffect(() => {
@@ -143,9 +217,6 @@ export default function Home() {
 
     fetchSettings();
   }, []);
-
-  // Calculate plural form of code term label
-  const pluralCodeTermLabel = codeTermLabel.endsWith('e') ? `${codeTermLabel}s` : `${codeTermLabel}s`;
 
   // Handle filter changes from URL parameters
   const handleUrlFilterChange = useCallback((newFilters: { bonusType?: string }) => {
@@ -169,24 +240,6 @@ export default function Home() {
         if (!casinosResponse.ok) throw new Error('Failed to fetch casinos');
         const casinosData = await casinosResponse.json();
         
-        // Log the data for debugging
-        console.log('Fetched casinos count:', casinosData.length);
-        
-        // List all casino names to help with mapping
-        if (casinosData.length > 0) {
-          console.log('All casino names for reference:');
-          casinosData.forEach((casino: Casino, index: number) => {
-            console.log(`${index + 1}. ${casino.name} (slug: ${casino.slug}, order: ${casino.displayOrder})`);
-          });
-          
-          // Log founded years for debugging oldest/newest filter
-          const casinosWithFoundedYears = casinosData.filter((casino: Casino) => casino.foundedYear);
-          console.log(`\nCasinos with founded years (${casinosWithFoundedYears.length}/${casinosData.length}):`);
-          casinosWithFoundedYears.forEach((casino: Casino) => {
-            console.log(`  - ${casino.name}: ${casino.foundedYear}`);
-          });
-        }
-        
         setCasinos(casinosData);
 
         // Fetch trending data (usage statistics for the past week)
@@ -207,7 +260,6 @@ export default function Home() {
             }
             
             setTrendingData(trendsMap);
-            console.log('Loaded trending data for casinos:', trendsMap.size);
           }
         } catch (trendingError) {
           console.error('Error fetching trending data:', trendingError);
@@ -235,153 +287,17 @@ export default function Home() {
     fetchData();
   }, []);
 
-  // Apply filters whenever the filters state changes
-  useEffect(() => {
-    if (!initialized) return;
+  // Memoized scroll handlers
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-    console.log('Applying filters to casinos, count:', casinos.length);
-    
-    // Generate one card per casino (not per bonus)
-    const bonusesData = transformCasinoDataForUI(casinos);
-    console.log('Transformed bonuses data, count:', bonusesData.length);
-    
-    const result = bonusesData
-      .filter(bonus => {
-        if (filters.searchTerm) {
-          const searchLower = filters.searchTerm.toLowerCase();
-          return (
-            bonus.casinoName.toLowerCase().includes(searchLower) ||
-            bonus.bonusText.toLowerCase().includes(searchLower) ||
-            (bonus.promoCode && bonus.promoCode.toLowerCase().includes(searchLower))
-          );
-        }
-        return true;
-      })
-      .filter(bonus => {
-        if (!filters.bonusType) return true;
-        // Check if the selected type exists in the bonusTypes array
-        return bonus.bonusTypes && bonus.bonusTypes.includes(filters.bonusType);
-      })
-      .filter(bonus => {
-        if (!filters.casino) return true;
-        return bonus.casinoName.toLowerCase() === filters.casino.toLowerCase();
-      })
-      .sort((a, b) => {
-        console.log(`🔀 APPLYING SORT: "${filters.sortBy}" to ${bonusesData.length} items`);
-        
-        if (!filters.sortBy) {
-          // Default sort: use displayOrder from backend
-          const casinoA = casinos.find(c => c.id === a.casinoId);
-          const casinoB = casinos.find(c => c.id === b.casinoId);
-          return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
-        }
-        
-        if (filters.sortBy === 'newest') {
-          // Sort by founded year (newest first)
-          console.log('🔄 SORTING BY NEWEST founded year');
-          console.log('🗃️ Total casinos in array:', casinos.length);
-          console.log('🎯 Looking for casinoIds:', { aId: a.casinoId, bId: b.casinoId });
-          
-          const casinoA = casinos.find(c => c.id === a.casinoId);
-          const casinoB = casinos.find(c => c.id === b.casinoId);
-          
-          console.log('🏢 Found casinos:', { 
-            casinoA: casinoA ? `${casinoA.name} (${casinoA.id})` : 'NOT FOUND',
-            casinoB: casinoB ? `${casinoB.name} (${casinoB.id})` : 'NOT FOUND'
-          });
-          
-          const yearA = casinoA?.foundedYear || 0;
-          const yearB = casinoB?.foundedYear || 0;
-          
-          console.log(`📅 Founded years: ${casinoA?.name || 'Unknown'} (${yearA}) vs ${casinoB?.name || 'Unknown'} (${yearB})`);
-          
-          // If both have years, sort by year (newest first)
-          if (yearA > 0 && yearB > 0) {
-            const result = yearB - yearA;
-            console.log(`✅ Both have years: ${result > 0 ? casinoB?.name : casinoA?.name} comes first (result: ${result})`);
-            return result;
-          }
-          // If only one has a year, put it first
-          if (yearA > 0 && yearB === 0) {
-            console.log(`✅ Only ${casinoA?.name} has year, comes first`);
-            return -1;
-          }
-          if (yearB > 0 && yearA === 0) {
-            console.log(`✅ Only ${casinoB?.name} has year, comes first`);
-            return 1;
-          }
-          // If neither has a year, sort by display order
-          console.log(`⚠️ Neither has year, using display order`);
-          return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
-        }
-        
-        if (filters.sortBy === 'oldest') {
-          // Sort by founded year (oldest first)
-          console.log('🔄 SORTING BY OLDEST founded year');
-          console.log('🗃️ Total casinos in array:', casinos.length);
-          console.log('🎯 Looking for casinoIds:', { aId: a.casinoId, bId: b.casinoId });
-          
-          const casinoA = casinos.find(c => c.id === a.casinoId);
-          const casinoB = casinos.find(c => c.id === b.casinoId);
-          
-          console.log('🏢 Found casinos:', { 
-            casinoA: casinoA ? `${casinoA.name} (${casinoA.id})` : 'NOT FOUND',
-            casinoB: casinoB ? `${casinoB.name} (${casinoB.id})` : 'NOT FOUND'
-          });
-          
-          const yearA = casinoA?.foundedYear || 0;
-          const yearB = casinoB?.foundedYear || 0;
-          
-          console.log(`📅 Founded years: ${casinoA?.name || 'Unknown'} (${yearA}) vs ${casinoB?.name || 'Unknown'} (${yearB})`);
-          
-          // If both have years, sort by year (oldest first)
-          if (yearA > 0 && yearB > 0) {
-            const result = yearA - yearB;
-            console.log(`✅ Both have years: ${result < 0 ? casinoA?.name : casinoB?.name} comes first (result: ${result})`);
-            return result;
-          }
-          // If only one has a year, put it first
-          if (yearA > 0 && yearB === 0) {
-            console.log(`✅ Only ${casinoA?.name} has year, comes first`);
-            return -1;
-          }
-          if (yearB > 0 && yearA === 0) {
-            console.log(`✅ Only ${casinoB?.name} has year, comes first`);
-            return 1;
-          }
-          // If neither has a year, sort by display order
-          console.log(`⚠️ Neither has year, using display order`);
-          return (casinoA?.displayOrder || 0) - (casinoB?.displayOrder || 0);
-        }
-        
-        if (filters.sortBy === 'highest_rated') {
-          // Sort by rating (highest first)
-          const casinoA = casinos.find(c => c.id === a.casinoId);
-          const casinoB = casinos.find(c => c.id === b.casinoId);
-          return (casinoB?.rating || 0) - (casinoA?.rating || 0);
-        }
-        
-        if (filters.sortBy === 'trending') {
-          // Sort by trending (most used offers first)
-          const trendingA = trendingData.get(a.casinoId || '') || 0;
-          const trendingB = trendingData.get(b.casinoId || '') || 0;
-          return trendingB - trendingA;
-        }
-        
-        return 0;
-      });
-
-    console.log('Final filtered bonuses count:', result.length);
-    
-    // Ensure we're actually updating the state with the filtered results
-    setFilteredBonuses(result);
-  }, [filters, initialized, casinos, trendingData]);
-
-  // Get unique casino names for filter dropdown
-  const casinoNames = Array.from(new Set(casinos.map(casino => casino.name))).sort();
-  console.log('Available casino names for filter:', casinoNames.length);
-
-  const currentYear = new Date().getFullYear();
+  const scrollToFilters = useCallback(() => {
+    const filterSection = document.querySelector('[data-filter-section]');
+    if (filterSection) {
+      filterSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -435,9 +351,9 @@ export default function Home() {
             <span className="block text-lg sm:text-xl md:text-2xl font-semibold text-[#68D08B] mb-6">
               Discover the Best Crypto Rewards {currentYear}
             </span>
-          </h1>
+        </h1>
         </div>
-
+        
         <div className="mb-6 sm:mb-8 md:mb-12" data-filter-section>
           <FilterControls
             key={`filter-controls-${initialized}`}
@@ -451,7 +367,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredBonuses.map(bonus => (
             <CasinoCard
-              key={`${bonus.id}`}
+              key={bonus.id}
               bonus={bonus}
             />
           ))}
@@ -567,7 +483,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                onClick={scrollToTop}
                 className="bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-semibold px-8 py-3 rounded-lg transition-colors duration-300"
               >
                 View All Bonuses
@@ -582,12 +498,7 @@ export default function Home() {
                 </div>
               </a>
               <button 
-                onClick={() => {
-                  const filterSection = document.querySelector('[data-filter-section]');
-                  if (filterSection) {
-                    filterSection.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
+                onClick={scrollToFilters}
                 className="border border-[#68D08B] text-[#68D08B] hover:bg-[#68D08B] hover:text-[#343541] font-semibold px-8 py-3 rounded-lg transition-all duration-300"
               >
                 Filter Bonuses
