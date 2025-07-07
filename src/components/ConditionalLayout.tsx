@@ -95,6 +95,12 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
               Spin Wheel
             </a>
             <a 
+              href="/about" 
+              className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium text-base"
+            >
+              About
+            </a>
+            <a 
               href="/contact" 
               className="text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 font-medium text-base"
             >
@@ -171,6 +177,18 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                   </div>
                 </a>
                 <a 
+                  href="/about" 
+                  className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs text-base"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>About</span>
+                  </div>
+                </a>
+                <a 
                   href="/contact" 
                   className="block text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 font-medium py-3 px-6 rounded-lg hover:bg-white/5 text-center w-full max-w-xs text-base"
                   onClick={() => setMobileMenuOpen(false)}
@@ -238,6 +256,9 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                 CryptoBonuses.com
               </a>
               <div className="flex items-center justify-center sm:justify-start gap-6 mt-4 sm:mt-0 text-sm">
+                <a href="/about" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
+                  About
+                </a>
                 <a href="/privacy" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
                   Privacy Policy
                 </a>
