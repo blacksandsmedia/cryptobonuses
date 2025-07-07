@@ -138,6 +138,37 @@ export default function PageCheckAdmin() {
     }
   };
 
+  const handleHomepageCheck = async () => {
+    setSubmitting(true);
+    try {
+      const response = await fetch('/api/page-checks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pageSlug: 'homepage',
+          pageType: 'homepage',
+          notes: notes || 'Homepage check - updates article modified time',
+          isAutomatic: false,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchData(); // Refresh the data
+        setNotes('');
+        alert('Homepage check recorded successfully - article modified time updated');
+      } else {
+        alert('Failed to record homepage check');
+      }
+    } catch (error) {
+      console.error('Error recording homepage check:', error);
+      alert('Error recording homepage check');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleDeleteAllChecks = async () => {
     const confirmed = window.confirm(
       `Are you sure you want to delete ALL page checks? This will permanently remove ${pageChecks.length} page check records. This action cannot be undone.`
@@ -198,6 +229,35 @@ export default function PageCheckAdmin() {
         <p className="text-[#a7a9b4]">
           Record page checks manually or schedule automatic weekly checks
         </p>
+      </div>
+
+      {/* Homepage Check Section */}
+      <div className="bg-[#373946] rounded-lg p-6 border border-[#404055]">
+        <h2 className="text-xl font-semibold text-white mb-4">Homepage Check</h2>
+        <p className="text-[#a7a9b4] mb-4">
+          Check the homepage to update its article modified time meta tag. This helps with SEO and social media sharing.
+        </p>
+        
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-[#a7a9b4] mb-2">
+            Notes (optional)
+          </label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add any notes about this homepage check..."
+            className="w-full px-3 py-2 bg-[#292932] border border-[#404055] rounded-md text-white placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#68D08B] focus:border-transparent"
+            rows={2}
+          />
+        </div>
+
+        <button
+          onClick={handleHomepageCheck}
+          disabled={submitting}
+          className="px-6 py-2 bg-[#68D08B] text-white rounded-md hover:bg-[#5bc47d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+        >
+          {submitting ? 'Recording...' : 'Check Homepage'}
+        </button>
       </div>
 
       {/* Bulk Check Section */}

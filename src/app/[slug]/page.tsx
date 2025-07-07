@@ -23,6 +23,7 @@ import RecentlyViewed from '@/components/RecentlyViewed';
 import RecentlyViewedTracker from '@/components/RecentlyViewedTracker';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import DateDisplay from '@/components/DateDisplay';
+import { getCasinoPageModifiedTime } from '@/lib/page-modified-time';
 
 // Add export const dynamic = 'force-dynamic' to disable caching
 export const dynamic = 'force-dynamic';
@@ -254,6 +255,9 @@ export async function generateMetadata(
                    : casino.logo ? `https://cryptobonuses.com${casino.logo}` 
                    : 'https://cryptobonuses.com/logo.png';
 
+  // Get dynamic modified time based on casino updates and page checks
+  const dynamicModifiedTime = await getCasinoPageModifiedTime(casino.slug, casino.updatedAt);
+
   return {
     title,
     description,
@@ -266,7 +270,7 @@ export async function generateMetadata(
       images: [imageUrl],
       siteName: 'CryptoBonuses',
       publishedTime: casino.createdAt?.toISOString(),
-      modifiedTime: casino.updatedAt?.toISOString(),
+      modifiedTime: dynamicModifiedTime,
     },
     twitter: {
       card: 'summary_large_image',
@@ -279,7 +283,7 @@ export async function generateMetadata(
     },
     other: {
       'article:published_time': casino.createdAt?.toISOString() || new Date().toISOString(),
-      'article:modified_time': casino.updatedAt?.toISOString() || new Date().toISOString(),
+      'article:modified_time': dynamicModifiedTime,
     },
   };
 }

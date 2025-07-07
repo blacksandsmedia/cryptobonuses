@@ -5,6 +5,7 @@ import DateDisplay from '@/components/DateDisplay';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { getLegalPageModifiedTime } from '@/lib/page-modified-time';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,12 +24,15 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     };
 
+    // Get dynamic modified time based on page updates and checks
+    const dynamicModifiedTime = await getLegalPageModifiedTime('terms', legalPage?.updatedAt);
+
     if (!legalPage) {
       return {
         ...baseMetadata,
         other: {
           'article:published_time': '2024-01-01T00:00:00Z',
-          'article:modified_time': new Date().toISOString(),
+          'article:modified_time': dynamicModifiedTime,
         },
       };
     }
@@ -42,15 +46,19 @@ export async function generateMetadata(): Promise<Metadata> {
         url: 'https://cryptobonuses.com/terms',
         type: 'article',
         publishedTime: legalPage.createdAt?.toISOString(),
-        modifiedTime: legalPage.updatedAt?.toISOString(),
+        modifiedTime: dynamicModifiedTime,
       },
       other: {
         'article:published_time': legalPage.createdAt?.toISOString() || '2024-01-01T00:00:00Z',
-        'article:modified_time': legalPage.updatedAt?.toISOString() || new Date().toISOString(),
+        'article:modified_time': dynamicModifiedTime,
       },
     };
   } catch (error) {
     console.error('Error fetching terms page metadata:', error);
+    
+    // Get dynamic modified time even on error
+    const dynamicModifiedTime = await getLegalPageModifiedTime('terms', null);
+    
     return {
       title: 'Terms of Service - CryptoBonuses',
       description: 'Terms of Service for CryptoBonuses - Read our terms and conditions for using our crypto casino bonus platform and services.',
@@ -60,7 +68,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
       other: {
         'article:published_time': '2024-01-01T00:00:00Z',
-        'article:modified_time': new Date().toISOString(),
+        'article:modified_time': dynamicModifiedTime,
       },
     };
   }

@@ -10,6 +10,7 @@ import SchemaMarkup from '@/components/SchemaMarkup';
 import { NotificationProvider } from '@/components/NotificationContext';
 import VisitorTracker from '@/components/VisitorTracker';
 import Script from 'next/script';
+import { getHomepageModifiedTime } from '@/lib/page-modified-time';
 // Initialize application startup (upload directory, etc.)
 import '@/lib/startup';
 
@@ -28,6 +29,9 @@ export async function generateMetadata(): Promise<Metadata> {
     console.error('Error fetching favicon from settings:', error);
   }
 
+  // Get dynamic modified time based on page changes and checks
+  const dynamicModifiedTime = await getHomepageModifiedTime();
+
   return {
     title: `Best Bitcoin Casino Bonuses & Crypto Promotions ${currentYear}`,
     description: `Find the best crypto casino bonuses, exclusive promo codes, and Bitcoin casino offers. Get deposit matches, free spins, and no deposit bonuses at trusted crypto casinos.`,
@@ -40,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'article',
       images: ['https://cdn.prod.website-files.com/67dd29ae7952086f714105e7/67e11433aaedad5402a3d9c5_CryptoBonuses%20Logo%20Main.webp'],
       publishedTime: '2024-01-01T00:00:00Z',
-      modifiedTime: new Date().toISOString(),
+      modifiedTime: dynamicModifiedTime,
     },
     twitter: {
       card: 'summary_large_image',
@@ -61,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     other: {
       'article:published_time': '2024-01-01T00:00:00Z',
-      'article:modified_time': new Date().toISOString(),
+      'article:modified_time': dynamicModifiedTime,
     },
     icons: {
       icon: [
