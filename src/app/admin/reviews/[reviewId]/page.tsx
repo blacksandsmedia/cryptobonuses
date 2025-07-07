@@ -14,11 +14,9 @@ interface Casino {
 const reviewSchema = z.object({
   author: z.string().min(1, "Author name is required"),
   content: z.string().min(3, "Review content is required"),
-  rating: z.union([z.number(), z.string()]).transform((val) => 
-    typeof val === 'string' ? parseFloat(val) : val
-  ),
+  rating: z.coerce.number().min(1).max(5),
   casinoId: z.string().min(1, "Casino is required"),
-  verified: z.boolean().optional().default(false)
+  verified: z.boolean().optional()
 });
 
 type ReviewFormData = z.infer<typeof reviewSchema>;
