@@ -252,6 +252,8 @@ export async function POST(request: Request) {
         keyFeatures: data.keyFeatures || [],
         // Add custom table fields
         customTableFields: data.customTableFields || [],
+        // Add recommended casino IDs
+        recommendedCasinoIds: data.recommendedCasinoIds || [],
         // Add content fields
         aboutContent: data.aboutContent || null,
         howToRedeemContent: data.howToRedeemContent || null,

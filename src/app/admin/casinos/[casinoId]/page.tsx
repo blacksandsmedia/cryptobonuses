@@ -232,6 +232,10 @@ export default function EditCasinoPage({
   // Custom table fields state
   const [customTableFields, setCustomTableFields] = useState<Array<{label: string, value: string}>>([]);
   
+  // Recommended casinos state
+  const [recommendedCasinoIds, setRecommendedCasinoIds] = useState<string[]>([]);
+  const [availableCasinos, setAvailableCasinos] = useState<Casino[]>([]);
+  
   // Screenshot state
   const [screenshotFiles, setScreenshotFiles] = useState<(File | null)[]>([null, null, null]);
   const [screenshotPreviews, setScreenshotPreviews] = useState<(string | null)[]>([null, null, null]);
@@ -255,6 +259,9 @@ export default function EditCasinoPage({
     } else {
       setLoading(false);
     }
+    
+    // Fetch available casinos for recommendations
+    fetchAvailableCasinos();
   }, [params.casinoId]);
 
   // Fetch settings for code term label
@@ -350,6 +357,11 @@ export default function EditCasinoPage({
       // Load custom table fields if they exist
       if (data.customTableFields && Array.isArray(data.customTableFields)) {
         setCustomTableFields(data.customTableFields);
+      }
+      
+      // Load recommended casino IDs if they exist
+      if (data.recommendedCasinoIds && Array.isArray(data.recommendedCasinoIds)) {
+        setRecommendedCasinoIds(data.recommendedCasinoIds);
       }
       
       // Load the first bonus if it exists
@@ -635,7 +647,32 @@ export default function EditCasinoPage({
   };
 
   const removeCustomTableField = (index: number) => {
-    setCustomTableFields(customTableFields.filter((_, i) => i !== index));
+    setCustomTableFields(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Fetch available casinos for recommendations
+  const fetchAvailableCasinos = async () => {
+    try {
+      const response = await fetch('/api/casinos');
+      if (response.ok) {
+        const casinos = await response.json();
+        setAvailableCasinos(casinos);
+      }
+    } catch (error) {
+      console.error('Error fetching available casinos:', error);
+    }
+  };
+
+  // Handle recommended casino selection
+  const handleRecommendedCasinoToggle = (casinoId: string) => {
+    setRecommendedCasinoIds(prev => {
+      if (prev.includes(casinoId)) {
+        return prev.filter(id => id !== casinoId);
+      } else if (prev.length < 3) {
+        return [...prev, casinoId];
+      }
+      return prev;
+    });
   };
 
   const onSubmit = async (data: CasinoForm) => {
@@ -738,36 +775,13 @@ export default function EditCasinoPage({
       }
 
       // Prepare casino data including bonus data
-      const casinoData = {
-        name: data.name,
-        slug: data.slug,
-        logo: data.logo,
-        featuredImage: data.featuredImage,
-        description: data.description,
-        affiliateLink: data.affiliateLink,
-        website: data.website,
-        foundedYear: (data.foundedYear && !isNaN(data.foundedYear)) ? data.foundedYear : null,
-        codeTermLabel: data.codeTermLabel || "bonus code",
-        screenshots: data.screenshots,
-        displayOrder: currentDisplayOrder,
-        // Add key features
-        keyFeatures: keyFeatures,
-        // Add custom table fields
-        customTableFields: customTableFields,
-        // Add content fields
-        aboutContent: data.aboutContent,
-        howToRedeemContent: data.howToRedeemContent,
-        bonusDetailsContent: data.bonusDetailsContent,
-        gameContent: data.gameContent,
-        termsContent: data.termsContent,
-        faqContent: data.faqContent,
-        // Add bonus data directly to the casino update request
+      const formData = {
+        ...data,
         bonusId: bonusId,
-        bonusTitle: data.bonusTitle,
-        bonusDescription: data.bonusDescription,
-        bonusCode: data.bonusCode,
-        bonusTypes: data.bonusTypes,
-        bonusValue: data.bonusValue
+        keyFeatures: keyFeatures,
+        customTableFields: customTableFields,
+        recommendedCasinoIds: recommendedCasinoIds,
+        screenshots: screenshotUrls,
       };
 
       // Save the casino with bonus data included
@@ -777,7 +791,7 @@ export default function EditCasinoPage({
           "Content-Type": "application/json",
         },
         credentials: "include", // Include credentials for auth
-        body: JSON.stringify(casinoData),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -1223,6 +1237,41 @@ export default function EditCasinoPage({
                 </div>
               ))}
             </div>
+          </div>
+          
+          <div className="border-b border-[#404055] pb-6">
+            <h3 className="text-xl font-semibold mb-4">Recommended Casinos</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Select up to 3 casinos to recommend in the "More Offers" section. These will appear as related offers on this casino's page.
+            </p>
+            
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {availableCasinos
+                .filter(casino => casino.id !== params.casinoId) // Don't show current casino
+                .map((casino) => (
+                  <div key={casino.id} className="flex items-center gap-3 p-3 bg-[#2A2B37] rounded-md">
+                    <input
+                      type="checkbox"
+                      id={`recommended-${casino.id}`}
+                      checked={recommendedCasinoIds.includes(casino.id)}
+                      onChange={() => handleRecommendedCasinoToggle(casino.id)}
+                      disabled={!recommendedCasinoIds.includes(casino.id) && recommendedCasinoIds.length >= 3}
+                      className="w-4 h-4 text-blue-600 bg-[#2A2B37] border border-[#404055] rounded"
+                    />
+                    <label htmlFor={`recommended-${casino.id}`} className="flex-1 text-white cursor-pointer">
+                      {casino.name}
+                    </label>
+                  </div>
+                ))}
+              
+              {availableCasinos.length === 0 && (
+                <p className="text-gray-400 text-center py-4">Loading available casinos...</p>
+              )}
+            </div>
+            
+            <p className="text-xs text-gray-400 mt-3">
+              Selected: {recommendedCasinoIds.length}/3 casinos
+            </p>
           </div>
           
           <div className="border-b border-[#404055] pb-6">
