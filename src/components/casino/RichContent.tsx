@@ -114,7 +114,30 @@ function replaceVariables(
   return processedText;
 }
 
+// Clickable bonus code component with copy feedback
+const ClickableBonusCode = ({ code, displayText, onCopy }: { code: string; displayText: string; onCopy: (code: string) => void }) => {
+  const [copied, setCopied] = useState(false);
 
+  const handleClick = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    onCopy(code);
+    
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
+
+  return (
+    <span 
+      className="text-[#68D08B] font-bold cursor-pointer hover:text-[#7ee095] transition-colors select-none"
+      onClick={handleClick}
+      title="Click to copy code"
+    >
+      {copied ? 'Copied!' : displayText}
+    </span>
+  );
+};
 
 // Function to detect and convert the specific promo code to clickable elements
 const processSpecificCodeDetection = (text: string, bonusCode: string | null | undefined, onCodeCopy: (code: string) => void) => {
@@ -143,17 +166,12 @@ const processSpecificCodeDetection = (text: string, bonusCode: string | null | u
     
     // Add the clickable code with proper styling
     parts.push(
-      <span 
+      <ClickableBonusCode
         key={`code-${matchIndex}-${matchedText}`}
-        className="text-[#68D08B] font-bold cursor-pointer hover:text-[#7ee095] transition-colors select-none"
-        onClick={() => {
-          navigator.clipboard.writeText(bonusCode);
-          onCodeCopy(bonusCode);
-        }}
-        title="Click to copy code"
-      >
-        {matchedText}
-      </span>
+        code={bonusCode}
+        displayText={matchedText}
+        onCopy={onCodeCopy}
+      />
     );
     
     lastIndex = matchStart + matchedText.length;
