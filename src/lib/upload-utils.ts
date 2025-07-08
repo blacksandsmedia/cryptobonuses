@@ -17,7 +17,10 @@ export async function ensureUploadDir(): Promise<string> {
     return UPLOAD_DIR;
   } catch (error) {
     console.error('Error creating upload directory:', error);
-    throw error;
+    // During build time or in environments where we can't create directories,
+    // don't throw an error - just log it and continue
+    console.warn('Upload directory creation failed, but continuing...');
+    return UPLOAD_DIR;
   }
 }
 
