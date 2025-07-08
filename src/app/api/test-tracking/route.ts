@@ -3,9 +3,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    // Find the first casino and bonus
+    // Find the first casino and bonus - using specific field selection to avoid new fields
     const casinos = await prisma.casino.findMany({
-      include: { bonuses: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        bonuses: {
+          select: {
+            id: true,
+            title: true,
+            code: true
+          }
+        }
+      },
       take: 1
     });
 
