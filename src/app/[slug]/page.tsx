@@ -160,7 +160,7 @@ async function getRelatedOffers(currentSlug: string): Promise<Array<{
     // Sort casinos according to the order in the recommendations array
     const sortedCasinos = recommendedSlugs
       .map(slug => recommendedCasinos.find(casino => casino.slug === slug))
-      .filter((casino): casino is NonNullable<typeof casino> => casino !== undefined);
+      .filter(casino => casino !== undefined);
     
     return sortedCasinos.map(casino => {
       const firstBonus = casino.bonuses[0] || { title: 'No bonus available', code: null };
@@ -257,9 +257,6 @@ export async function generateMetadata(
 
   // Get dynamic modified time based on casino updates and page checks
   const dynamicModifiedTime = await getCasinoPageModifiedTime(casino.slug, casino.updatedAt);
-  
-  // Convert dynamic modified time string to Date object for DateDisplay component
-  const dynamicModifiedDate = new Date(dynamicModifiedTime);
 
   return {
     title,
@@ -413,6 +410,9 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
   // Use casino-specific code term label, fallback to "bonus code"
   const codeTermLabel = dbCasino.codeTermLabel || 'bonus code';
   
+  // Calculate dynamic modified time for use in both meta tags and DateDisplay
+  const dynamicModifiedTime: string = await getCasinoPageModifiedTime(dbCasino.slug, dbCasino.updatedAt);
+  
   // Add a timestamp to identify when data was fetched
   console.log(`Fetched casino data for ${slug} at ${new Date().toISOString()}`);
 
@@ -421,12 +421,6 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
   const bonusTitle = bonus?.title || `${dbCasino.name} Bonus`;
   const bonusTypes = bonus?.types && bonus.types.length > 0 ? bonus.types.map((type: string) => type.toLowerCase()) : ["other"];
   const bonusType = bonusTypes[0]; // Keep for backward compatibility
-  
-  // Get dynamic modified time based on casino updates and page checks
-  const dynamicModifiedTime = await getCasinoPageModifiedTime(dbCasino.slug, dbCasino.updatedAt);
-  
-  // Convert dynamic modified time string to Date object for DateDisplay component
-  const dynamicModifiedDate = new Date(dynamicModifiedTime);
   
   // Convert Prisma Review objects to the format expected by ReviewSection
   const reviews = dbCasino.reviews
@@ -618,7 +612,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
             verified: review.verified
           })),
           datePublished: dbCasino.createdAt?.toISOString(),
-          dateModified: dbCasino.updatedAt?.toISOString()
+          dateModified: dynamicModifiedTime
         }}
       />
 
@@ -1204,7 +1198,7 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
           {/* Date Display */}
           <DateDisplay 
             publishedAt={dbCasino.createdAt}
-            modifiedAt={dynamicModifiedDate}
+            modifiedAt={dynamicModifiedTime}
             className="mb-6"
           />
 
