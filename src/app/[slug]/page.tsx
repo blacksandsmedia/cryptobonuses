@@ -514,9 +514,9 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
     lastClaimed
   };
 
-  // Use database content directly (no more generation)
-  const aboutContent = dbCasino.aboutContent || `${dbCasino.name} is a popular crypto casino offering exciting gaming experiences with cryptocurrency payments.`;
-  const bonusDescription = dbCasino.bonusDetailsContent || `This exclusive bonus offer provides great value for players at ${dbCasino.name}.`;
+  // Use database content directly (no fallback content)
+  const aboutContent = dbCasino.aboutContent;
+  const bonusDescription = dbCasino.bonusDetailsContent;
   const gameContent = dbCasino.gameContent;
   const howToRedeemContent = dbCasino.howToRedeemContent;
   const termsContent = dbCasino.termsContent;
@@ -532,17 +532,18 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
     logo: normalizeImagePath(dbCasino.logo)
   };
 
-  // Define table of contents items
+  // Define table of contents items - only include sections with content
   const tocItems = [
     { id: 'how-to-redeem', label: 'How to Redeem', icon: '' },
-    { id: 'about-casino', label: 'About', icon: '' },
+    ...(aboutContent ? [{ id: 'about-casino', label: 'About', icon: '' }] : []),
     ...(dbCasino.screenshots && dbCasino.screenshots.length > 0 ? [{ id: 'screenshots', label: 'Screenshots', icon: '' }] : []),
+    ...(gameContent ? [{ id: 'games', label: 'Games', icon: '' }] : []),
     { id: 'bonus-details', label: 'Bonus Details', icon: '' },
     ...(reviews.length > 0 ? [{ id: 'reviews', label: 'Reviews', icon: '' }] : []),
     { id: 'analytics', label: 'Analytics', icon: '' },
-    { id: 'terms', label: 'Terms', icon: '' },
+    ...(termsContent ? [{ id: 'terms', label: 'Terms', icon: '' }] : []),
     { id: 'more-offers', label: 'More Offers', icon: '' },
-    { id: 'faq', label: 'FAQ', icon: '' },
+    ...(faqContent ? [{ id: 'faq', label: 'FAQ', icon: '' }] : []),
     { id: 'weekly-popular', label: 'Popular This Week', icon: '' },
     { id: 'recent-page-checks', label: `Recent ${dbCasino.name} Updates`, icon: '' }
   ];
@@ -831,17 +832,19 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
           )}
 
           {/* About Casino Section - Enhanced with SEO content */}
-          <section id="about-casino" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">About {dbCasino.name}</h2>
-            <RichContent 
-              content={aboutContent} 
-              type="about" 
-              keyFeatures={dbCasino.keyFeatures || []}
-              casinoData={richContentCasinoData}
-              bonusData={richContentBonusData}
-              analyticsData={richContentAnalyticsData}
-            />
-          </section>
+          {aboutContent && (
+            <section id="about-casino" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">About {dbCasino.name}</h2>
+              <RichContent 
+                content={aboutContent} 
+                type="about" 
+                keyFeatures={dbCasino.keyFeatures || []}
+                casinoData={richContentCasinoData}
+                bonusData={richContentBonusData}
+                analyticsData={richContentAnalyticsData}
+              />
+            </section>
+          )}
 
           {/* Screenshots Section - New section to display casino screenshots */}
           {dbCasino.screenshots && dbCasino.screenshots.length > 0 && (
@@ -854,19 +857,35 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
             </section>
           )}
 
-          {/* Bonus Offer Section - Enhanced with more detailed content */}
-          <section id="bonus-details" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Bonus Offer Details</h2>
-            <div className="bg-[#2c2f3a] p-4 rounded-lg mb-4 border border-[#404055]">
-              <h3 className="text-lg font-semibold text-[#68D08B] mb-2">{bonusTitle}</h3>
+          {/* Games Section - Show games content if available */}
+          {gameContent && (
+            <section id="games" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">{dbCasino.name} Games</h2>
               <RichContent 
-                content={bonusDescription} 
-                type="bonusDetails" 
+                content={gameContent} 
+                type="games" 
                 casinoData={richContentCasinoData}
                 bonusData={richContentBonusData}
                 analyticsData={richContentAnalyticsData}
               />
-            </div>
+            </section>
+          )}
+
+          {/* Bonus Offer Section - Enhanced with more detailed content */}
+          <section id="bonus-details" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Bonus Offer Details</h2>
+            {bonusDescription && (
+              <div className="bg-[#2c2f3a] p-4 rounded-lg mb-4 border border-[#404055]">
+                <h3 className="text-lg font-semibold text-[#68D08B] mb-2">{bonusTitle}</h3>
+                <RichContent 
+                  content={bonusDescription} 
+                  type="bonusDetails" 
+                  casinoData={richContentCasinoData}
+                  bonusData={richContentBonusData}
+                  analyticsData={richContentAnalyticsData}
+                />
+              </div>
+            )}
             
             {/* Bonus Type Badge */}
             <div className="flex flex-wrap gap-2 mb-4">
@@ -892,16 +911,18 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
           </div>
 
           {/* Terms & Conditions */}
-          <section id="terms" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Terms & Conditions</h2>
-            <RichContent 
-              content={termsContent || `This bonus offer is available for a limited time and may be subject to additional restrictions. ${bonusCode ? `${codeTypeCapitalized} ${bonusCode} ` : ''}must be applied during registration or deposit on ${dbCasino.name}'s website. Please refer to ${dbCasino.name}'s site for full bonus terms and conditions, including wagering requirements, game restrictions, and maximum withdrawal limits.`} 
-              type="terms" 
-              casinoData={richContentCasinoData}
-              bonusData={richContentBonusData}
-              analyticsData={richContentAnalyticsData}
-            />
-          </section>
+          {termsContent && (
+            <section id="terms" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Terms & Conditions</h2>
+              <RichContent 
+                content={termsContent} 
+                type="terms" 
+                casinoData={richContentCasinoData}
+                bonusData={richContentBonusData}
+                analyticsData={richContentAnalyticsData}
+              />
+            </section>
+          )}
 
           {/* More Offers Section */}
           <section id="more-offers" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
@@ -960,16 +981,18 @@ export default async function CasinoPage({ params }: { params: { slug: string } 
           </section>
 
           {/* FAQ Section */}
-          <section id="faq" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-            <RichContent 
-              content={faqContent || `How do I claim the ${dbCasino.name} bonus?\nTo claim the ${bonusTitle} at ${dbCasino.name}, ${bonusCode ? `use the ${codeTypeCapitalized} ${bonusCode} during registration or when making your deposit.` : `click the "Get Bonus" button above to visit their website and follow the registration process.`}\n\nWhat cryptocurrencies does ${dbCasino.name} accept?\n${dbCasino.name} accepts a variety of cryptocurrencies for deposits and withdrawals, typically including Bitcoin (BTC), Ethereum (ETH), Litecoin (LTC), and more.\n\nAre there wagering requirements for this bonus?\nYes, like most online casino bonuses, the ${bonusTitle} at ${dbCasino.name} comes with wagering requirements. You'll need to wager the bonus amount a specific number of times before withdrawing any associated winnings.\n\nIs ${dbCasino.name} available in my country?\n${dbCasino.name} is available in many countries worldwide, though restrictions may apply in certain jurisdictions. As a crypto casino, it generally offers wider accessibility than traditional online casinos.\n\nHow long does it take to withdraw winnings from ${dbCasino.name}?\nCryptocurrency withdrawals at ${dbCasino.name} are typically processed within minutes once approved, though the actual time depends on blockchain network congestion.`} 
-              type="faq" 
-              casinoData={richContentCasinoData}
-              bonusData={richContentBonusData}
-              analyticsData={richContentAnalyticsData}
-            />
-          </section>
+          {faqContent && (
+            <section id="faq" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+              <RichContent 
+                content={faqContent} 
+                type="faq" 
+                casinoData={richContentCasinoData}
+                bonusData={richContentBonusData}
+                analyticsData={richContentAnalyticsData}
+              />
+            </section>
+          )}
 
           {/* Weekly Popular Casinos */}
           <div id="weekly-popular">

@@ -295,17 +295,18 @@ export default function EditCasinoPage({
       setValue("foundedYear", data.foundedYear || NaN);
       setValue("codeTermLabel", data.codeTermLabel || "bonus code");
       
-      // Handle content fields - use existing content or generate if empty
+      // Handle content fields - only use existing content, no auto-generation
       const casinoName = data.name;
       const bonusType = data.bonuses?.[0]?.types?.[0] || "WELCOME";
       const bonusTitle = data.bonuses?.[0]?.title || "Welcome Bonus";
       
-      setValue("aboutContent", data.aboutContent || generateAboutContent(casinoName, bonusType));
-      setValue("howToRedeemContent", data.howToRedeemContent || generateHowToRedeemContent(casinoName, !!data.bonuses?.[0]?.code, data.website || "", data.affiliateLink || ""));
-      setValue("bonusDetailsContent", data.bonusDetailsContent || generateBonusDetailsContent(casinoName, bonusTitle, bonusType));
-      setValue("gameContent", data.gameContent || generateGameContent(casinoName));
-      setValue("termsContent", data.termsContent || generateTermsContent(casinoName));
-      setValue("faqContent", data.faqContent || generateFAQContent(casinoName));
+      // Only populate fields if they have actual content
+      setValue("aboutContent", data.aboutContent || "");
+      setValue("howToRedeemContent", data.howToRedeemContent || "");
+      setValue("bonusDetailsContent", data.bonusDetailsContent || "");
+      setValue("gameContent", data.gameContent || "");
+      setValue("termsContent", data.termsContent || "");
+      setValue("faqContent", data.faqContent || "");
       
       // Store the calculated rating for display
       setCalculatedRating(data.rating);
