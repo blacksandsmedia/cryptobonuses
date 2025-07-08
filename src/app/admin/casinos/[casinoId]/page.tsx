@@ -232,10 +232,6 @@ export default function EditCasinoPage({
   // Custom table fields state
   const [customTableFields, setCustomTableFields] = useState<Array<{label: string, value: string}>>([]);
   
-  // Recommended casinos state
-  const [recommendedCasinoIds, setRecommendedCasinoIds] = useState<string[]>([]);
-  const [availableCasinos, setAvailableCasinos] = useState<Casino[]>([]);
-  
   // Screenshot state
   const [screenshotFiles, setScreenshotFiles] = useState<(File | null)[]>([null, null, null]);
   const [screenshotPreviews, setScreenshotPreviews] = useState<(string | null)[]>([null, null, null]);
@@ -259,9 +255,6 @@ export default function EditCasinoPage({
     } else {
       setLoading(false);
     }
-    
-    // Fetch available casinos for recommendations
-    fetchAvailableCasinos();
   }, [params.casinoId]);
 
   // Fetch settings for code term label
@@ -357,11 +350,6 @@ export default function EditCasinoPage({
       // Load custom table fields if they exist
       if (data.customTableFields && Array.isArray(data.customTableFields)) {
         setCustomTableFields(data.customTableFields);
-      }
-      
-      // Load recommended casino IDs if they exist
-      if (data.recommendedCasinoIds && Array.isArray(data.recommendedCasinoIds)) {
-        setRecommendedCasinoIds(data.recommendedCasinoIds);
       }
       
       // Load the first bonus if it exists
@@ -647,37 +635,12 @@ export default function EditCasinoPage({
   };
 
   const removeCustomTableField = (index: number) => {
-    setCustomTableFields(prev => prev.filter((_, i) => i !== index));
+    setCustomTableFields(customTableFields.filter((_, i) => i !== index));
   };
 
-  // Fetch available casinos for recommendations
-  const fetchAvailableCasinos = async () => {
-    try {
-      const response = await fetch('/api/casinos');
-      if (response.ok) {
-        const casinos = await response.json();
-        setAvailableCasinos(casinos);
-      }
-    } catch (error) {
-      console.error('Error fetching available casinos:', error);
-    }
-  };
-
-  // Handle recommended casino selection
-  const handleRecommendedCasinoToggle = (casinoId: string) => {
-    setRecommendedCasinoIds(prev => {
-      if (prev.includes(casinoId)) {
-        return prev.filter(id => id !== casinoId);
-      } else if (prev.length < 3) {
-        return [...prev, casinoId];
-      }
-      return prev;
-    });
-  };
-
-  // Helper function to clear form fields
-  const clearField = (fieldName: string) => {
-    setValue(fieldName as any, "");
+  // Clear content handlers
+  const clearField = (fieldName: keyof CasinoForm) => {
+    setValue(fieldName, '' as any);
   };
 
   const onSubmit = async (data: CasinoForm) => {
@@ -780,13 +743,36 @@ export default function EditCasinoPage({
       }
 
       // Prepare casino data including bonus data
-      const formData = {
-        ...data,
-        bonusId: bonusId,
+      const casinoData = {
+        name: data.name,
+        slug: data.slug,
+        logo: data.logo,
+        featuredImage: data.featuredImage,
+        description: data.description,
+        affiliateLink: data.affiliateLink,
+        website: data.website,
+        foundedYear: (data.foundedYear && !isNaN(data.foundedYear)) ? data.foundedYear : null,
+        codeTermLabel: data.codeTermLabel || "bonus code",
+        screenshots: data.screenshots,
+        displayOrder: currentDisplayOrder,
+        // Add key features
         keyFeatures: keyFeatures,
+        // Add custom table fields
         customTableFields: customTableFields,
-        recommendedCasinoIds: recommendedCasinoIds,
-        screenshots: screenshotUrls,
+        // Add content fields
+        aboutContent: data.aboutContent,
+        howToRedeemContent: data.howToRedeemContent,
+        bonusDetailsContent: data.bonusDetailsContent,
+        gameContent: data.gameContent,
+        termsContent: data.termsContent,
+        faqContent: data.faqContent,
+        // Add bonus data directly to the casino update request
+        bonusId: bonusId,
+        bonusTitle: data.bonusTitle,
+        bonusDescription: data.bonusDescription,
+        bonusCode: data.bonusCode,
+        bonusTypes: data.bonusTypes,
+        bonusValue: data.bonusValue
       };
 
       // Save the casino with bonus data included
@@ -796,7 +782,7 @@ export default function EditCasinoPage({
           "Content-Type": "application/json",
         },
         credentials: "include", // Include credentials for auth
-        body: JSON.stringify(formData),
+        body: JSON.stringify(casinoData),
       });
 
       if (!response.ok) {
@@ -1094,10 +1080,13 @@ export default function EditCasinoPage({
                 </label>
                 <button
                   type="button"
-                  onClick={() => clearField("description")}
-                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  onClick={() => clearField('description')}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
                   title="Clear description"
                 >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                   Clear
                 </button>
               </div>
@@ -1255,41 +1244,6 @@ export default function EditCasinoPage({
           </div>
           
           <div className="border-b border-[#404055] pb-6">
-            <h3 className="text-xl font-semibold mb-4">Recommended Casinos</h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Select up to 3 casinos to recommend in the "More Offers" section. These will appear as related offers on this casino's page.
-            </p>
-            
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {availableCasinos
-                .filter(casino => casino.id !== params.casinoId) // Don't show current casino
-                .map((casino) => (
-                  <div key={casino.id} className="flex items-center gap-3 p-3 bg-[#2A2B37] rounded-md">
-                    <input
-                      type="checkbox"
-                      id={`recommended-${casino.id}`}
-                      checked={recommendedCasinoIds.includes(casino.id)}
-                      onChange={() => handleRecommendedCasinoToggle(casino.id)}
-                      disabled={!recommendedCasinoIds.includes(casino.id) && recommendedCasinoIds.length >= 3}
-                      className="w-4 h-4 text-blue-600 bg-[#2A2B37] border border-[#404055] rounded"
-                    />
-                    <label htmlFor={`recommended-${casino.id}`} className="flex-1 text-white cursor-pointer">
-                      {casino.name}
-                    </label>
-                  </div>
-                ))}
-              
-              {availableCasinos.length === 0 && (
-                <p className="text-gray-400 text-center py-4">Loading available casinos...</p>
-              )}
-            </div>
-            
-            <p className="text-xs text-gray-400 mt-3">
-              Selected: {recommendedCasinoIds.length}/3 casinos
-            </p>
-          </div>
-          
-          <div className="border-b border-[#404055] pb-6">
             <h3 className="text-xl font-semibold mb-4">Casino Bonus</h3>
             
             <div className="form-group">
@@ -1382,10 +1336,13 @@ export default function EditCasinoPage({
                 </label>
                 <button
                   type="button"
-                  onClick={() => clearField("bonusDescription")}
-                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  onClick={() => clearField('bonusDescription')}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
                   title="Clear bonus description"
                 >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                   Clear
                 </button>
               </div>
@@ -1422,10 +1379,13 @@ export default function EditCasinoPage({
                   </label>
                   <button
                     type="button"
-                    onClick={() => clearField("aboutContent")}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    onClick={() => clearField('aboutContent')}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
                     title="Clear about content"
                   >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Clear
                   </button>
                 </div>
@@ -1453,10 +1413,13 @@ export default function EditCasinoPage({
                   </label>
                   <button
                     type="button"
-                    onClick={() => clearField("howToRedeemContent")}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    onClick={() => clearField('howToRedeemContent')}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
                     title="Clear how to redeem content"
                   >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Clear
                   </button>
                 </div>
@@ -1484,10 +1447,13 @@ export default function EditCasinoPage({
                   </label>
                   <button
                     type="button"
-                    onClick={() => clearField("bonusDetailsContent")}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    onClick={() => clearField('bonusDetailsContent')}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
                     title="Clear bonus details content"
                   >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Clear
                   </button>
                 </div>
@@ -1515,10 +1481,13 @@ export default function EditCasinoPage({
                   </label>
                   <button
                     type="button"
-                    onClick={() => clearField("gameContent")}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
-                    title="Clear game content"
+                    onClick={() => clearField('gameContent')}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
+                    title="Clear games content"
                   >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Clear
                   </button>
                 </div>
@@ -1546,10 +1515,13 @@ export default function EditCasinoPage({
                   </label>
                   <button
                     type="button"
-                    onClick={() => clearField("termsContent")}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    onClick={() => clearField('termsContent')}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
                     title="Clear terms content"
                   >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Clear
                   </button>
                 </div>
@@ -1577,10 +1549,13 @@ export default function EditCasinoPage({
                   </label>
                   <button
                     type="button"
-                    onClick={() => clearField("faqContent")}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    onClick={() => clearField('faqContent')}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
                     title="Clear FAQ content"
                   >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Clear
                   </button>
                 </div>
