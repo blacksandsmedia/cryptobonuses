@@ -74,7 +74,7 @@ const getOrganizationSchema = () => {
       'Bitcoin Promotions'
     ],
     'sameAs': [
-      'https://twitter.com/cryptobonusescom'
+      'https://x.com/CryptoBonusesco'
     ],
     'contactPoint': {
       '@type': 'ContactPoint',

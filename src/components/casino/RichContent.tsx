@@ -114,81 +114,50 @@ function replaceVariables(
   return processedText;
 }
 
-// Auto-copy code component
-const ClickableCode = ({ code, onCopy }: { code: string; onCopy: (code: string) => void }) => {
-  const [copied, setCopied] = useState(false);
 
-  const handleClick = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    onCopy(code);
-    
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  };
 
-  return (
-    <span 
-      className="text-[#68D08B] cursor-pointer hover:text-[#7ee095] transition-colors select-none"
-      onClick={handleClick}
-      title="Click to copy code"
-    >
-      {copied ? 'Copied!' : code}
-    </span>
-  );
-};
+// Function to detect and convert the specific promo code to clickable elements
+const processSpecificCodeDetection = (text: string, bonusCode: string | null | undefined, onCodeCopy: (code: string) => void) => {
+  // If no bonus code is provided, return text as-is
+  if (!bonusCode || bonusCode.trim() === '') {
+    return [text];
+  }
 
-// Function to detect and convert promo codes to clickable elements
-const processCodeDetection = (text: string, onCodeCopy: (code: string) => void) => {
-  // More restrictive pattern for promo codes - must be 4+ characters, contain letters, and not be purely numeric
-  const codePattern = /\b[A-Z][A-Z0-9]{3,19}\b(?=\s|$|[.,;!?])/g;
-  
-  // Common words to exclude from being treated as codes
-  const excludeWords = [
-    'THE', 'AND', 'FOR', 'ARE', 'BUT', 'NOT', 'YOU', 'ALL', 'CAN', 'HAS', 'HER', 'WAS', 'ONE', 'OUR', 'OUT', 'DAY', 'GET', 'USE', 'MAN', 'NEW', 'NOW', 'WAY', 'MAY', 'SAY', 'SEE', 'HIM', 'TWO', 'HOW', 'ITS', 'WHO', 'OIL', 'SIT', 'SET', 'RUN', 'EAT', 'FAR', 'SEA', 'EYE', 'BAD', 'BIG', 'BOX', 'YET', 'YES', 'TRY', 'LET', 'PUT', 'TOO', 'OLD', 'ANY', 'APP', 'TOP', 'WIN', 'BET', 'VIP', 'MAX', 'MIN', 'END', 'PLAY', 'GAME', 'GAMES', 'SPIN', 'SPINS', 'FREE', 'CASH', 'BONUS', 'CASINO', 'SLOTS', 'TABLE', 'LIVE', 'POKER', 'DICE', 'CARD', 'CARDS', 'DEAL', 'DEALER', 'PLAYER', 'PLAYERS', 'WELCOME', 'DEPOSIT', 'WITHDRAW', 'ACCOUNT', 'REGISTER', 'LOGIN', 'SIGN', 'CLICK', 'BUTTON', 'LINK', 'WEBSITE', 'SITE', 'PAGE', 'HOME', 'MAIN', 'FIRST', 'LAST', 'NEXT', 'PREV', 'BACK', 'USD', 'EUR', 'GBP', 'BTC', 'ETH', 'LTC', 'BCH', 'DOGE', 'USDT', 'BUSD', 'ADA', 'XRP', 'DOT', 'UNI', 'LINK', 'MATIC', 'AVAX', 'LUNA', 'NEAR', 'ALGO', 'ATOM', 'EGLD', 'HBAR', 'ICP', 'VET', 'FTM', 'SAND', 'MANA', 'AXS', 'CRO', 'LRC', 'ENJ', 'BAT', 'ZEC', 'DASH', 'XMR', 'EOS', 'TRX', 'TRON', 'XLM', 'NEO', 'IOTA', 'XTZ', 'WAVES'
-  ];
-  
   const parts: (string | React.ReactElement)[] = [];
+  
+  // Create a regex pattern for the specific bonus code (case-insensitive, whole word)
+  const codePattern = new RegExp(`\\b${bonusCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
   let lastIndex = 0;
+  let matchIndex = 0;
   
   const matches = Array.from(text.matchAll(codePattern));
   
-  matches.forEach((match, index) => {
-    const matchedText = match[0];
+  matches.forEach((match) => {
     const matchStart = match.index!;
-    
-    // Skip if it's a common word
-    if (excludeWords.includes(matchedText)) {
-      return;
-    }
-    
-    // Skip if it's purely numeric (like "001", "123", etc.)
-    if (/^\d+$/.test(matchedText)) {
-      return;
-    }
-    
-    // Skip if it appears to be part of a monetary amount (preceded by digits and decimal)
-    const beforeText = text.substring(Math.max(0, matchStart - 10), matchStart);
-    if (/\d\.\s*$/.test(beforeText)) {
-      return;
-    }
+    const matchedText = match[0];
     
     // Add text before the match
     if (matchStart > lastIndex) {
       parts.push(text.substring(lastIndex, matchStart));
     }
     
-    // Add the clickable code
+    // Add the clickable code with proper styling
     parts.push(
-      <ClickableCode 
-        key={`code-${index}-${matchedText}`} 
-        code={matchedText} 
-        onCopy={onCodeCopy}
-      />
+      <span 
+        key={`code-${matchIndex}-${matchedText}`}
+        className="text-[#68D08B] font-bold cursor-pointer hover:text-[#7ee095] transition-colors select-none"
+        onClick={() => {
+          navigator.clipboard.writeText(bonusCode);
+          onCodeCopy(bonusCode);
+        }}
+        title="Click to copy code"
+      >
+        {matchedText}
+      </span>
     );
     
     lastIndex = matchStart + matchedText.length;
+    matchIndex++;
   });
   
   // Add remaining text
@@ -226,7 +195,7 @@ const processDescriptionWithLinks = (
     // Add text before the link (process it for codes)
     if (matchStart > lastIndex) {
       const beforeText = processedText.substring(lastIndex, matchStart);
-      const processedBefore = processCodeDetection(beforeText, onCodeCopy);
+      const processedBefore = processSpecificCodeDetection(beforeText, bonusData?.code, onCodeCopy);
       if (Array.isArray(processedBefore)) {
         processedBefore.forEach((part, idx) => {
           parts.push(typeof part === 'string' ? part : React.cloneElement(part, { key: `before-${partIndex}-${idx}` }));
@@ -256,7 +225,7 @@ const processDescriptionWithLinks = (
   // Process remaining text for codes
   if (lastIndex < processedText.length) {
     const remainingText = processedText.substring(lastIndex);
-    const processedRemaining = processCodeDetection(remainingText, onCodeCopy);
+    const processedRemaining = processSpecificCodeDetection(remainingText, bonusData?.code, onCodeCopy);
     if (Array.isArray(processedRemaining)) {
       processedRemaining.forEach((part, idx) => {
         parts.push(typeof part === 'string' ? part : React.cloneElement(part, { key: `remaining-${idx}` }));
@@ -268,7 +237,7 @@ const processDescriptionWithLinks = (
   
   // If no links were found, just process for codes
   if (parts.length === 0) {
-    return processCodeDetection(processedText, onCodeCopy);
+    return processSpecificCodeDetection(processedText, bonusData?.code, onCodeCopy);
   }
   
   return parts;
