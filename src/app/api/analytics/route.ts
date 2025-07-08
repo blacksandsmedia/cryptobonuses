@@ -219,7 +219,7 @@ export async function GET(request: Request) {
           id: bonus.id,
           title: bonus.title,
           code: bonus.code,
-          type: bonus.type,
+          types: bonus.types,
           value: bonus.value,
           copies: transformedTrackings.filter(t => t.bonusId === bonus.id && t.actionType === "code_copy").length,
           clicks: transformedTrackings.filter(t => t.bonusId === bonus.id && t.actionType === "offer_click").length
@@ -311,7 +311,7 @@ export async function GET(request: Request) {
             id: bonus.id,
             title: bonus.title,
             code: bonus.code,
-            type: bonus.type,
+            types: bonus.types,
             value: bonus.value,
             copies: casinoTrackings.filter(t => t.bonusId === bonus.id && t.actionType === "code_copy").length,
             clicks: casinoTrackings.filter(t => t.bonusId === bonus.id && t.actionType === "offer_click").length
