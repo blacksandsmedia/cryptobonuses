@@ -812,34 +812,7 @@ export default function EditCasinoPage({
         }
       }
 
-      // Only create a separate bonus if we're creating a new casino and there's no bonusId
-      if (params.casinoId === "new" && !bonusId) {
-        // Create new bonus
-        const bonusData = {
-          title: data.bonusTitle,
-          description: data.bonusDescription,
-          code: data.bonusCode || null,
-          types: data.bonusTypes,
-          value: data.bonusValue,
-          casinoId: savedCasino.id
-        };
-
-        const bonusResponse = await fetch("/api/bonuses", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Add authorization header with admin token from cookies if available
-            "Authorization": `Bearer ${document.cookie.split('; ').find(row => row.startsWith('admin-token='))?.split('=')[1] || ''}`
-          },
-          credentials: "include", // Include cookies for auth
-          body: JSON.stringify(bonusData),
-        });
-
-        if (!bonusResponse.ok) {
-          const errorData = await bonusResponse.json();
-          throw new Error(errorData.error || "Failed to save bonus");
-        }
-      }
+      // Bonus creation is now handled by the casino API, so no separate bonus creation needed
 
       // On success, navigate back to the casinos list
       router.push("/admin/casinos");

@@ -169,19 +169,35 @@ export async function PUT(
       } as any,
     });
 
-    // Also check for bonus data and update if provided
-    if (data.bonusId && data.bonusTitle) {
-      console.log("Updating bonus:", data.bonusId, "with types:", data.bonusTypes);
-      await prisma.bonus.update({
-        where: { id: data.bonusId },
-        data: {
-          title: data.bonusTitle,
-          description: data.bonusDescription,
-          code: data.bonusCode,
-          types: data.bonusTypes || [],
-          value: data.bonusValue,
-        } as any
-      });
+    // Handle bonus data - either update existing or create new
+    if (data.bonusTitle) {
+      if (data.bonusId) {
+        // Update existing bonus
+        console.log("Updating existing bonus:", data.bonusId, "with types:", data.bonusTypes);
+        await prisma.bonus.update({
+          where: { id: data.bonusId },
+          data: {
+            title: data.bonusTitle,
+            description: data.bonusDescription,
+            code: data.bonusCode,
+            types: data.bonusTypes || ["WELCOME"],
+            value: data.bonusValue,
+          } as any
+        });
+      } else {
+        // Create new bonus for this casino
+        console.log("Creating new bonus for casino:", params.id, "with types:", data.bonusTypes);
+        await prisma.bonus.create({
+          data: {
+            title: data.bonusTitle,
+            description: data.bonusDescription,
+            code: data.bonusCode,
+            types: data.bonusTypes || ["WELCOME"],
+            value: data.bonusValue,
+            casinoId: params.id,
+          } as any
+        });
+      }
     }
     
     return NextResponse.json(casino);

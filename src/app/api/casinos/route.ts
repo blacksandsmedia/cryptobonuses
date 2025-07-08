@@ -262,6 +262,21 @@ export async function POST(request: Request) {
       }
     });
     
+    // Create bonus if bonus data is provided
+    if (data.bonusTitle) {
+      console.log("Creating bonus for new casino:", casino.id, "with types:", data.bonusTypes);
+      await prisma.bonus.create({
+        data: {
+          title: data.bonusTitle,
+          description: data.bonusDescription,
+          code: data.bonusCode,
+          types: data.bonusTypes || ["WELCOME"],
+          value: data.bonusValue,
+          casinoId: casino.id,
+        } as any
+      });
+    }
+    
     return NextResponse.json(casino);
   } catch (error) {
     console.error("Error creating casino:", error);
