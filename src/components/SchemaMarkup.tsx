@@ -64,8 +64,7 @@ const getOrganizationSchema = () => {
       'height': 512
     },
     'description': `Crypto Bonuses is the leading platform for Bitcoin casino bonuses and cryptocurrency gambling promotions in ${currentYear}. We provide expert reviews, exclusive bonus codes, and verified offers from trusted crypto casinos.`,
-    'foundingDate': '2024',
-    'slogan': 'Your trusted source for crypto casino bonuses',
+    'foundingDate': '2024-01-01',
     'areaServed': 'Worldwide',
     'knowsAbout': [
       'Bitcoin Casino Bonuses',
@@ -88,6 +87,16 @@ const getOrganizationSchema = () => {
 // Website Schema with search action
 const getWebsiteSchema = (pageTitle?: string, pageDescription?: string, datePublished?: string, dateModified?: string) => {
   const currentYear = new Date().getFullYear();
+  
+  // Ensure dates are in proper ISO format
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return new Date().toISOString();
+    try {
+      return new Date(dateString).toISOString();
+    } catch {
+      return new Date().toISOString();
+    }
+  };
   
   const schema: any = {
     '@context': 'https://schema.org',
@@ -113,10 +122,10 @@ const getWebsiteSchema = (pageTitle?: string, pageDescription?: string, datePubl
 
   // Add dates if provided
   if (datePublished) {
-    schema.datePublished = datePublished;
+    schema.datePublished = formatDate(datePublished);
   }
   if (dateModified) {
-    schema.dateModified = dateModified;
+    schema.dateModified = formatDate(dateModified);
   }
 
   return schema;
@@ -148,30 +157,39 @@ const getCasinoSchema = (casino: Casino, bonus?: Bonus, reviews?: Review[], date
     ? verifiedReviews.reduce((sum, review) => sum + review.rating, 0) / verifiedReviews.length
     : casino.rating;
 
+  // Ensure dates are in proper ISO format
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return new Date().toISOString();
+    try {
+      return new Date(dateString).toISOString();
+    } catch {
+      return new Date().toISOString();
+    }
+  };
+
   const schema: any = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    '@id': `https://cryptobonuses.com/${casino.slug}#product`,
-    'name': bonus?.code 
-      ? `${casino.name} Promo Code - ${bonus.code}`
-      : `${casino.name} Casino Bonus`,
+    '@type': 'Article',
+    '@id': `https://cryptobonuses.com/${casino.slug}#article`,
+    'headline': bonus?.code 
+      ? `${casino.name} Promo Code ${bonus.code} - ${bonus.title}`
+      : `${casino.name} Casino Bonus Review`,
     'description': bonus?.description || casino.description,
-    'image': casino.featuredImage 
-      ? createAbsoluteImageUrl(casino.featuredImage)
-      : createAbsoluteImageUrl(casino.logo),
+    'image': {
+      '@type': 'ImageObject',
+      'url': casino.featuredImage 
+        ? createAbsoluteImageUrl(casino.featuredImage)
+        : createAbsoluteImageUrl(casino.logo),
+      'width': 1200,
+      'height': 630
+    },
     'url': `https://cryptobonuses.com/${casino.slug}`,
-    'brand': {
-      '@type': 'Brand',
-      'name': casino.name,
-      'logo': createAbsoluteImageUrl(casino.logo),
-      'url': casino.website
+    'author': {
+      '@type': 'Organization',
+      '@id': 'https://cryptobonuses.com/#organization',
+      'name': 'Crypto Bonuses',
+      'url': 'https://cryptobonuses.com'
     },
-    'category': 'Bitcoin Casino Bonus',
-    'audience': {
-      '@type': 'Audience',
-      'audienceType': 'cryptocurrency users'
-    },
-    // Add publisher information for Crypto Bonuses brand
     'publisher': {
       '@type': 'Organization',
       '@id': 'https://cryptobonuses.com/#organization',
@@ -179,34 +197,53 @@ const getCasinoSchema = (casino: Casino, bonus?: Bonus, reviews?: Review[], date
       'url': 'https://cryptobonuses.com',
       'logo': {
         '@type': 'ImageObject',
-        'url': 'https://cdn.prod.website-files.com/67dd29ae7952086f714105e7/67e11433aaedad5402a3d9c5_CryptoBonuses%20Logo%20Main.webp'
+        'url': 'https://cdn.prod.website-files.com/67dd29ae7952086f714105e7/67e11433aaedad5402a3d9c5_CryptoBonuses%20Logo%20Main.webp',
+        'width': 512,
+        'height': 512
       }
     },
-    // Add isPartOf to link to the main website
+    'datePublished': formatDate(datePublished),
+    'dateModified': formatDate(dateModified),
+    'inLanguage': 'en-US',
+    'about': {
+      '@type': 'Organization',
+      'name': casino.name,
+      'url': casino.website,
+      'logo': {
+        '@type': 'ImageObject',
+        'url': createAbsoluteImageUrl(casino.logo)
+      },
+      'foundingDate': casino.foundedYear ? `${casino.foundedYear}-01-01` : undefined
+    },
+    'mainEntity': {
+      '@type': 'Service',
+      'name': bonus?.title || `${casino.name} Casino Bonus`,
+      'description': bonus?.description || casino.description,
+      'provider': {
+        '@type': 'Organization',
+        'name': casino.name,
+        'url': casino.website
+      },
+      'category': 'Bitcoin Casino Bonus',
+      'audience': {
+        '@type': 'Audience',
+        'name': 'Cryptocurrency Users'
+      }
+    },
     'isPartOf': {
       '@type': 'WebSite',
-      '@id': 'https://cryptobonuses.com/#website',
-      'name': 'Crypto Bonuses',
-      'url': 'https://cryptobonuses.com'
+      '@id': 'https://cryptobonuses.com/#website'
     }
   };
 
-  // Add dates if provided
-  if (datePublished) {
-    schema.datePublished = datePublished;
-  }
-  if (dateModified) {
-    schema.dateModified = dateModified;
+  // Remove undefined values
+  if (!casino.foundedYear) {
+    delete schema.about.foundingDate;
   }
 
-  // Add founding date if available
-  if (casino.foundedYear) {
-    schema.brand.foundingDate = casino.foundedYear.toString();
-  }
-
-  // Add offers section
+  // Add offers section for the service
   if (bonus) {
-    schema.offers = {
+    schema.mainEntity.offers = {
       '@type': 'Offer',
       'name': bonus.title,
       'description': bonus.description,
@@ -218,31 +255,29 @@ const getCasinoSchema = (casino: Casino, bonus?: Bonus, reviews?: Review[], date
         'name': casino.name,
         'url': casino.website
       },
-      'priceValidUntil': new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+      'validThrough': new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
       'category': bonus.types?.join(', ') || 'Casino Bonus'
     };
   }
 
   // Add aggregate rating if there are reviews
   if (verifiedReviews.length > 0) {
-    schema.aggregateRating = {
+    schema.mainEntity.aggregateRating = {
       '@type': 'AggregateRating',
-      '@id': `https://cryptobonuses.com/${casino.slug}#aggregaterating`,
-      'ratingValue': aggregateRating.toFixed(1),
-      'reviewCount': verifiedReviews.length.toString(),
-      'bestRating': '5',
-      'worstRating': '1'
+      'ratingValue': parseFloat(aggregateRating.toFixed(1)),
+      'reviewCount': verifiedReviews.length,
+      'bestRating': 5,
+      'worstRating': 1
     };
 
-    // Add individual reviews
+    // Add individual reviews to the article
     schema.review = verifiedReviews.slice(0, 5).map((review, index) => ({
       '@type': 'Review',
-      '@id': `https://cryptobonuses.com/${casino.slug}#review${index + 1}`,
       'reviewRating': {
         '@type': 'Rating',
-        'ratingValue': review.rating.toString(),
-        'bestRating': '5',
-        'worstRating': '1'
+        'ratingValue': review.rating,
+        'bestRating': 5,
+        'worstRating': 1
       },
       'author': {
         '@type': 'Person',
@@ -250,10 +285,11 @@ const getCasinoSchema = (casino: Casino, bonus?: Bonus, reviews?: Review[], date
       },
       'reviewBody': review.content,
       'datePublished': review.createdAt 
-        ? new Date(review.createdAt).toISOString().split('T')[0]
-        : new Date().toISOString().split('T')[0],
-      'publisher': {
-        '@id': 'https://cryptobonuses.com/#organization'
+        ? formatDate(review.createdAt)
+        : formatDate(),
+      'itemReviewed': {
+        '@type': 'Service',
+        'name': `${casino.name} Casino Bonus`
       }
     }));
   }
@@ -292,8 +328,7 @@ const getBrandSchema = () => {
       'width': 512,
       'height': 512
     },
-    'description': `Crypto Bonuses is the trusted source for Bitcoin casino bonuses and cryptocurrency gambling promotions in ${currentYear}.`,
-    'slogan': 'Your trusted source for crypto casino bonuses'
+    'description': `Crypto Bonuses is the trusted source for Bitcoin casino bonuses and cryptocurrency gambling promotions in ${currentYear}.`
   };
 };
 
