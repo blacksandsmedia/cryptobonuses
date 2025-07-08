@@ -475,34 +475,34 @@ export default function CasinosPage() {
           />
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
             <span className="text-sm text-[#a7a9b4] whitespace-nowrap">Quick Edit:</span>
-            <button
-              onClick={() => setDetailedView(!detailedView)}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                detailedView 
-                  ? 'bg-[#68D08B] text-white' 
-                  : 'bg-[#373946] text-[#a7a9b4] hover:bg-[#454655]'
-              }`}
-            >
-              {detailedView ? 'Enabled' : 'Disabled'}
-            </button>
-          </div>
+          <button
+            onClick={() => setDetailedView(!detailedView)}
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              detailedView 
+                ? 'bg-[#68D08B] text-white' 
+                : 'bg-[#373946] text-[#a7a9b4] hover:bg-[#454655]'
+            }`}
+          >
+            {detailedView ? 'Enabled' : 'Disabled'}
+          </button>
+        </div>
           <div className="flex flex-col sm:flex-row gap-2">
-            <button
-              onClick={handleSearch}
+        <button
+          onClick={handleSearch}
               className="w-full sm:w-auto px-4 py-2 bg-[#373946] text-white rounded-md hover:bg-[#454655] transition-colors"
-            >
-              Search
-            </button>
-            {selectedCasinos.length > 0 && (
-              <button
-                onClick={handleBulkDelete}
+        >
+          Search
+        </button>
+        {selectedCasinos.length > 0 && (
+          <button
+            onClick={handleBulkDelete}
                 className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-              >
-                Delete Selected ({selectedCasinos.length})
-              </button>
-            )}
+          >
+            Delete Selected ({selectedCasinos.length})
+          </button>
+        )}
           </div>
         </div>
       </div>
@@ -510,179 +510,179 @@ export default function CasinosPage() {
       {/* Table Container - Mobile Responsive */}
       <div className="admin-container p-0">
         <div className="admin-table-wrapper">
-          <DragDropContext 
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={onDragEnd}
-          >
-            <Droppable droppableId="casinos">
-              {(provided) => (
-                <table 
+        <DragDropContext 
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={onDragEnd}
+        >
+          <Droppable droppableId="casinos">
+            {(provided) => (
+              <table 
                   className="admin-table"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  <thead className="bg-[#373946]">
-                    <tr>
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                <thead className="bg-[#373946]">
+                  <tr>
                       <th className="admin-table-th-mobile">
-                        Order
-                      </th>
+                      Order
+                    </th>
                       <th className="admin-table-th-mobile">
-                        Logo
-                      </th>
-                      <th className="px-2 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={selectAll}
-                          onChange={toggleSelectAll}
-                          className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
-                        />
-                      </th>
+                      Logo
+                    </th>
+                    <th className="px-2 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={toggleSelectAll}
+                        className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
+                      />
+                    </th>
                       <th className="admin-table-th-mobile">
-                        Name & Slug
-                      </th>
-                      {detailedView && (
-                        <>
+                      Name & Slug
+                    </th>
+                    {detailedView && (
+                      <>
                           <th className="admin-table-th-mobile hidden md:table-cell">
-                            Website
-                          </th>
+                          Website
+                        </th>
                           <th className="admin-table-th-mobile hidden lg:table-cell">
-                            Affiliate Link
-                          </th>
+                          Affiliate Link
+                        </th>
                           <th className="admin-table-th-mobile hidden lg:table-cell">
-                            Bonus Code
-                          </th>
-                        </>
-                      )}
+                          Bonus Code
+                        </th>
+                      </>
+                    )}
                       <th className="admin-table-th-mobile">
                         Rating <span className="text-xs font-normal opacity-75 hidden sm:inline">(from reviews)</span>
-                      </th>
+                    </th>
                       <th className="admin-table-th-mobile text-right">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-[#292932] divide-y divide-[#404055]">
-                    {filteredCasinos.map((casino, index) => (
-                      <Draggable key={casino.id} draggableId={casino.id} index={index}>
-                        {(provided, snapshot) => (
-                          <tr
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-[#292932] divide-y divide-[#404055]">
+                  {filteredCasinos.map((casino, index) => (
+                    <Draggable key={casino.id} draggableId={casino.id} index={index}>
+                      {(provided, snapshot) => (
+                        <tr
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
                             className={snapshot.isDragging ? "bg-[#373946] opacity-80" : "hover:bg-[#323240]"}
                           >
                             <td 
                               className="admin-table-td-mobile cursor-move"
-                              {...provided.dragHandleProps}
-                            >
+                            {...provided.dragHandleProps}
+                          >
                               <div className="flex items-center justify-center w-6 h-6 bg-[#373946] rounded-md text-white text-xs">
-                                {index + 1}
-                              </div>
-                            </td>
+                              {index + 1}
+                            </div>
+                          </td>
                             <td className="admin-table-td-mobile">
                               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded overflow-hidden bg-[#2c2f3a] flex items-center justify-center">
-                                {casino.logo ? (
-                                  <Image
-                                    src={normalizeImagePath(casino.logo)}
-                                    alt={`${casino.name || 'Casino'} Logo`}
+                              {casino.logo ? (
+                                <Image
+                                  src={normalizeImagePath(casino.logo)}
+                                  alt={`${casino.name || 'Casino'} Logo`}
                                     width={32}
                                     height={32}
                                     className="object-contain sm:w-10 sm:h-10"
-                                    onError={(e) => {
-                                      // Fallback to initials when image fails to load
-                                      e.currentTarget.style.display = 'none';
-                                      const name = casino.name || 'Casino';
-                                      const parentElement = e.currentTarget.parentElement;
-                                      if (parentElement) {
-                                        parentElement.innerHTML = name.substring(0, 2).toUpperCase();
-                                      }
-                                    }}
-                                  />
-                                ) : (
-                                  <span className="text-white text-xs font-medium">
-                                    {(casino.name || 'Casino').substring(0, 2).toUpperCase()}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-2 py-3 sm:py-4 whitespace-nowrap text-center">
-                              <input
-                                type="checkbox"
-                                checked={selectedCasinos.includes(casino.id)}
-                                onChange={() => toggleSelectCasino(casino.id)}
-                                className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
-                              />
-                            </td>
-                            <td className="admin-table-td-mobile">
-                              {detailedView ? (
-                                <div className="space-y-1">
-                                  {renderEditableField(casino, 'name', casino.name || '', 'Casino name')}
-                                  {renderEditableField(casino, 'slug', casino.slug || '', 'URL slug')}
-                                </div>
+                                  onError={(e) => {
+                                    // Fallback to initials when image fails to load
+                                    e.currentTarget.style.display = 'none';
+                                    const name = casino.name || 'Casino';
+                                    const parentElement = e.currentTarget.parentElement;
+                                    if (parentElement) {
+                                      parentElement.innerHTML = name.substring(0, 2).toUpperCase();
+                                    }
+                                  }}
+                                />
                               ) : (
+                                  <span className="text-white text-xs font-medium">
+                                  {(casino.name || 'Casino').substring(0, 2).toUpperCase()}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                            <td className="px-2 py-3 sm:py-4 whitespace-nowrap text-center">
+                            <input
+                              type="checkbox"
+                              checked={selectedCasinos.includes(casino.id)}
+                              onChange={() => toggleSelectCasino(casino.id)}
+                              className="h-4 w-4 rounded border-[#404055] text-[#68D08B] focus:ring-[#68D08B]"
+                            />
+                          </td>
+                            <td className="admin-table-td-mobile">
+                            {detailedView ? (
+                              <div className="space-y-1">
+                                {renderEditableField(casino, 'name', casino.name || '', 'Casino name')}
+                                {renderEditableField(casino, 'slug', casino.slug || '', 'URL slug')}
+                              </div>
+                            ) : (
                                 <div 
                                   className="cursor-pointer"
                                   onClick={() => router.push(`/admin/casinos/${casino.id}`)}
                                 >
                                   <div className="text-sm font-medium text-white truncate max-w-[120px] sm:max-w-[200px]">
-                                    {casino.name || 'Unnamed Casino'}
-                                  </div>
+                                  {casino.name || 'Unnamed Casino'}
+                                </div>
                                   <div className="text-xs sm:text-sm text-[#a7a9b4] truncate max-w-[120px] sm:max-w-[200px]">
                                     {casino.slug || 'no-slug'}
                                   </div>
-                                </div>
-                              )}
-                            </td>
-                            {detailedView && (
-                              <>
-                                <td className="admin-table-td-mobile hidden md:table-cell">
-                                  {renderEditableField(casino, 'website', casino.website || '', 'Website URL')}
-                                </td>
-                                <td className="admin-table-td-mobile hidden lg:table-cell">
-                                  {renderEditableField(casino, 'affiliateLink', casino.affiliateLink || '', 'Affiliate link')}
-                                </td>
-                                <td className="admin-table-td-mobile hidden lg:table-cell">
-                                  {renderEditableField(casino, 'bonusCode', casino.bonusCode || '', 'Bonus code')}
-                                </td>
-                              </>
+                              </div>
                             )}
+                          </td>
+                          {detailedView && (
+                            <>
+                                <td className="admin-table-td-mobile hidden md:table-cell">
+                                {renderEditableField(casino, 'website', casino.website || '', 'Website URL')}
+                              </td>
+                                <td className="admin-table-td-mobile hidden lg:table-cell">
+                                {renderEditableField(casino, 'affiliateLink', casino.affiliateLink || '', 'Affiliate link')}
+                              </td>
+                                <td className="admin-table-td-mobile hidden lg:table-cell">
+                                {renderEditableField(casino, 'bonusCode', casino.bonusCode || '', 'Bonus code')}
+                              </td>
+                            </>
+                          )}
                             <td className="admin-table-td-mobile">
                               <div className="text-xs sm:text-sm text-white">
-                                {casino.rating ? `${casino.rating.toFixed(1)}/5` : '0.0/5'}
-                              </div>
-                            </td>
+                              {casino.rating ? `${casino.rating.toFixed(1)}/5` : '0.0/5'}
+                            </div>
+                          </td>
                             <td className="admin-table-td-mobile text-right">
                               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-1 sm:gap-3">
-                                <button
-                                  onClick={() => router.push(`/admin/casinos/${casino.id}`)}
+                            <button
+                              onClick={() => router.push(`/admin/casinos/${casino.id}`)}
                                   className="text-[#68D08B] hover:text-[#5abc7a] text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(casino.id)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(casino.id)}
                                   className="text-red-400 hover:text-red-300 text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
-                                >
-                                  Delete
-                                </button>
+                            >
+                              Delete
+                            </button>
                               </div>
-                            </td>
-                          </tr>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                    {filteredCasinos.length === 0 && (
-                      <tr>
+                          </td>
+                        </tr>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                  {filteredCasinos.length === 0 && (
+                    <tr>
                         <td colSpan={detailedView ? 10 : 7} className="px-3 sm:px-6 py-8 text-center text-[#a7a9b4] text-sm">
-                          {searchTerm ? "No casinos found matching your search." : "No casinos found. Create your first casino by clicking the \"Add New Casino\" button."}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              )}
-            </Droppable>
-          </DragDropContext>
+                        {searchTerm ? "No casinos found matching your search." : "No casinos found. Create your first casino by clicking the \"Add New Casino\" button."}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </Droppable>
+        </DragDropContext>
         </div>
       </div>
 

@@ -153,7 +153,7 @@ export default function OfferNotifications() {
   }, [router, removeNotification]);
 
   const fetchRecentClaims = useCallback(async () => {
-    try {
+      try {
       console.log('[Notifications] 🔍 Fetching recent claims...');
       
       const response = await fetch('/api/recent-claims', {
@@ -167,9 +167,9 @@ export default function OfferNotifications() {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const data = await response.json();
-      const recentClaims: OfferClaim[] = data.claims || [];
-      
+          const data = await response.json();
+          const recentClaims: OfferClaim[] = data.claims || [];
+          
       console.log('[Notifications] 📥 API returned', recentClaims.length, 'claims');
       
       // API is working if we get a successful response
@@ -207,18 +207,18 @@ export default function OfferNotifications() {
           addNotification(claimToShow, false);
         } else {
           console.log('[Notifications] 💤 No new claims to show (all previously shown or too old)');
-        }
+            }
       } else {
         console.log('[Notifications] 📭 No claims returned from API');
       }
       
-    } catch (error) {
+      } catch (error) {
       console.error('[Notifications] ❌ Error fetching recent claims:', error);
       
       const timeSinceLastSuccess = Date.now() - lastSuccessfulApiCall.getTime();
       if (timeSinceLastSuccess > 120000) { // 2 minutes of failures
         console.log('[Notifications] 🔴 Setting API as not working due to consecutive failures');
-        setApiWorking(false);
+      setApiWorking(false);
       }
     }
   }, [lastSuccessfulApiCall, addNotification]);
@@ -306,8 +306,8 @@ export default function OfferNotifications() {
         </div>
       )}
       
-      <div className="fixed bottom-4 left-1/2 md:left-4 transform -translate-x-1/2 md:translate-x-0 z-50 space-y-3 pointer-events-none">
-        {notifications.map((notification) => (
+    <div className="fixed bottom-4 left-1/2 md:left-4 transform -translate-x-1/2 md:translate-x-0 z-50 space-y-3 pointer-events-none">
+      {notifications.map((notification) => (
           <div
             key={notification.notificationId}
             onClick={() => handleNotificationClick(notification)}
@@ -338,7 +338,7 @@ export default function OfferNotifications() {
                       target.src = `/uploads/${filename}?v=${Date.now()}`;
                     } else if (!target.src.includes('CryptoBonuses')) {
                       // Final fallback to site logo
-                      target.src = '/images/CryptoBonuses Logo.png';
+                    target.src = '/images/CryptoBonuses Logo.png';
                     }
                   }}
                   onLoad={() => {
@@ -349,7 +349,7 @@ export default function OfferNotifications() {
               </div>
               
               <div className="flex-1 min-w-0">
-                {formatMessage(notification)}
+                  {formatMessage(notification)}
               </div>
               
               <button 
@@ -363,10 +363,10 @@ export default function OfferNotifications() {
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
-            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+    </div>
     </>
   );
 } 

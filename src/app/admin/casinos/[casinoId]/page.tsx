@@ -48,7 +48,7 @@ interface Bonus {
   title: string;
   description: string;
   code: string | null;
-  type: string;
+  types: string[];
   value: string;
 }
 
@@ -297,7 +297,7 @@ export default function EditCasinoPage({
       
       // Handle content fields - use existing content or generate if empty
       const casinoName = data.name;
-      const bonusType = data.bonuses?.[0]?.type || "WELCOME";
+      const bonusType = data.bonuses?.[0]?.types?.[0] || "WELCOME";
       const bonusTitle = data.bonuses?.[0]?.title || "Welcome Bonus";
       
       setValue("aboutContent", data.aboutContent || generateAboutContent(casinoName, bonusType));

@@ -129,23 +129,6 @@ export default async function RootLayout({
             console.log('Google Analytics initialized with hardcoded ID: G-4RD7RLHE26');
           `}
         </Script>
-
-        {/* Service Worker Registration */}
-        <Script id="service-worker" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator && location.protocol === 'https:') {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    console.log('Service Worker registered successfully:', registration.scope);
-                  })
-                  .catch(function(error) {
-                    console.log('Service Worker registration failed:', error);
-                  });
-              });
-            }
-          `}
-        </Script>
       </head>
       <body className={`${inter.className} bg-[#343541] text-white overflow-x-hidden`}>
         {/* Global Schema Markup for Crypto Bonuses Organization */}

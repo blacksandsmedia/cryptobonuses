@@ -20,21 +20,21 @@
 }
 
 @layer base {
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  body {
-    font-family: var(--font-family);
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
     font-size: 16px; /* Base font size */
     font-weight: 400;
   }
@@ -144,13 +144,13 @@
 
   .text-responsive-sm {
     @apply text-xs sm:text-sm md:text-base lg:text-lg;
-  }
+}
 
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
 }
 
 @layer utilities {
@@ -198,60 +198,60 @@
 
   .leading-loose {
     line-height: 1.8;
-  }
+}
 
-  /* Hide scrollbar for table of contents */
-  .scrollbar-hide {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
-  }
-  .scrollbar-hide::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
-  } 
+/* Hide scrollbar for table of contents */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+} 
 
-  /* Casino logo animation within cards */
-  .casino-logo {
-    outline: none;
-    border-radius: 8px;
-    transition: box-shadow 0.3s ease;
-    will-change: box-shadow;
-    transform: translateZ(0); /* Create stacking context for hardware acceleration */
-  }
+/* Casino logo animation within cards */
+.casino-logo {
+  outline: none;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease;
+  will-change: box-shadow;
+  transform: translateZ(0); /* Create stacking context for hardware acceleration */
+}
 
-  .casino-logo:hover {
-    box-shadow: 0 0 0 2px #68D08B, 0 0 10px rgba(104, 208, 139, 0.4);
-  }
+.casino-logo:hover {
+  box-shadow: 0 0 0 2px #68D08B, 0 0 10px rgba(104, 208, 139, 0.4);
+}
 
-  /* Slow spin animation for wheel emoji */
-  @keyframes spin-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+/* Slow spin animation for wheel emoji */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
   }
-
-  .animate-spin-slow {
-    animation: spin-slow 3s linear infinite;
+  to {
+    transform: rotate(360deg);
   }
+}
 
-  /* Crypto ticker scroll animation */
-  @keyframes scroll-left {
-    0% { 
-      transform: translateX(0); 
-    }
-    100% { 
-      transform: translateX(-50%); 
-    }
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+/* Crypto ticker scroll animation */
+@keyframes scroll-left {
+  0% { 
+    transform: translateX(0); 
   }
-
-  .animate-scroll-left {
-    animation: scroll-left 40s linear infinite;
+  100% { 
+    transform: translateX(-50%); 
   }
+}
 
-  .animate-scroll-left:hover {
-    animation-play-state: paused;
+.animate-scroll-left {
+  animation: scroll-left 40s linear infinite;
+}
+
+.animate-scroll-left:hover {
+  animation-play-state: paused;
   }
 }
 

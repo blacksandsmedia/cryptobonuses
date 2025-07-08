@@ -266,19 +266,19 @@ export default function AdminReportsPage() {
                 {selectedReports.size} report{selectedReports.size !== 1 ? 's' : ''} selected
               </span>
               <div className="flex gap-3">
-                <button
-                  onClick={handleBulkDelete}
-                  disabled={isDeleting}
+              <button
+                onClick={handleBulkDelete}
+                disabled={isDeleting}
                   className="bg-red-600 hover:bg-red-700 disabled:bg-[#404055] text-white disabled:text-[#6b6b7d] px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  {isDeleting ? 'Deleting...' : 'Delete Selected'}
-                </button>
-                <button
-                  onClick={() => setSelectedReports(new Set())}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Selected'}
+              </button>
+              <button
+                onClick={() => setSelectedReports(new Set())}
                   className="text-[#a7a9b4] hover:text-white text-sm px-3 py-2"
-                >
-                  Clear Selection
-                </button>
+              >
+                Clear Selection
+              </button>
               </div>
             </div>
           )}

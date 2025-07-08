@@ -16,7 +16,7 @@ interface Casino {
     id: string;
     title: string;
     code: string | null;
-    type: string;
+    types: string[];
     value: string;
     description: string;
   } | null;
@@ -357,7 +357,7 @@ export default function SpinWheel({ casinos, faviconUrl }: SpinWheelProps) {
 
                   <div className="space-y-2">
                     <p className="text-white/80 text-sm">
-                      <span className="font-semibold">Type:</span> {selectedCasino.bonus.type.replace('_', ' ')}
+                      <span className="font-semibold">Type:</span> {selectedCasino.bonus.types?.[0]?.replace('_', ' ') || 'Bonus'}
                     </p>
                     <p className="text-white/80 text-sm">
                       <span className="font-semibold">Value:</span> {selectedCasino.bonus.value}

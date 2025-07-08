@@ -183,7 +183,7 @@ export default function ScreenshotGallery({ screenshots, casinoName }: Screensho
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white/90 text-sm text-center">
             <div className="font-medium mb-1">{getImageFilename(screenshots[currentIndex])}</div>
             <div className="text-xs text-white/70">
-              {currentIndex + 1} / {screenshots.length}
+            {currentIndex + 1} / {screenshots.length}
             </div>
           </div>
         </div>

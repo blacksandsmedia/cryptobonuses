@@ -97,7 +97,7 @@ export async function PUT(
         title: data.title,
         description: data.description,
         code: data.code,
-        type: data.type,
+        types: data.types,
         value: data.value,
         casinoId: data.casinoId,
       },

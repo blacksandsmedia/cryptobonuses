@@ -40,7 +40,7 @@ export async function GET() {
       }
     });
     console.log('[Statistics] Code copy claims:', codeCopyCount);
-    
+
     // Get offer_click count for additional claims
     const offerClickCount = await prisma.offerTracking.count({
       where: {
@@ -48,7 +48,7 @@ export async function GET() {
       }
     });
     console.log('[Statistics] Offer click claims:', offerClickCount);
-    
+
     // Total claims = code_copy + offer_click
     const totalBonusesClaimed = codeCopyCount + offerClickCount;
     console.log('[Statistics] Total bonus claims calculated:', totalBonusesClaimed);
@@ -56,7 +56,7 @@ export async function GET() {
     // Get total bonuses available
     const totalOffersAvailable = await prisma.bonus.count();
     console.log('[Statistics] Total bonuses available:', totalOffersAvailable);
-    
+
     // Find most popular casino from code_copy actions (priority)
     let mostClaimedOfferData = await prisma.offerTracking.groupBy({
       by: ['bonusId'],
@@ -76,7 +76,7 @@ export async function GET() {
       },
       take: 1
     });
-    
+
     // If no code_copy data, try offer_click
     if (mostClaimedOfferData.length === 0) {
       console.log('[Statistics] No code_copy data, trying offer_click...');
@@ -124,21 +124,21 @@ export async function GET() {
             }
           }
         }
-      });
-      
+          });
+          
       if (bonusDetails && bonusDetails.casino) {
-        mostClaimedOffer = {
+            mostClaimedOffer = {
           name: bonusDetails.casino.name,
           slug: bonusDetails.casino.slug,
           claimCount: mostClaimedBonus._count.bonusId,
           logoUrl: bonusDetails.casino.logo
-        };
+            };
         console.log('[Statistics] Most popular casino:', bonusDetails.casino.name);
       }
     } else {
       console.log('[Statistics] No bonus claim data found');
     }
-    
+
     // Calculate total claimed value (simplified)
     const totalClaimedValue = totalBonusesClaimed > 0 ? `$${Math.round(totalBonusesClaimed * 0.5)}K` : '$0';
     
@@ -151,16 +151,16 @@ export async function GET() {
     };
     
     console.log('[Statistics] Final response:', response);
-    
+
     return NextResponse.json(response);
     
   } catch (error) {
     console.error('[Statistics] Error:', error);
-    return NextResponse.json({
+      return NextResponse.json({
       totalUsers: 0,
       totalBonusesClaimed: 0,
       totalOffersAvailable: 0,
-      mostClaimedOffer: null,
+        mostClaimedOffer: null,
       totalClaimedValue: '$0',
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });

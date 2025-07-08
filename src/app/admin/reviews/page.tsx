@@ -325,111 +325,111 @@ export default function ReviewsPage() {
               {isDeleting ? 'Deleting...' : `Delete Selected (${selectedReviews.size})`}
             </button>
           )}
-          <Link
-            href="/admin/reviews/new"
+        <Link
+          href="/admin/reviews/new"
             className="btn-primary text-center"
-          >
-            Add New Review
-          </Link>
+        >
+          Add New Review
+        </Link>
         </div>
       </div>
 
       {/* Table Container - Mobile Responsive */}
       <div className="admin-container p-0">
         <div className="admin-table-wrapper">
-          <table className="admin-table">
-            <thead>
-              <tr>
+        <table className="admin-table">
+          <thead>
+            <tr>
                 <th className="admin-table-th-mobile w-12">
-                  <input 
-                    type="checkbox" 
-                    checked={selectedReviews.size === reviews.length && reviews.length > 0}
-                    onChange={toggleSelectAll}
-                    className="w-4 h-4"
-                  />
-                </th>
+                <input 
+                  type="checkbox" 
+                  checked={selectedReviews.size === reviews.length && reviews.length > 0}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4"
+                />
+              </th>
                 <th className="admin-table-th-mobile">Casino</th>
                 <th className="admin-table-th-mobile">Author</th>
                 <th className="admin-table-th-mobile">Rating</th>
                 <th className="admin-table-th-mobile">Status</th>
                 <th className="admin-table-th-mobile hidden sm:table-cell">Created</th>
                 <th className="admin-table-th-mobile text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reviews.map((review) => (
-                <tr key={review.id} className={!review.verified ? "bg-[#342e32]" : ""}>
+            </tr>
+          </thead>
+          <tbody>
+            {reviews.map((review) => (
+              <tr key={review.id} className={!review.verified ? "bg-[#342e32]" : ""}>
                   <td className="admin-table-td-mobile">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedReviews.has(review.id)}
-                      onChange={() => toggleSelectReview(review.id)}
-                      className="w-4 h-4"
-                    />
-                  </td>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedReviews.has(review.id)}
+                    onChange={() => toggleSelectReview(review.id)}
+                    className="w-4 h-4"
+                  />
+                </td>
                   <td className="admin-table-td-mobile">
                     <div className="text-sm font-medium text-white truncate max-w-[120px] sm:max-w-[200px]">
-                      {review.casino?.name || "Unknown Casino"}
-                    </div>
-                  </td>
+                    {review.casino?.name || "Unknown Casino"}
+                  </div>
+                </td>
                   <td className="admin-table-td-mobile">
                     <div className="text-sm text-white truncate max-w-[100px] sm:max-w-[150px]">{review.author}</div>
-                  </td>
+                </td>
                   <td className="admin-table-td-mobile">
                     <div className="text-sm text-white">{review.rating}/5</div>
-                  </td>
+                </td>
                   <td className="admin-table-td-mobile">
-                    {review.verified ? (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-[#68D08B] text-[#292932]">
-                        Verified
-                      </span>
-                    ) : (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-[#f59e0b] text-[#292932]">
-                        Pending
-                      </span>
-                    )}
-                  </td>
+                  {review.verified ? (
+                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-[#68D08B] text-[#292932]">
+                      Verified
+                    </span>
+                  ) : (
+                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-[#f59e0b] text-[#292932]">
+                      Pending
+                    </span>
+                  )}
+                </td>
                   <td className="admin-table-td-mobile hidden sm:table-cell">
-                    <div className="text-sm text-[#a7a9b4]">
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </div>
-                  </td>
+                  <div className="text-sm text-[#a7a9b4]">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </div>
+                </td>
                   <td className="admin-table-td-mobile text-right">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-1 sm:gap-4">
-                      {!review.verified && (
-                        <button
-                          onClick={() => handleVerify(review.id)}
-                          disabled={verifying === review.id}
+                  {!review.verified && (
+                    <button
+                      onClick={() => handleVerify(review.id)}
+                      disabled={verifying === review.id}
                           className={`text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent ${verifying === review.id ? 'opacity-50 cursor-not-allowed' : 'text-[#68D08B] hover:text-[#5abc7a]'}`}
-                        >
-                          {verifying === review.id ? 'Verifying...' : 'Verify'}
-                        </button>
-                      )}
-                      <button
-                        onClick={() => router.push(`/admin/reviews/${review.id}`)}
+                    >
+                      {verifying === review.id ? 'Verifying...' : 'Verify'}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => router.push(`/admin/reviews/${review.id}`)}
                         className="admin-link text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(review.id)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(review.id)}
                         className="text-red-400 hover:text-red-300 text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
-                      >
-                        Delete
-                      </button>
+                  >
+                    Delete
+                  </button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-              {reviews.length === 0 && (
-                <tr>
+                </td>
+              </tr>
+            ))}
+            {reviews.length === 0 && (
+              <tr>
                   <td colSpan={7} className="px-3 sm:px-6 py-8 text-center text-[#a7a9b4] text-sm">
-                    No reviews found. Create your first review by clicking the "Add New Review" button.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                  No reviews found. Create your first review by clicking the "Add New Review" button.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
         </div>
       </div>
     </div>

@@ -5,96 +5,96 @@
 /* Admin styles matching the site's dark theme */
 
 @layer components {
-  /* Form elements */
-  input, textarea, select {
+/* Form elements */
+input, textarea, select {
     @apply mt-1 block w-full rounded-lg bg-[#3c3f4a] border border-[#404055] text-white shadow-sm focus:border-[#68D08B] focus:ring-2 focus:ring-[#68D08B]/20 transition-colors duration-200;
     @apply text-xs sm:text-sm px-4 py-3;
-  }
+}
 
-  /* Form groups */
-  .form-group {
-    @apply mb-6;
-  }
+/* Form groups */
+.form-group {
+  @apply mb-6;
+}
 
-  .form-label {
+.form-label {
     @apply block font-medium text-white mb-2;
     @apply text-xs sm:text-sm;
-  }
+}
 
-  /* Buttons */
-  .btn-primary {
-    @apply px-4 py-3 bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-semibold rounded-lg transition-colors duration-300;
+/* Buttons */
+.btn-primary {
+  @apply px-4 py-3 bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-semibold rounded-lg transition-colors duration-300;
     @apply text-sm sm:text-base font-medium;
-  }
+}
 
-  .btn-secondary {
+.btn-secondary {
     @apply px-4 py-3 bg-[#343541] border border-[#404055] hover:border-[#68D08B]/30 rounded-lg font-medium text-white hover:bg-[#3c3f4a] transition-all duration-300;
     @apply text-sm sm:text-base font-medium;
-  }
+}
 
-  .btn-danger {
-    @apply px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300 shadow-lg hover:shadow-xl;
+.btn-danger {
+  @apply px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300 shadow-lg hover:shadow-xl;
     @apply text-sm sm:text-base font-medium;
-  }
+}
 
-  /* Containers */
-  .admin-container {
-    @apply bg-[#292932] shadow-lg rounded-xl p-8 border border-[#404055];
-  }
+/* Containers */
+.admin-container {
+  @apply bg-[#292932] shadow-lg rounded-xl p-8 border border-[#404055];
+}
 
-  .admin-card {
-    @apply p-6 bg-[#373946] border border-[#404055] rounded-xl shadow-lg hover:bg-[#3c3f4a] hover:border-[#68D08B]/30 transition-all duration-300;
-  }
+.admin-card {
+  @apply p-6 bg-[#373946] border border-[#404055] rounded-xl shadow-lg hover:bg-[#3c3f4a] hover:border-[#68D08B]/30 transition-all duration-300;
+}
 
-  /* Tables */
-  .admin-table {
-    @apply min-w-full divide-y divide-[#404055];
-  }
+/* Tables */
+.admin-table {
+  @apply min-w-full divide-y divide-[#404055];
+}
 
-  .admin-table thead {
-    @apply bg-[#373946];
-  }
+.admin-table thead {
+  @apply bg-[#373946];
+}
 
-  .admin-table th {
+.admin-table th {
     @apply px-6 py-4 text-left font-medium text-[#a7a9b4] uppercase tracking-wider;
     @apply text-xs;
-  }
+}
 
-  .admin-table tbody {
-    @apply bg-[#292932] divide-y divide-[#404055];
-  }
+.admin-table tbody {
+  @apply bg-[#292932] divide-y divide-[#404055];
+}
 
-  .admin-table td {
-    @apply px-6 py-4 whitespace-nowrap;
+.admin-table td {
+  @apply px-6 py-4 whitespace-nowrap;
     @apply text-xs sm:text-sm;
   }
 
   /* Responsive table wrapper */
   .admin-table-wrapper {
     @apply overflow-x-auto;
-  }
+}
 
-  /* Headings */
-  .admin-heading {
+/* Headings */
+.admin-heading {
     @apply font-bold text-white mb-6;
     @apply text-lg sm:text-xl md:text-2xl;
-  }
+}
 
-  /* Links and interactive elements */
-  .admin-link {
+/* Links and interactive elements */
+.admin-link {
     @apply text-[#68D08B] hover:text-[#5abc7a] transition-colors duration-200;
     @apply text-xs sm:text-sm;
-  }
+}
 
-  /* Error messages */
-  .admin-error {
+/* Error messages */
+.admin-error {
     @apply mt-1 text-red-400;
     @apply text-xs;
-  }
+}
 
-  /* Loading spinner */
-  .admin-spinner {
-    @apply animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#68D08B];
+/* Loading spinner */
+.admin-spinner {
+  @apply animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#68D08B];
   }
 
   /* Responsive grid layouts */

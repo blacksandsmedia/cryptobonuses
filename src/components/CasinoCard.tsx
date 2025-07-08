@@ -1,41 +1,105 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import CopyCodeButton from './CopyCodeButton';
 import { normalizeImagePath } from '@/lib/image-utils';
+import ClickableBonusCode from './ClickableBonusCode';
 
-// Define the correct interface based on how the component is actually used
-interface CasinoCardBonus {
+// Define the bonus type directly here to avoid import issues
+interface Bonus {
   id: string;
   casinoName: string;
   bonusType: string;
-  bonusTypes?: string[];
+  bonusTypes?: string[]; // New field for multiple bonus types
   bonusValue: number;
   bonusText: string;
   logoUrl: string;
-  promoCode?: string | null;
+  promoCode: string | null;
   affiliateLink: string;
   isActive: boolean;
+  // Add the casinoId field for tracking
   casinoId?: string;
+  // Add the bonusId field for tracking
   bonusId?: string;
+  // Add the codeTermLabel field for casino-specific terminology
   codeTermLabel?: string;
-  slug?: string;
 }
 
 interface CasinoCardProps {
-  bonus: CasinoCardBonus;
+  bonus: Bonus;
 }
 
 export default function CasinoCard({ bonus }: CasinoCardProps) {
+  const [copied, setCopied] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imagePath, setImagePath] = useState('');
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Use casino-specific code term label, fallback to "bonus code"
+  const codeTermLabel = bonus.codeTermLabel || 'bonus code';
+  
+  // More aggressive truncation on mobile only if casino name is long
+  const getDisplayCode = () => {
+    if (!bonus.promoCode) return bonus.promoCode;
+    
+    // Only truncate more aggressively on mobile if casino name is over 9 characters
+    const shouldTruncateMore = isMobile && bonus.casinoName.length > 9;
+    const maxLength = shouldTruncateMore ? 6 : 8;
+    
+    return bonus.promoCode.length > maxLength 
+      ? `${bonus.promoCode.slice(0, maxLength)}..`
+      : bonus.promoCode;
+  };
+  
+  const displayCode = getDisplayCode();
 
-  // Memoize tracking functions to prevent unnecessary re-renders
-  const trackOfferClick = useCallback(async (casinoId: string, bonusId: string) => {
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (bonus.promoCode) {
+      navigator.clipboard.writeText(bonus.promoCode);
+      setCopied(true);
+      
+      // Track the copy event
+      if (bonus.bonusId && bonus.casinoId) {
+        trackCopyCode(bonus.casinoId, bonus.bonusId);
+      }
+      
+      // Affiliate link opening removed per user request
+      
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleGetBonusClick = (e: React.MouseEvent) => {
+    // Don't stop propagation - allow the link to work normally
+    
+    // Track the click event
+    if (bonus.bonusId && bonus.casinoId) {
+      trackOfferClick(bonus.casinoId, bonus.bonusId);
+    }
+  };
+
+  const trackCopyCode = async (casinoId: string, bonusId: string) => {
+    try {
+      await fetch('/api/tracking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          casinoId,
+          bonusId,
+          actionType: 'code_copy',
+        }),
+      });
+    } catch (error) {
+      console.error("Error tracking code copy:", error);
+    }
+  };
+
+  const trackOfferClick = async (casinoId: string, bonusId: string) => {
     try {
       await fetch('/api/tracking', {
         method: 'POST',
@@ -51,14 +115,14 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
     } catch (error) {
       console.error("Error tracking offer click:", error);
     }
-  }, []);
+  };
 
-  // Memoized functions
-  const getInitials = useCallback((name: string) => {
+  const getInitials = (name: string) => {
     return name.substring(0, 2).toUpperCase();
-  }, []);
+  };
 
-  const getAlternativeLogoPaths = useCallback((casinoName: string, originalPath: string) => {
+  // Load alternative logo paths to try
+  const getAlternativeLogoPaths = (casinoName: string, originalPath: string) => {
     const cleanName = casinoName.replace(/[^a-zA-Z0-9]/g, '');
     return [
       `/images/${casinoName} Logo.png`,
@@ -67,56 +131,57 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
       `/images/${cleanName}Logo.png`,
       '/images/Simplified Logo.png'
     ];
-  }, []);
+  };
 
-  // Optimized image error handling
-  const handleImageError = useCallback(() => {
+  // Try next image in case of error
+  const handleImageError = () => {
+    console.error(`Image failed to load: ${imagePath}`);
+    
+    // Get alternative paths
     const alternativePaths = getAlternativeLogoPaths(bonus.casinoName, imagePath);
     const currentIndex = alternativePaths.indexOf(imagePath);
     
     if (currentIndex < alternativePaths.length - 1) {
+      // Try next alternative
       const nextPath = alternativePaths[currentIndex + 1];
-      setImageLoading(true);
+      console.log(`Trying alternative logo path: ${nextPath}`);
+      setImageLoading(true); // Reset loading state for new image
       setImagePath(nextPath);
     } else {
+      // All alternatives failed, show initials
+      console.log(`All logo paths failed for ${bonus.casinoName}, showing initials`);
       setImageError(true);
       setImageLoading(false);
     }
-  }, [bonus.casinoName, imagePath, getAlternativeLogoPaths]);
+  };
 
-  // Optimized image load handling
-  const handleImageLoad = useCallback(() => {
+  // Handle successful image load
+  const handleImageLoad = () => {
+    console.log(`Image loaded successfully for ${bonus.casinoName}: ${imagePath}`);
     setImageLoading(false);
     setImageError(false);
-  }, []);
+  };
 
-  // Mobile detection with debouncing
+  // Check for mobile on mount and resize
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
     const checkMobile = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setIsMobile(window.innerWidth < 640);
-      }, 100);
+      setIsMobile(window.innerWidth < 640);
     };
     
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-      clearTimeout(timeoutId);
-    };
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Initialize image path
+  // Determine the best logo path when component mounts
   useEffect(() => {
     try {
       const normalizedPath = normalizeImagePath(bonus.logoUrl);
       setImagePath(normalizedPath);
-      setImageError(false);
-      setImageLoading(true);
+      setImageError(false); // Reset error state when path changes
+      setImageLoading(true); // Reset loading state when path changes
+      console.log(`Set image path for ${bonus.casinoName}: ${normalizedPath}`);
     } catch (error) {
       console.error(`Error setting image path for ${bonus.casinoName}:`, error);
       setImageError(true);
@@ -124,96 +189,89 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
     }
   }, [bonus.logoUrl, bonus.casinoName]);
 
-  // Dynamic code term label
-  const codeTermLabel = bonus.codeTermLabel || 'bonus code';
+  // Capitalize the first letter of each word in the code term
   const codeTypeCapitalized = codeTermLabel.split(' ').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ');
 
-  // Handle card click
-  const handleCardClick = () => {
-    if (bonus.casinoId && bonus.bonusId) {
-      trackOfferClick(bonus.casinoId, bonus.bonusId);
-    }
-  };
-
   return (
-    <div className="bg-[#3e4050] rounded-xl border border-[#404055] p-4 sm:p-6 hover:border-[#68D08B] transition-all duration-300 group shadow-sm hover:shadow-lg">
-      <div className="flex flex-col gap-4">
-        {/* Top Section - Logo and Casino Info */}
-        <Link href={`/${bonus.slug || bonus.casinoName.toLowerCase().replace(/[^a-z0-9]/g, '')}`} onClick={handleCardClick}>
-          <div className="flex items-start gap-3 sm:gap-4 cursor-pointer">
-            {/* Optimized Logo Container */}
-            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-[#2c2f3a] flex-shrink-0">
+    <div className="relative">
+      {bonus.promoCode && (
+        <button
+          onClick={handleCopy}
+          className={`absolute right-4 sm:right-5 top-5 z-10 bg-[#2c2f3a] text-white px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg border border-transparent transition-[background-color,box-shadow,border-color] duration-200 flex items-center gap-1 sm:gap-1.5 group will-change-[background-color] text-xs sm:text-sm ${
+            isMobile ? '' : 'hover:bg-[#343747] hover:shadow-lg hover:border-[#68D08B]'
+          }`}
+          title={bonus.promoCode}
+        >
+          <span className="text-white">{copied ? 'Copied!' : displayCode}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-80 group-hover:text-[#68D08B] group-hover:opacity-100">
+            <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+            <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+          </svg>
+        </button>
+      )}
+      <article 
+        className={`relative bg-gradient-to-br from-[#3e4050] to-[#373846] p-5 rounded-xl shadow-lg border-2 border-[#404055] transition-[box-shadow,border-color,transform] duration-300 group will-change-transform ${
+          isMobile 
+            ? '' 
+            : 'hover:shadow-xl hover:border-[#68D08B] hover:scale-[1.005]'
+        }`}
+        style={{ transform: 'translateZ(0)' }}
+      >
+        <a 
+          href={`/${bonus.id}`} 
+          className="block"
+          title={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
+        >
+          <div className="flex items-start gap-4 mb-4">
+            <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#2c2f3a] flex items-center justify-center casino-logo">
               {imageError ? (
+                // Show initials when all images fail to load
                 <div className="w-full h-full flex items-center justify-center text-center font-semibold px-1 text-sm">
                   {getInitials(bonus.casinoName)}
                 </div>
               ) : (
                 <div className="relative w-full h-full">
+                  {/* Show loading placeholder while image loads */}
                   {imageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center text-center font-semibold px-1 text-sm bg-[#2c2f3a] z-10">
                       {getInitials(bonus.casinoName)}
                     </div>
                   )}
+                  {/* Actual image */}
                   <Image
                     src={imagePath}
-                    alt={`${bonus.casinoName} ${codeTypeCapitalized}`}
+                    alt={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
                     width={64}
                     height={64}
-                    sizes="(max-width: 640px) 56px, 64px"
                     className={`object-cover w-full h-full transition-opacity duration-200 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
                     onError={handleImageError}
                     onLoad={handleImageLoad}
-                    loading="lazy"
-                    quality={75}
+                    priority={true}
                   />
                 </div>
               )}
             </div>
-            
-            {/* Casino Info */}
-            <div className="min-w-0 flex-1">
-              <h2 className={`font-bold truncate ${bonus.promoCode ? 'pr-16 sm:pr-20' : 'pr-4'} text-lg sm:text-xl`}>
-                {bonus.casinoName}
-              </h2>
-              <p className="text-[#68D08B] font-medium mt-1 text-base sm:text-lg">
-                {bonus.bonusText}
-              </p>
+            <div className="min-w-0">
+              <h2 className={`font-bold truncate ${bonus.promoCode ? 'pr-16 sm:pr-20' : 'pr-4'} text-lg sm:text-xl`}>{bonus.casinoName}</h2>
+              <p className="text-[#68D08B] font-medium mt-1 text-base sm:text-lg">{bonus.bonusText}</p>
             </div>
           </div>
-        </Link>
-
-        {/* Code Section */}
-        {bonus.promoCode && (
-          <div className="bg-[#292932] rounded-lg p-3 border border-[#404055]">
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-[#a7a9b4] text-sm mb-1">{codeTypeCapitalized}:</p>
-                <code className="text-[#68D08B] font-mono text-sm sm:text-base font-semibold">
-                  {bonus.promoCode}
-                </code>
-              </div>
-              <CopyCodeButton 
-                code={bonus.promoCode}
-                casinoId={bonus.casinoId}
-                bonusId={bonus.bonusId}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Action Button */}
-        <a
-          href={bonus.affiliateLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleCardClick}
-          className="bg-[#68D08B] hover:bg-[#5bc47d] text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-center block"
-        >
-          CLAIM BONUS
         </a>
-      </div>
+
+        <a
+          href={bonus.affiliateLink || '#'}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className={`w-full bg-[#68D08B] text-[#343541] font-bold py-3 px-4 rounded-lg text-center transition-[background-color] duration-300 block will-change-[background-color] text-sm sm:text-base font-medium ${
+            isMobile ? '' : 'hover:bg-[#5abc7a]'
+          }`}
+          onClick={handleGetBonusClick}
+        >
+          Get Bonus
+        </a>
+      </article>
     </div>
   );
 } 

@@ -37,14 +37,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user has a password set
-    if (!user.password) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
-    }
-
     // Verify password
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {

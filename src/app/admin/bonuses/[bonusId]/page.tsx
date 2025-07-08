@@ -10,7 +10,7 @@ const bonusSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   code: z.string().optional().or(z.literal("")),
-  type: z.enum(["WELCOME", "NO_DEPOSIT", "FREE_SPINS", "RELOAD", "CASHBACK", "DEPOSIT"]),
+  types: z.array(z.enum(["WELCOME", "NO_DEPOSIT", "FREE_SPINS", "RELOAD", "CASHBACK", "DEPOSIT"])).min(1, "At least one type is required"),
   value: z.string().min(1, "Value is required"),
   casinoId: z.string().min(1, "Casino is required"),
 });
@@ -65,7 +65,7 @@ export default function EditBonusPage({
       setValue("title", data.title);
       setValue("description", data.description);
       setValue("code", data.code || "");
-      setValue("type", data.type);
+      setValue("types", data.types || []);
       setValue("value", data.value);
       setValue("casinoId", data.casinoId);
     } catch (error) {
@@ -159,16 +159,16 @@ export default function EditBonusPage({
 
             <div>
               <label
-                htmlFor="type"
+                htmlFor="types"
                 className="block text-[#a7a9b4] text-sm font-medium mb-2"
               >
-                Type
+                Types (Select multiple with Ctrl/Cmd + Click)
               </label>
               <select
-                {...register("type")}
-                id="type"
-                className="w-full bg-[#1E1E27] border border-[#404055] rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#68D08B] appearance-none"
-                style={{ backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M2 5l6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 1rem center", paddingRight: "2.5rem" }}
+                {...register("types")}
+                id="types"
+                multiple
+                className="w-full bg-[#1E1E27] border border-[#404055] rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#68D08B] h-32"
               >
                 <option value="WELCOME">Welcome Bonus</option>
                 <option value="NO_DEPOSIT">No Deposit Bonus</option>
@@ -177,8 +177,8 @@ export default function EditBonusPage({
                 <option value="CASHBACK">Cashback</option>
                 <option value="DEPOSIT">Deposit Bonus</option>
               </select>
-              {errors.type && (
-                <p className="mt-1 text-sm text-red-500">{errors.type.message}</p>
+              {errors.types && (
+                <p className="mt-1 text-sm text-red-500">{errors.types.message}</p>
               )}
             </div>
 
