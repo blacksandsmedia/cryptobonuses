@@ -675,6 +675,11 @@ export default function EditCasinoPage({
     });
   };
 
+  // Helper function to clear form fields
+  const clearField = (fieldName: string) => {
+    setValue(fieldName as any, "");
+  };
+
   const onSubmit = async (data: CasinoForm) => {
     try {
       setFormError(null);
@@ -1080,12 +1085,22 @@ export default function EditCasinoPage({
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="description"
-                className="form-label"
-              >
-                Description
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="description"
+                  className="form-label mb-0"
+                >
+                  Description
+                </label>
+                <button
+                  type="button"
+                  onClick={() => clearField("description")}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  title="Clear description"
+                >
+                  Clear
+                </button>
+              </div>
               <textarea
                 {...register("description")}
                 id="description"
@@ -1358,12 +1373,22 @@ export default function EditCasinoPage({
             </div>
             
             <div className="form-group">
-              <label
-                htmlFor="bonusDescription"
-                className="form-label"
-              >
-                Bonus Description
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="bonusDescription"
+                  className="form-label mb-0"
+                >
+                  Bonus Description
+                </label>
+                <button
+                  type="button"
+                  onClick={() => clearField("bonusDescription")}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  title="Clear bonus description"
+                >
+                  Clear
+                </button>
+              </div>
               <textarea
                 {...register("bonusDescription")}
                 id="bonusDescription"
@@ -1388,12 +1413,22 @@ export default function EditCasinoPage({
             
             <div className="space-y-6">
               <div className="form-group">
-                <label
-                  htmlFor="aboutContent"
-                  className="form-label"
-                >
-                  About Content
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="aboutContent"
+                    className="form-label mb-0"
+                  >
+                    About Content
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => clearField("aboutContent")}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    title="Clear about content"
+                  >
+                    Clear
+                  </button>
+                </div>
                 <textarea
                   {...register("aboutContent")}
                   id="aboutContent"
@@ -1409,12 +1444,22 @@ export default function EditCasinoPage({
               </div>
 
               <div className="form-group">
-                <label
-                  htmlFor="howToRedeemContent"
-                  className="form-label"
-                >
-                  How to Redeem Content
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="howToRedeemContent"
+                    className="form-label mb-0"
+                  >
+                    How to Redeem Content
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => clearField("howToRedeemContent")}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    title="Clear how to redeem content"
+                  >
+                    Clear
+                  </button>
+                </div>
                 <textarea
                   {...register("howToRedeemContent")}
                   id="howToRedeemContent"
@@ -1430,12 +1475,22 @@ export default function EditCasinoPage({
               </div>
 
               <div className="form-group">
-                <label
-                  htmlFor="bonusDetailsContent"
-                  className="form-label"
-                >
-                  Bonus Details Content
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="bonusDetailsContent"
+                    className="form-label mb-0"
+                  >
+                    Bonus Details Content
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => clearField("bonusDetailsContent")}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    title="Clear bonus details content"
+                  >
+                    Clear
+                  </button>
+                </div>
                 <textarea
                   {...register("bonusDetailsContent")}
                   id="bonusDetailsContent"
@@ -1451,12 +1506,22 @@ export default function EditCasinoPage({
               </div>
 
               <div className="form-group">
-                <label
-                  htmlFor="gameContent"
-                  className="form-label"
-                >
-                  Games & Features Content
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="gameContent"
+                    className="form-label mb-0"
+                  >
+                    Games & Features Content
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => clearField("gameContent")}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    title="Clear game content"
+                  >
+                    Clear
+                  </button>
+                </div>
                 <textarea
                   {...register("gameContent")}
                   id="gameContent"
@@ -1472,12 +1537,22 @@ export default function EditCasinoPage({
               </div>
 
               <div className="form-group">
-                <label
-                  htmlFor="termsContent"
-                  className="form-label"
-                >
-                  Terms & Conditions Content
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="termsContent"
+                    className="form-label mb-0"
+                  >
+                    Terms & Conditions Content
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => clearField("termsContent")}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    title="Clear terms content"
+                  >
+                    Clear
+                  </button>
+                </div>
                 <textarea
                   {...register("termsContent")}
                   id="termsContent"
@@ -1493,12 +1568,22 @@ export default function EditCasinoPage({
               </div>
 
               <div className="form-group">
-                <label
-                  htmlFor="faqContent"
-                  className="form-label"
-                >
-                  FAQ Content
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="faqContent"
+                    className="form-label mb-0"
+                  >
+                    FAQ Content
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => clearField("faqContent")}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    title="Clear FAQ content"
+                  >
+                    Clear
+                  </button>
+                </div>
                 <textarea
                   {...register("faqContent")}
                   id="faqContent"
