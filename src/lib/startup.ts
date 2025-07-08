@@ -19,18 +19,17 @@ export async function initializeApp() {
   }
 }
 
-// Auto-initialize when this module is imported
-// This ensures the upload directory is created at startup
-// But only if we're not in build mode
+// Auto-initialize when this module is imported, but only at runtime
+// Skip initialization during build process
 if (typeof window === 'undefined') {
-  // Only run on server side and not during build phase
-  // Check if we're in a build environment by looking for specific build indicators
-  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || 
-                     process.env.NEXT_PHASE === 'phase-export' ||
-                     process.argv.includes('build') ||
-                     process.argv.includes('next:build');
+  // Check if we're in a build process
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' ||
+                     process.env.NODE_ENV === 'production' && process.argv.some(arg => arg.includes('build'));
   
   if (!isBuildTime) {
+    // Only run initialization at actual runtime, not during build
     initializeApp().catch(console.error);
+  } else {
+    console.log('🏗️ Skipping initialization during build process');
   }
 } 

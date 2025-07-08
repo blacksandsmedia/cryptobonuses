@@ -10,6 +10,13 @@ export const UPLOAD_DIR = process.env.UPLOAD_DIR || '/data/uploads';
  */
 export async function ensureUploadDir(): Promise<string> {
   try {
+    // Skip directory creation during build time
+    const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+    if (isBuildTime) {
+      console.log('🏗️ Skipping upload directory creation during build');
+      return UPLOAD_DIR;
+    }
+    
     if (!existsSync(UPLOAD_DIR)) {
       await mkdir(UPLOAD_DIR, { recursive: true });
       console.log(`Created upload directory: ${UPLOAD_DIR}`);
@@ -17,9 +24,8 @@ export async function ensureUploadDir(): Promise<string> {
     return UPLOAD_DIR;
   } catch (error) {
     console.error('Error creating upload directory:', error);
-    // During build time or in environments where we can't create directories,
-    // don't throw an error - just log it and continue
-    console.warn('Upload directory creation failed, but continuing...');
+    // During build time or if directory creation fails, just return the path
+    // Don't throw error to prevent build from failing
     return UPLOAD_DIR;
   }
 }
