@@ -2,11 +2,34 @@ const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
 
-const prisma = new PrismaClient();
-
 async function generateRedirects() {
+  // Check if we're in a build environment where database might not be available
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || 
+                     process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL;
+  
+  if (isBuildTime) {
+    console.log('🏗️ Build environment detected, creating empty redirects config...');
+    const emptyConfig = `// Empty redirects config for build time
+// Generated on: ${new Date().toISOString()}
+// Note: Database was not available during build
+
+module.exports = {
+  redirects: []
+};`;
+    
+    const redirectsPath = path.join(process.cwd(), 'redirects.config.js');
+    fs.writeFileSync(redirectsPath, emptyConfig);
+    console.log('✅ Created empty redirects config for build process');
+    return;
+  }
+
+  const prisma = new PrismaClient();
+  
   try {
     console.log('🔍 Fetching redirects from database...');
+    
+    // Test database connection first
+    await prisma.$connect();
     
     // Get all redirects from database
     const redirects = await prisma.slugRedirect.findMany({
@@ -44,10 +67,10 @@ async function generateRedirects() {
       
       // Original redirect (without trailing slash) SECOND
       nextjsRedirects.push({
-        source: `/${redirect.oldSlug}`,
-        destination: `/${redirect.newSlug}`,
-        permanent: true, // 301 redirect
-        statusCode: 301  // Explicitly set 301 instead of 308
+      source: `/${redirect.oldSlug}`,
+      destination: `/${redirect.newSlug}`,
+      permanent: true, // 301 redirect
+      statusCode: 301  // Explicitly set 301 instead of 308
       });
     });
 
@@ -90,8 +113,26 @@ module.exports = {
 
   } catch (error) {
     console.error('❌ Error generating redirects:', error);
+    
+    // Create empty redirects file as fallback
+    console.log('🔄 Creating empty redirects config as fallback...');
+    const fallbackConfig = `// Fallback empty redirects config
+// Generated on: ${new Date().toISOString()}
+// Note: Database connection failed during generation
+
+module.exports = {
+  redirects: []
+};`;
+    
+    const redirectsPath = path.join(process.cwd(), 'redirects.config.js');
+    fs.writeFileSync(redirectsPath, fallbackConfig);
+    console.log('✅ Created fallback empty redirects config');
   } finally {
-    await prisma.$disconnect();
+    try {
+      await prisma.$disconnect();
+    } catch (disconnectError) {
+      console.log('ℹ️  Database disconnect skipped (was not connected)');
+    }
   }
 }
 
