@@ -1,3 +1,6 @@
+import { getRequestConfig } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+
 // Define supported locales
 export const locales = ['en', 'pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'] as const;
 export type Locale = typeof locales[number];
@@ -16,4 +19,16 @@ export const localeConfig = {
   ja: { name: '日本語', flag: '🇯🇵' },
   ko: { name: '한국어', flag: '🇰🇷' },
   fr: { name: 'Français', flag: '🇫🇷' },
-} as const; 
+} as const;
+
+export default getRequestConfig(async ({ locale }) => {
+  // Validate that the incoming `locale` parameter is valid
+  if (!locales.includes(locale as any)) {
+    notFound();
+  }
+
+  return {
+    messages: (await import(`../messages/${locale}.json`)).default,
+    locale: locale as string
+  };
+}); 
