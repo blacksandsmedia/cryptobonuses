@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { locales, localeConfig, defaultLocale } from '@/i18n';
 import type { Locale } from '@/i18n';
 
@@ -10,7 +9,6 @@ export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname() || '/';
-  const t = useTranslations('languages');
 
   // Get current locale from pathname
   const getCurrentLocale = (): Locale => {
@@ -57,7 +55,7 @@ export default function LanguageSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#a4a5b0] hover:text-[#68D08B] transition-colors duration-200 rounded-md hover:bg-white/5"
-        aria-label={t('selectLanguage')}
+        aria-label="Select Language"
       >
         <span>{localeConfig[currentLocale].flag}</span>
         <span className="hidden sm:block">{localeConfig[currentLocale].name}</span>
@@ -83,7 +81,7 @@ export default function LanguageSelector() {
           <div className="absolute right-0 mt-2 w-48 bg-[#2c2f3a] border border-[#404055] rounded-md shadow-lg z-50">
             <div className="py-2">
               <div className="px-3 py-2 text-xs font-semibold text-[#68D08B] uppercase tracking-wider">
-                {t('selectLanguage')}
+                Select Language
               </div>
               {locales.map((locale) => (
                 <button
