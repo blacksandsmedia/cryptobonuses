@@ -193,6 +193,75 @@ export default function CasinosPage() {
     }
   };
 
+  const handleBulkClearContent = async () => {
+    if (selectedCasinos.length === 0) {
+      setError("No casinos selected for content clearing");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to clear ALL content sections (About, Games, Terms, FAQ, etc.) from ${selectedCasinos.length} casinos? This cannot be undone.`)) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/casinos/bulk-clear-content`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: selectedCasinos }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to clear content");
+      }
+
+      const result = await response.json();
+      
+      toast.success(`Successfully cleared content from ${result.count} casinos`);
+      setSelectedCasinos([]);
+      setSelectAll(false);
+      
+      // Refresh to show updated content status
+      fetchCasinos();
+    } catch (error) {
+      console.error("Failed to clear content:", error);
+      setError(`Failed to clear content: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Failed to clear content: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearContent = async (casinoId: string, casinoName: string) => {
+    if (!confirm(`Are you sure you want to clear ALL content sections (About, Games, Terms, FAQ, etc.) from "${casinoName}"? This cannot be undone.`)) return;
+
+    try {
+      const response = await fetch(`/api/casinos/bulk-clear-content`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: [casinoId] }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to clear content");
+      }
+
+      toast.success(`Successfully cleared content from "${casinoName}"`);
+      
+      // Refresh to show updated content status
+      fetchCasinos();
+    } catch (error) {
+      console.error("Failed to clear content:", error);
+      toast.error(`Failed to clear content: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   const toggleSelectCasino = (id: string) => {
     if (selectedCasinos.includes(id)) {
       setSelectedCasinos(selectedCasinos.filter(casinoId => casinoId !== id));
@@ -496,12 +565,20 @@ export default function CasinosPage() {
           Search
         </button>
         {selectedCasinos.length > 0 && (
-          <button
-            onClick={handleBulkDelete}
-                className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-          >
-            Delete Selected ({selectedCasinos.length})
-          </button>
+          <>
+            <button
+              onClick={handleBulkClearContent}
+              className="w-full sm:w-auto px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+            >
+              Clear Content ({selectedCasinos.length})
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+            >
+              Delete Selected ({selectedCasinos.length})
+            </button>
+          </>
         )}
           </div>
         </div>
@@ -651,12 +728,19 @@ export default function CasinosPage() {
                             </div>
                           </td>
                             <td className="admin-table-td-mobile text-right">
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-1 sm:gap-3">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-1 sm:gap-2">
                             <button
                               onClick={() => router.push(`/admin/casinos/${casino.id}`)}
                                   className="text-[#68D08B] hover:text-[#5abc7a] text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
                             >
                               Edit
+                            </button>
+                            <button
+                              onClick={() => handleClearContent(casino.id, casino.name || 'Casino')}
+                              className="text-orange-400 hover:text-orange-300 text-xs sm:text-sm px-2 py-1 sm:px-0 sm:py-0 rounded sm:rounded-none bg-[#373946] sm:bg-transparent"
+                              title="Clear all content sections"
+                            >
+                              Clear
                             </button>
                             <button
                               onClick={() => handleDelete(casino.id)}
