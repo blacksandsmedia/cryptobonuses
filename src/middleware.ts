@@ -102,7 +102,14 @@ const CASINO_REDIRECTS = new Map([
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed' // English gets no prefix, other languages get prefixes
+  localePrefix: 'as-needed', // English gets no prefix, other languages get prefixes
+  pathnames: {
+    '/': '/',
+    '/contact': '/contact',
+    '/terms': '/terms',
+    '/privacy': '/privacy',
+    '/spin': '/spin'
+  }
 });
 
 // Helper function to extract locale from pathname
