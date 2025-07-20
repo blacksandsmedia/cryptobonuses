@@ -1,7 +1,8 @@
 // Auto-generated redirects from database
 // Generated on: 2025-07-08T15:13:31.796Z
-// Database entries: 108
-// Total redirects: 216 (includes trailing slash versions)
+// Database entries: 118
+// Total redirects: 236 (includes trailing slash versions)
+// Last updated: 2025-01-08 - Added missing redirects for phemex, primexbt, app, crypto-com, kucoin, bingx, bitfinex, stormgain, csgoempire, pixel-gg
 
 module.exports = {
   redirects: [
@@ -1298,6 +1299,126 @@ module.exports = {
   {
     "source": "/privacy-policy/",
     "destination": "/privacy",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/phemex/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/phemex",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/primexbt/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/primexbt",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/app/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/app",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/crypto-com/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/crypto-com",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/kucoin/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/kucoin",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/bingx/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/bingx",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/bitfinex/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/bitfinex",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/stormgain/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/stormgain",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/csgoempire/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/csgoempire",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/pixel-gg/",
+    "destination": "/",
+    "permanent": true,
+    "statusCode": 301
+  },
+  {
+    "source": "/pixel-gg",
+    "destination": "/",
     "permanent": true,
     "statusCode": 301
   }
