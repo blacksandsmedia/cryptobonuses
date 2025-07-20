@@ -73,6 +73,17 @@ const CASINO_REDIRECTS = new Map([
   ['primedice', 'primedice.com'],
   ['destinyx', 'destinyx.com'],
   ['lottery', 'spin'],
+  // Add the missing redirects that were causing issues
+  ['phemex', ''],
+  ['primexbt', ''],
+  ['app', ''],
+  ['crypto-com', ''],
+  ['kucoin', ''],
+  ['bingx', ''],
+  ['bitfinex', ''],
+  ['stormgain', ''],
+  ['csgoempire', ''],
+  ['pixel-gg', ''],
 ]);
 
 // Middleware that handles admin routes, API routes, and casino redirects
@@ -87,11 +98,12 @@ export async function middleware(request: NextRequest) {
     const casinoSlug = pathname.slice(1, -1); // Remove leading slash and trailing slash
     if (CASINO_REDIRECTS.has(casinoSlug)) {
       const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
-      console.log(`[Middleware] Casino redirect (trailing slash): ${pathname} → /${targetDomain}`);
+      const destination = targetDomain === '' ? '/' : `/${targetDomain}`;
+      console.log(`[Middleware] Casino redirect (trailing slash): ${pathname} → ${destination}`);
       
       // Return direct 301 redirect to prevent double redirects
       return NextResponse.redirect(
-        new URL(`/${targetDomain}`, request.url), 
+        new URL(destination, request.url), 
         { status: 301 }
       );
     }
@@ -102,11 +114,12 @@ export async function middleware(request: NextRequest) {
     const casinoSlug = pathname.slice(1); // Remove leading slash
     if (CASINO_REDIRECTS.has(casinoSlug)) {
       const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
-      console.log(`[Middleware] Casino redirect (no trailing slash): ${pathname} → /${targetDomain}`);
+      const destination = targetDomain === '' ? '/' : `/${targetDomain}`;
+      console.log(`[Middleware] Casino redirect (no trailing slash): ${pathname} → ${destination}`);
       
       // Return direct 301 redirect
       return NextResponse.redirect(
-        new URL(`/${targetDomain}`, request.url), 
+        new URL(destination, request.url), 
         { status: 301 }
       );
     }
