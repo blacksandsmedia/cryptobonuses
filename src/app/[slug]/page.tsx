@@ -120,28 +120,11 @@ async function getRelatedOffers(currentSlug: string): Promise<Array<{
   name: string;
 }>> {
   try {
-    // First, try to get the casino and its recommended casinos from the database
-    const currentCasino = await prisma.casino.findUnique({
-      where: { slug: currentSlug },
-      select: { id: true, recommendedCasinoIds: true }
-    });
-
-    let recommendedSlugs: string[] = [];
-    
-    if (currentCasino?.recommendedCasinoIds && currentCasino.recommendedCasinoIds.length > 0) {
-      // Use database recommendations - get the slugs for these casino IDs
-      const recommendedCasinos = await prisma.casino.findMany({
-        where: { id: { in: currentCasino.recommendedCasinoIds } },
-        select: { slug: true }
-      });
-      recommendedSlugs = recommendedCasinos.map(casino => casino.slug);
-    } else {
-      // Fall back to static recommendations
-      recommendedSlugs = CASINO_RECOMMENDATIONS[currentSlug] || [];
-    }
+    // Get the static recommendations for this casino
+    const recommendedSlugs = CASINO_RECOMMENDATIONS[currentSlug] || [];
     
     if (recommendedSlugs.length === 0) {
-      // Final fallback to rating-based if no recommendations found
+      // Fallback to rating-based if slug not found in mapping
       const allCasinos = await prisma.casino.findMany({
         orderBy: { rating: 'desc' },
         include: { bonuses: true },

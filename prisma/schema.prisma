@@ -85,7 +85,6 @@ model Casino {
   codeTermLabel            String?           @default("bonus code")
   keyFeatures              Json?             @default("[]")
   customTableFields        Json?             @default("[]")
-  recommendedCasinoIds     String[]          @default([])
   aboutContent             String?
   howToRedeemContent       String?
   bonusDetailsContent      String?

@@ -75,8 +75,6 @@ export async function GET(
         keyFeatures: casino.keyFeatures || [],
         // Ensure custom table fields are included
         customTableFields: casino.customTableFields || [],
-        // Ensure recommended casino IDs are included
-        recommendedCasinoIds: casino.recommendedCasinoIds || [],
         // Ensure content fields are included
         aboutContent: casino.aboutContent || null,
         howToRedeemContent: casino.howToRedeemContent || null,
@@ -168,8 +166,6 @@ export async function PUT(
         gameContent: data.gameContent,
         termsContent: data.termsContent,
         faqContent: data.faqContent,
-        // Add recommended casino IDs
-        recommendedCasinoIds: data.recommendedCasinoIds || [],
       } as any,
     });
 
