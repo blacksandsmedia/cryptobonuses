@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import Newsletter from './Newsletter';
 import SearchModal from './SearchModal';
 import CryptoTicker from './CryptoTicker';
+import LanguageSelector from './LanguageSelector';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -121,6 +122,7 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
+            <LanguageSelector />
           </nav>
           
           {/* Search button on mobile */}
@@ -202,6 +204,11 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
                     </div>
                   </a>
                 )}
+              </div>
+
+              {/* Language Selector for Mobile */}
+              <div className="mt-4 pt-4 border-t border-[#404055] flex justify-center">
+                <LanguageSelector />
               </div>
               
               {/* Menu Footer */}

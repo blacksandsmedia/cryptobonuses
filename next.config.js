@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 
+// Import next-intl plugin
+const createNextIntlPlugin = require('next-intl/plugin');
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.js');
+
 // Import redirects from generated configuration
 let redirectsConfig = { redirects: [] };
 try {
@@ -51,4 +55,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withNextIntl(nextConfig);
