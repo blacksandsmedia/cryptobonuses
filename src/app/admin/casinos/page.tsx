@@ -70,9 +70,9 @@ export default function CasinosPage() {
   useEffect(() => {
     if (selectAll) {
       setSelectedCasinos(filteredCasinos.map(casino => casino.id));
-    } else {
-      setSelectedCasinos([]);
     }
+    // Don't clear selections when selectAll becomes false
+    // Only clear when explicitly toggling the "Select All" checkbox
   }, [selectAll, filteredCasinos]);
 
   const fetchCasinos = async () => {
@@ -275,7 +275,14 @@ export default function CasinosPage() {
   };
 
   const toggleSelectAll = () => {
-    setSelectAll(!selectAll);
+    const newSelectAllState = !selectAll;
+    setSelectAll(newSelectAllState);
+    
+    // If unchecking "Select All", clear all selections
+    if (!newSelectAllState) {
+      setSelectedCasinos([]);
+    }
+    // If checking "Select All", the useEffect will handle selecting all
   };
 
   const onDragEnd = async (result: any) => {
