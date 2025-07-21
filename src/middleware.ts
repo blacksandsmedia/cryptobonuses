@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import createMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './i18n';
 
 // Simple JWT verification for Edge Runtime
 function verifyJWT(token: string, secret: string): any {
@@ -98,32 +96,21 @@ const CASINO_REDIRECTS = new Map([
   ['pixel-gg', ''],
 ]);
 
-// Create next-intl middleware
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'as-needed', // English gets no prefix, other languages get prefixes
-  pathnames: {
-    '/': '/',
-    '/contact': '/contact',
-    '/terms': '/terms',
-    '/privacy': '/privacy',
-    '/spin': '/spin'
-  }
-});
+// Supported locales for simple locale detection
+const supportedLocales = ['en', 'pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
 
 // Helper function to extract locale from pathname
 function getLocaleFromPathname(pathname: string): string | null {
   const segments = pathname.split('/');
   const firstSegment = segments[1];
-  return locales.includes(firstSegment as any) ? firstSegment : null;
+  return supportedLocales.includes(firstSegment) ? firstSegment : null;
 }
 
 // Helper function to remove locale from pathname
 function removeLocaleFromPathname(pathname: string): string {
   const segments = pathname.split('/');
   const firstSegment = segments[1];
-  if (locales.includes(firstSegment as any)) {
+  if (supportedLocales.includes(firstSegment)) {
     return '/' + segments.slice(2).join('/');
   }
   return pathname;
@@ -146,7 +133,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Extract locale from pathname for casino redirect checks
-  const locale = getLocaleFromPathname(pathname);
+  const detectedLocale = getLocaleFromPathname(pathname);
   const pathWithoutLocale = removeLocaleFromPathname(pathname);
 
   // Handle casino redirects BEFORE Next.js processes trailing slashes
@@ -184,8 +171,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Apply i18n middleware for all other requests
-  return intlMiddleware(request);
+  // For locale-prefixed paths, continue with the request
+  // Set locale header for the application to use
+  const currentLocale = getLocaleFromPathname(pathname) || 'en';
+  const response = NextResponse.next();
+  response.headers.set('x-locale', currentLocale);
+  return response;
 }
 
 // Handle non-i18n paths (API, static files, etc.)

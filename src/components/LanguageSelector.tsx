@@ -2,8 +2,24 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { locales, localeConfig, defaultLocale } from '@/i18n';
-import type { Locale } from '@/i18n';
+
+// Simple locale configuration
+const locales = ['en', 'pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
+const defaultLocale = 'en';
+
+const localeConfig = {
+  en: { name: 'English', flag: '🇺🇸' },
+  pl: { name: 'Polski', flag: '🇵🇱' },
+  tr: { name: 'Türkçe', flag: '🇹🇷' },
+  es: { name: 'Español', flag: '🇪🇸' },
+  pt: { name: 'Português', flag: '🇵🇹' },
+  vi: { name: 'Tiếng Việt', flag: '🇻🇳' },
+  ja: { name: '日本語', flag: '🇯🇵' },
+  ko: { name: '한국어', flag: '🇰🇷' },
+  fr: { name: 'Français', flag: '🇫🇷' },
+};
+
+type Locale = keyof typeof localeConfig;
 
 export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,23 +99,23 @@ export default function LanguageSelector() {
               <div className="px-3 py-2 text-xs font-semibold text-[#68D08B] uppercase tracking-wider">
                 Select Language
               </div>
-              {locales.map((locale) => (
-                <button
-                  key={locale}
-                  onClick={() => handleLanguageChange(locale)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-left hover:bg-[#343541] transition-colors ${
-                    currentLocale === locale ? 'bg-[#343541] text-[#68D08B]' : 'text-[#a4a5b0]'
-                  }`}
-                >
-                  <span>{localeConfig[locale].flag}</span>
-                  <span>{localeConfig[locale].name}</span>
-                  {currentLocale === locale && (
-                    <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-              ))}
+                              {locales.map((locale) => (
+                  <button
+                    key={locale}
+                    onClick={() => handleLanguageChange(locale as Locale)}
+                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-left hover:bg-[#343541] transition-colors ${
+                      currentLocale === locale ? 'bg-[#343541] text-[#68D08B]' : 'text-[#a4a5b0]'
+                    }`}
+                  >
+                    <span>{localeConfig[locale as Locale].flag}</span>
+                    <span>{localeConfig[locale as Locale].name}</span>
+                    {currentLocale === locale && (
+                      <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
             </div>
           </div>
         </>

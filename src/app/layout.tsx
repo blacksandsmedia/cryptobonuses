@@ -11,8 +11,7 @@ import { NotificationProvider } from '@/components/NotificationContext';
 import VisitorTracker from '@/components/VisitorTracker';
 import Script from 'next/script';
 import { getHomepageModifiedTime } from '@/lib/page-modified-time';
-import { NextIntlClientProvider } from 'next-intl';
-import { defaultLocale } from '@/i18n';
+
 // Initialize application startup (upload directory, etc.)
 import '@/lib/startup';
 
@@ -100,13 +99,7 @@ export default async function RootLayout({
     console.error('Error fetching settings:', error);
   }
 
-  // Load English messages for default locale
-  let messages = {};
-  try {
-    messages = (await import(`../messages/${defaultLocale}.json`)).default;
-  } catch (error) {
-    console.error('Error loading messages:', error);
-  }
+
 
   // Add cache busting parameter for favicon
   const cacheBuster = Date.now();
@@ -144,17 +137,15 @@ export default async function RootLayout({
         {/* Global Schema Markup for Crypto Bonuses Organization */}
         <SchemaMarkup type="organization" />
         
-        <NextIntlClientProvider messages={messages} locale={defaultLocale}>
-          <NotificationProvider>
-            <AuthProvider>
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
-              <OfferNotifications />
-              <VisitorTracker />
-            </AuthProvider>
-          </NotificationProvider>
-        </NextIntlClientProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+            <OfferNotifications />
+            <VisitorTracker />
+          </AuthProvider>
+        </NotificationProvider>
         <Toaster position="top-right" />
       </body>
     </html>
