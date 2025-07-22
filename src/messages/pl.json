@@ -53,6 +53,14 @@
     "moreOffers": "Więcej Ofert",
     "popularThisWeek": "Popularne w Tym Tygodniu"
   },
+  "statistics": {
+    "title": "CryptoBonuses w Liczbach",
+    "description": "Dołącz do tysięcy graczy, którzy ufają CryptoBonuses w znajdowaniu najlepszych ofert krypto kasyn",
+    "totalUsers": "Wszyscy Użytkownicy",
+    "bonusesClaimed": "Odebrane Bonusy",
+    "activeOffers": "Aktywne Oferty",
+    "totalValue": "Całkowita Wartość Odebranych"
+  },
   "common": {
     "loading": "Ładowanie...",
     "error": "Błąd",

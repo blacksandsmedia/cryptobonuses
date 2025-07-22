@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface StatisticsData {
   totalUsers: number;
@@ -19,6 +20,16 @@ interface StatisticsData {
 export default function StatisticsSection() {
   const [stats, setStats] = useState<StatisticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -155,17 +166,17 @@ export default function StatisticsSection() {
     <section className="py-16 mt-16 bg-gradient-to-br from-[#2a2c36] to-[#343541]">
       <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            CryptoBonuses by the Numbers
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-white to-[#a4a5b0] bg-clip-text text-transparent">
+            {t('statistics.title') || 'CryptoBonuses by the Numbers'}
           </h2>
           <p className="text-[#a4a5b0] text-lg max-w-2xl mx-auto">
-            Join thousands of players who trust CryptoBonuses to find the best crypto casino offers
+            {t('statistics.description') || 'Join thousands of players who trust CryptoBonuses to find the best crypto casino offers'}
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           <StatCard
-            title="Total Users"
+            title={t('statistics.totalUsers') || 'Total Users'}
             value={stats.totalUsers}
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -176,7 +187,7 @@ export default function StatisticsSection() {
           />
           
           <StatCard
-            title="Bonuses Claimed"
+            title={t('statistics.bonusesClaimed') || 'Bonuses Claimed'}
             value={stats.totalBonusesClaimed}
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -186,7 +197,7 @@ export default function StatisticsSection() {
           />
           
           <StatCard
-            title="Active Offers"
+            title={t('statistics.activeOffers') || 'Active Offers'}
             value={stats.totalOffersAvailable}
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -201,7 +212,7 @@ export default function StatisticsSection() {
           />
           
           <StatCard
-            title="Total Claimed Value"
+            title={t('statistics.totalValue') || 'Total Claimed Value'}
             value={stats.totalClaimedValue}
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

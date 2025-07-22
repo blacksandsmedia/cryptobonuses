@@ -53,6 +53,14 @@
     "moreOffers": "Daha Fazla Teklif",
     "popularThisWeek": "Bu Hafta Popüler"
   },
+  "statistics": {
+    "title": "CryptoBonuses Sayılarla",
+    "description": "En iyi kripto casino tekliflerini bulmak için CryptoBonuses'a güvenen binlerce oyuncuya katılın",
+    "totalUsers": "Toplam Kullanıcı",
+    "bonusesClaimed": "Talep Edilen Bonuslar",
+    "activeOffers": "Aktif Teklifler",
+    "totalValue": "Toplam Talep Edilen Değer"
+  },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
