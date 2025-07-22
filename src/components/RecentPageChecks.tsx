@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { formatDistanceToNow } from 'date-fns';
 
 interface User {
@@ -32,6 +33,16 @@ interface RecentPageChecksProps {
 export default function RecentPageChecks({ pageSlug, casinoName, pageType = 'casino' }: RecentPageChecksProps) {
   const [pageChecks, setPageChecks] = useState<PageCheck[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
 
   useEffect(() => {
     async function fetchPageChecks() {
@@ -98,7 +109,7 @@ export default function RecentPageChecks({ pageSlug, casinoName, pageType = 'cas
 
   return (
     <section className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4">Recent {casinoName} Updates</h2>
+      <h2 className="text-xl sm:text-2xl font-bold mb-4">{t('casino.recent') || 'Recent'} {casinoName} {t('casino.updates') || 'Updates'}</h2>
       <div className="space-y-3">
         {pageChecks.slice(0, 3).map((check) => {
           const avatar = getUserAvatar(check.user);
@@ -140,7 +151,7 @@ export default function RecentPageChecks({ pageSlug, casinoName, pageType = 'cas
                       {displayName}
                     </span>
                   )}
-                  <span className="text-[#a7a9b4]"> checked this page</span>
+                  <span className="text-[#a7a9b4]"> {t('casino.checkedThisPage') || 'checked this page'}</span>
                   {check.notes && !check.isAutomatic && !check.notes.includes('Weekly automatic check') && (
                     <span className="text-[#a7a9b4] block text-xs mt-1 italic">"{check.notes}"</span>
                   )}

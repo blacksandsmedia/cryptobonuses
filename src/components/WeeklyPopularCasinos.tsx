@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { normalizeImagePath } from '@/lib/image-utils';
 
 interface PopularCasino {
@@ -28,6 +29,16 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
   const [casinos, setCasinos] = useState<PopularCasino[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
 
   useEffect(() => {
     async function fetchPopularCasinos() {
@@ -80,14 +91,14 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
   return (
     <section className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
       <div className="flex items-center gap-3 mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold">Most Popular Crypto Casinos</h2>
+        <h2 className="text-xl sm:text-2xl font-bold">{t('casino.mostPopularCasinos') || 'Most Popular Crypto Casinos'}</h2>
         <div className="bg-[#68D08B]/10 text-[#68D08B] text-xs px-2 py-1 rounded-md">
-          Trending
+          {t('casino.trending') || 'Trending'}
         </div>
       </div>
       
       <p className="text-[#a7a9b4] mb-4 text-base">
-        Discover the top crypto casinos that players are choosing this week, ranked by community activity.
+        {t('casino.popularCasinosDescription') || 'Discover the top crypto casinos that players are choosing this week, ranked by community activity.'}
       </p>
 
       <div className="space-y-2">
@@ -141,7 +152,7 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
                 {/* Claims Count */}
                 <div className="text-right flex-shrink-0">
                   <div className="text-sm font-medium text-white">
-                    {casino.weeklyClaims} claims
+                    {casino.weeklyClaims} {t('casino.claims') || 'claims'}
                   </div>
                 </div>
               </div>
@@ -156,7 +167,7 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
           href="/"
           className="inline-flex items-center gap-2 text-[#68D08B] hover:text-[#7ee3a3] transition-colors text-sm font-medium"
         >
-          View All Crypto Casinos
+          {t('casino.viewAllCryptoCasinos') || 'View All Crypto Casinos'}
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M7 17l9.2-9.2M17 17V7H7"/>
           </svg>
