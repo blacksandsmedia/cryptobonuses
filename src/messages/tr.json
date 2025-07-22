@@ -221,7 +221,24 @@
     "privacyPolicy": "Gizlilik Politikası",
     "terms": "Şartlar",
     "contact": "İletişim",
-    "copyright": "CryptoBonuses. Tüm hakları saklıdır."
+    "copyright": "Tüm hakları saklıdır"
+  },
+  "verification": {
+    "title": "Bonus Kullanımı ve Doğrulama",
+    "realTimeData": "Gerçek Zamanlı Kullanım Verileri",
+    "trackingStats": "Canlı bonus takip istatistikleri",
+    "lastUsed": "Son Kullanım",
+    "usedToday": "Bugün Kullanılan",
+    "verifiedActive": "Doğrulanmış ve Aktif",
+    "verified": "DOĞRULANMIŞ",
+    "teamVerification": "Ekibimiz bu bonus teklifinin aktif ve çalıştığını doğruladı. Tüm şartlar doğruluk açısından incelenmiştir.",
+    "verifiedDate": "Doğrulandı {date}",
+    "shareOffer": "Teklifi Paylaş",
+    "reportIssue": "Sorun Bildir",
+    "foundProblem": "Bir sorun mu buldunuz? Bize bildirin",
+    "ageRestriction": "Sadece 18+",
+    "gambleResponsibly": "Sorumlu Kumar Oynayın",
+    "termsApply": "Şartlar Geçerlidir"
   },
   "newsletter": {
     "title": "En Son Casino Bonuslarından Haberdar Olun",

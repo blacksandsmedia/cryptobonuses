@@ -221,7 +221,24 @@
     "privacyPolicy": "Polityka Prywatności",
     "terms": "Warunki",
     "contact": "Kontakt",
-    "copyright": "CryptoBonuses. Wszelkie prawa zastrzeżone."
+    "copyright": "Wszelkie prawa zastrzeżone"
+  },
+  "verification": {
+    "title": "Wykorzystanie Bonusu i Weryfikacja",
+    "realTimeData": "Dane Użytkowania w Czasie Rzeczywistym",
+    "trackingStats": "Statystyki śledzenia bonusów na żywo",
+    "lastUsed": "Ostatnio Użyte",
+    "usedToday": "Użyte Dzisiaj",
+    "verifiedActive": "Zweryfikowane i Aktywne",
+    "verified": "ZWERYFIKOWANE",
+    "teamVerification": "Nasz zespół zweryfikował, że ta oferta bonusowa jest aktywna i działa. Wszystkie warunki zostały sprawdzone pod kątem dokładności.",
+    "verifiedDate": "Zweryfikowano {date}",
+    "shareOffer": "Udostępnij Ofertę",
+    "reportIssue": "Zgłoś Problem",
+    "foundProblem": "Znalazłeś problem? Daj nam znać",
+    "ageRestriction": "Tylko 18+",
+    "gambleResponsibly": "Graj Odpowiedzialnie",
+    "termsApply": "Obowiązują Warunki"
   },
   "newsletter": {
     "title": "Bądź Na Bieżąco z Najnowszymi Bonusami Kasyn",
