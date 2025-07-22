@@ -70,6 +70,8 @@
     "recent": "Ostatnie",
     "updates": "Aktualizacje",
     "viewBonus": "Zobacz Bonus",
+    "backToAllBonuses": "Powrót do Wszystkich Bonusów",
+    "website": "Strona Internetowa",
     "mostPopularCasinos": "Najpopularniejsze Kasyna Krypto",
     "trending": "Popularne",
     "popularCasinosDescription": "Odkryj najlepsze kasyna krypto, które gracze wybierają w tym tygodniu, uszeregowane według aktywności społeczności.",
@@ -146,7 +148,9 @@
     "claimsLabel": "odebranych",
     "recentActivity": "Ostatnia Aktywność",
     "someoneClaimed": "Ktoś odebrał",
-    "withCode": "z kodem"
+    "withCode": "z kodem",
+    "updatedRealTime": "Analityka aktualizowana w czasie rzeczywistym",
+    "lastUpdated": "Ostatnio zaktualizowano"
   },
   "bonusTypes": {
     "welcome": "POWITANIE",
@@ -209,7 +213,9 @@
     "logout": "Wyloguj",
     "login": "Zaloguj",
     "register": "Zarejestruj",
-    "recentlyViewed": "Ostatnio Przeglądane"
+    "recentlyViewed": "Ostatnio Przeglądane",
+    "published": "Opublikowano",
+    "modified": "Zmodyfikowano"
   },
   "footer": {
     "privacyPolicy": "Polityka Prywatności",

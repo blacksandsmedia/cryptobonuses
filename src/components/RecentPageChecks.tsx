@@ -66,7 +66,7 @@ export default function RecentPageChecks({ pageSlug, casinoName, pageType = 'cas
   if (loading) {
     return (
       <section className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-        <h2 className="text-xl sm:text-2xl font-bold mb-4">Updates from Checks</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">{t('casino.recent') || 'Recent'} {t('casino.updates') || 'Updates'}</h2>
         <div className="animate-pulse">
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (

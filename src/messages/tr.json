@@ -70,6 +70,8 @@
     "recent": "Son",
     "updates": "Güncellemeler",
     "viewBonus": "Bonusu Görüntüle",
+    "backToAllBonuses": "Tüm Bonuslara Geri Dön",
+    "website": "Web Sitesi",
     "mostPopularCasinos": "En Popüler Kripto Casinolar",
     "trending": "Trend",
     "popularCasinosDescription": "Bu hafta oyuncuların seçtiği en iyi kripto casinoları keşfedin, topluluk aktivitesine göre sıralanmış.",
@@ -146,7 +148,9 @@
     "claimsLabel": "talep",
     "recentActivity": "Son Aktiviteler",
     "someoneClaimed": "Birisi talep etti",
-    "withCode": "kodu ile"
+    "withCode": "kodu ile",
+    "updatedRealTime": "Analitikler gerçek zamanlı olarak güncellenir",
+    "lastUpdated": "Son güncelleme"
   },
   "bonusTypes": {
     "welcome": "HOŞ GELDİN",
@@ -209,7 +213,9 @@
     "logout": "Çıkış",
     "login": "Giriş",
     "register": "Kayıt Ol",
-    "recentlyViewed": "Son Görüntülenenler"
+    "recentlyViewed": "Son Görüntülenenler",
+    "published": "Yayınlandı",
+    "modified": "Değiştirildi"
   },
   "footer": {
     "privacyPolicy": "Gizlilik Politikası",

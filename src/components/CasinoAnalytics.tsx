@@ -316,7 +316,7 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
       </div>
 
       <div className="mt-3 sm:mt-4 text-xs text-[#a7a9b4] text-center">
-        Analytics updated in real-time • Last updated {new Date().toLocaleTimeString()}
+        {t('analytics.updatedRealTime') || 'Analytics updated in real-time'} • {t('analytics.lastUpdated') || 'Last updated'} {new Date().toLocaleTimeString()}
       </div>
     </section>
   );

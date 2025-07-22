@@ -1,20 +1,30 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import LanguageSelector from './LanguageSelector';
+import CryptoTicker from './CryptoTicker';
 import Newsletter from './Newsletter';
 import SearchModal from './SearchModal';
-import CryptoTicker from './CryptoTicker';
-import LanguageSelector from './LanguageSelector';
+import { useTranslation } from '@/contexts/TranslationContext';
+
+interface Settings {
+  id: string;
+  siteName: string;
+  siteTitle: string;
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  hideCryptoTicker: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
-  faviconUrl?: string;
 }
 
-export default function ConditionalLayout({ children, faviconUrl }: ConditionalLayoutProps) {
+export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith('/admin');
   const currentYear = new Date().getFullYear();
@@ -22,6 +32,16 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [hideCryptoTicker, setHideCryptoTicker] = useState(false);
   const [hideBuyCryptoButton, setHideBuyCryptoButton] = useState(false);
+
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
 
   // Fetch visibility settings
   useEffect(() => {
@@ -75,16 +95,15 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
 
           {/* Logo - Centered on Mobile */}
           <div className="flex-1 flex justify-center md:flex-none md:justify-start">
-            <Link href="/" className="flex items-center">
-              <Image
+            <a href="/" className="flex items-center">
+              <img
                 src="https://cdn.prod.website-files.com/67dd29ae7952086f714105e7/67e11433aaedad5402a3d9c5_CryptoBonuses%20Logo%20Main.webp"
                 alt="CryptoBonuses - Bitcoin Casino Bonuses"
                 width={240}
                 height={50}
-                priority
                 className="h-[50px] w-auto"
               />
-            </Link>
+            </a>
           </div>
           
           {/* Desktop Navigation Menu */}
@@ -246,18 +265,18 @@ export default function ConditionalLayout({ children, faviconUrl }: ConditionalL
               </a>
               <div className="flex items-center justify-center sm:justify-start gap-6 mt-4 sm:mt-0 text-sm">
                 <a href="/privacy" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                  Privacy Policy
+                  {t('footer.privacyPolicy') || 'Privacy Policy'}
                 </a>
                 <a href="/terms" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                  Terms
+                  {t('footer.terms') || 'Terms'}
                 </a>
                 <a href="/contact" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                  Contact
+                  {t('footer.contact') || 'Contact'}
                 </a>
               </div>
             </div>
             <div className="text-center sm:text-right opacity-70 text-xs">
-              © {currentYear} CryptoBonuses. All rights reserved.
+              © {currentYear} CryptoBonuses. {t('footer.copyright') || 'All rights reserved'}.
             </div>
           </div>
         </div>
