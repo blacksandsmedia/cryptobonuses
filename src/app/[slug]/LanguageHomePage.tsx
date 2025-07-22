@@ -54,17 +54,19 @@ function TranslatedHomePage() {
         
         const allBonuses = data.flatMap((casino: any) => 
           casino.bonuses.map((bonus: any) => ({
-            id: bonus.id,
+            id: casino.slug, // Use casino slug, not database ID
             casinoName: casino.name,
             bonusType: bonus.types[0] || 'other',
             bonusValue: parseFloat(bonus.value) || 0,
             bonusText: bonus.title,
             logoUrl: casino.logoUrl,
-            promoCode: bonus.code || null,
+            promoCode: bonus.code ? bonus.code : null, // Ensure proper typing
             affiliateLink: casino.affiliateLink,
             isActive: true,
+            casinoId: casino.id, // Keep database ID for tracking
+            bonusId: bonus.id, // Keep bonus ID for tracking
             reviews: []
-          }))
+          } as CasinoBonus))
         );
         
         setBonuses(allBonuses);

@@ -1,6 +1,9 @@
+'use client';
+
 import React, { useEffect, useRef } from 'react';
 import { BonusType, FilterState } from '@/types/casino';
 import { trackSearch, trackSearchInstant } from '@/utils/searchTracking';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface FilterControlsProps {
   filters: FilterState;
@@ -13,9 +16,19 @@ interface FilterControlsProps {
 export default function FilterControls({ filters, onFilterChange, casinos, casinoCount = 0, className = '' }: FilterControlsProps) {
   const searchInputDesktopRef = useRef<HTMLInputElement>(null);
   const searchInputMobileRef = useRef<HTMLInputElement>(null);
+  
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
 
   // Create dynamic placeholder text
-  const placeholderText = casinoCount > 0 ? `Search ${casinoCount} casinos...` : 'Search bonuses...';
+  const placeholderText = casinoCount > 0 ? t('homepage.searchPlaceholder') || `Search ${casinoCount} casinos...` : t('homepage.searchPlaceholder') || 'Search bonuses...';
 
   // Track search terms with debouncing
   useEffect(() => {
@@ -96,13 +109,13 @@ export default function FilterControls({ filters, onFilterChange, casinos, casin
           className="h-12 px-4 bg-[#2c2f3a] border border-[#404055] rounded-xl text-[#8b8c98] focus:outline-none focus:ring-1 focus:ring-[#68D08B] transition-all appearance-none pr-12 min-w-[160px]"
           style={dropdownStyle}
         >
-          <option value="">All Types</option>
-          <option value="welcome">Welcome</option>
-          <option value="no_deposit">No Deposit</option>
-          <option value="free_spins">Free Spins</option>
-          <option value="reload">Reload</option>
-          <option value="cashback">Cashback</option>
-          <option value="deposit">Deposit</option>
+          <option value="">{t('homepage.allOffers') || 'All Types'}</option>
+          <option value="welcome">{t('homepage.welcome') || 'Welcome'}</option>
+          <option value="no_deposit">{t('homepage.noDeposit') || 'No Deposit'}</option>
+          <option value="free_spins">{t('homepage.freeSpins') || 'Free Spins'}</option>
+          <option value="reload">{t('homepage.reload') || 'Reload'}</option>
+          <option value="cashback">{t('homepage.cashback') || 'Cashback'}</option>
+          <option value="deposit">{t('homepage.deposit') || 'Deposit'}</option>
         </select>
 
         {/* Sort Dropdown */}
