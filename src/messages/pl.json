@@ -4,14 +4,30 @@
     "contact": "Kontakt",
     "terms": "Warunki",
     "privacy": "Prywatność",
-    "spin": "Kręć"
+    "spin": "Koło Fortuny",
+    "submitBonus": "Prześlij Bonus",
+    "buyCrypto": "Kup Krypto",
+    "search": "Szukaj",
+    "language": "Język"
   },
   "homepage": {
     "title": "Najlepsze Bonusy Bitcoin Casino i Promocje Krypto 2025",
     "description": "Znajdź najlepsze bonusy krypto casino, ekskluzywne kody promocyjne i oferty Bitcoin casino. Otrzymaj dopasowania depozytów, darmowe obroty i bonusy bez depozytu w zaufanych krypto kasynach.",
+    "welcomeTitle": "Witamy w CryptoBonuses",
+    "welcomeDescription": "Odkryj najlepsze bonusy Bitcoin casino i promocyjne bonusy w {year} roku. Nasza ekspercko wyselekcjonowana lista zawiera zaufane krypto kasyna oferujące hojne pakiety powitalne, ekskluzywne kody bonusowe i darmowe obroty.",
     "searchPlaceholder": "Szukaj kasyn...",
     "featuredCasinos": "Polecane Krypto Kasyna",
-    "allOffers": "Wszystkie Oferty"
+    "allOffers": "Wszystkie Oferty",
+    "filterBonuses": "Filtruj Bonusy",
+    "viewAllBonuses": "Zobacz Wszystkie Bonusy",
+    "spinTheWheel": "Zakręć Kołem",
+    "winBig": "WYGRAJ DUŻO!",
+    "trustedBy": "Zaufane przez {count}+ Graczy",
+    "verifiedBonuses": "Zweryfikowane Bonusy",
+    "exclusiveCodes": "Ekskluzywne Kody",
+    "noHiddenFees": "Brak Ukrytych Opłat",
+    "noMatchingBonuses": "Nie znaleziono bonusów pasujących do twoich filtrów. Spróbuj zmienić kryteria filtrowania.",
+    "loadingBonuses": "Ładowanie bonusów kasyna..."
   },
   "casino": {
     "getBonus": "Odbierz Bonus",
@@ -24,14 +40,33 @@
     "writeReview": "Napisz Opinię",
     "rating": "Ocena",
     "founded": "Założone",
-    "features": "Kluczowe Funkcje"
+    "features": "Kluczowe Funkcje",
+    "howToRedeem": "Jak Wykorzystać",
+    "bonusDetails": "Szczegóły Bonusu",
+    "analytics": "Analityka",
+    "moreOffers": "Więcej Ofert",
+    "popularThisWeek": "Popularne w Tym Tygodniu"
   },
   "common": {
     "loading": "Ładowanie...",
     "error": "Błąd",
     "notFound": "Strona Nie Znaleziona",
+    "notFoundMessage": "Nie mogliśmy znaleźć strony której szukasz.",
+    "returnHome": "Powrót do Strony Głównej",
     "backHome": "Powrót do Strony Głównej",
     "language": "Język",
-    "search": "Szukaj"
+    "search": "Szukaj",
+    "yes": "Tak",
+    "no": "Nie",
+    "cancel": "Anuluj",
+    "submit": "Prześlij",
+    "save": "Zapisz",
+    "close": "Zamknij"
+  },
+  "footer": {
+    "privacyPolicy": "Polityka Prywatności",
+    "terms": "Warunki",
+    "contact": "Kontakt",
+    "copyright": "CryptoBonuses. Wszelkie prawa zastrzeżone."
   }
 } 

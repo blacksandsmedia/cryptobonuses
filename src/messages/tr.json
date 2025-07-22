@@ -4,14 +4,30 @@
     "contact": "İletişim",
     "terms": "Şartlar",
     "privacy": "Gizlilik",
-    "spin": "Çevir"
+    "spin": "Çark Çevir",
+    "submitBonus": "Bonus Gönder",
+    "buyCrypto": "Kripto Al",
+    "search": "Ara",
+    "language": "Dil"
   },
   "homepage": {
     "title": "En İyi Bitcoin Casino Bonusları ve Kripto Promosyonları 2025",
-    "description": "En iyi kripto casino bonuslarını, özel promosyon kodlarını ve Bitcoin casino tekliflerini bulun. Güvenilir kripto casinolardan para yatırma eşleşmeleri, bedava dönüşler ve para yatırma bonusları alın.",
+    "description": "En iyi kripto casino bonuslarını, özel promosyon kodlarını ve Bitcoin casino tekliflerini bulun. Güvenilir kripto casinolardan para yatırma eşleşmeleri, bedava dönüşler ve para yatırmama bonusları alın.",
+    "welcomeTitle": "CryptoBonuses'a Hoş Geldiniz",
+    "welcomeDescription": "{year} yılının en iyi Bitcoin casino bonuslarını ve promosyonal bonusları keşfedin. Uzman olarak seçilmiş listemizde cömert hoş geldin paketleri, özel bonus kodları ve bedava dönüşler sunan güvenilir kripto casinolar bulunmaktadır.",
     "searchPlaceholder": "Casino ara...",
     "featuredCasinos": "Öne Çıkan Kripto Casinolar",
-    "allOffers": "Tüm Teklifler"
+    "allOffers": "Tüm Teklifler",
+    "filterBonuses": "Bonusları Filtrele",
+    "viewAllBonuses": "Tüm Bonusları Görüntüle",
+    "spinTheWheel": "Çarkı Çevir",
+    "winBig": "BÜYÜK KAZAN!",
+    "trustedBy": "{count}+ Oyuncu Tarafından Güvenilir",
+    "verifiedBonuses": "Doğrulanmış Bonuslar",
+    "exclusiveCodes": "Özel Kodlar",
+    "noHiddenFees": "Gizli Ücret Yok",
+    "noMatchingBonuses": "Filtrelerinizle eşleşen bonus bulunamadı. Filtre kriterlerinizi değiştirmeyi deneyin.",
+    "loadingBonuses": "Casino bonusları yükleniyor..."
   },
   "casino": {
     "getBonus": "Bonus Al",
@@ -24,14 +40,33 @@
     "writeReview": "Yorum Yaz",
     "rating": "Değerlendirme",
     "founded": "Kuruluş",
-    "features": "Temel Özellikler"
+    "features": "Temel Özellikler",
+    "howToRedeem": "Nasıl Kullanılır",
+    "bonusDetails": "Bonus Detayları",
+    "analytics": "Analitik",
+    "moreOffers": "Daha Fazla Teklif",
+    "popularThisWeek": "Bu Hafta Popüler"
   },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
     "notFound": "Sayfa Bulunamadı",
+    "notFoundMessage": "Aradığınız sayfa bulunamadı.",
+    "returnHome": "Ana Sayfaya Dön",
     "backHome": "Ana Sayfaya Dön",
     "language": "Dil",
-    "search": "Ara"
+    "search": "Ara",
+    "yes": "Evet",
+    "no": "Hayır",
+    "cancel": "İptal",
+    "submit": "Gönder",
+    "save": "Kaydet",
+    "close": "Kapat"
+  },
+  "footer": {
+    "privacyPolicy": "Gizlilik Politikası",
+    "terms": "Şartlar",
+    "contact": "İletişim",
+    "copyright": "CryptoBonuses. Tüm hakları saklıdır."
   }
 } 

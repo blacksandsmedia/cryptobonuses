@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import SpinPage from '../../spin/page';
+import { TranslationProvider } from '@/contexts/TranslationContext';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +24,9 @@ export default function LangSpinPage({ params }: LangSpinPageProps) {
     notFound();
   }
   
-  // Render the spin page
-  return <SpinPage />;
+  return (
+    <TranslationProvider locale={lang as any}>
+      <SpinPage />
+    </TranslationProvider>
+  );
 } 
