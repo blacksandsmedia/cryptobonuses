@@ -87,5 +87,19 @@
     "terms": "Şartlar",
     "contact": "İletişim",
     "copyright": "CryptoBonuses. Tüm hakları saklıdır."
+  },
+  "newsletter": {
+    "title": "En Son Casino Bonuslarından Haberdar Olun",
+    "description": "Özel bonus kodları, yeni casino incelemeleri ve özel teklifler doğrudan e-posta kutunuza gönderilsin. En iyi kripto casino fırsatlarını kaçırmayın!",
+    "emailPlaceholder": "E-posta adresinizi girin",
+    "subscribe": "Abone Ol",
+    "subscribing": "Abone oluyor...",
+    "trust": {
+      "noSpam": "Asla spam yok",
+      "weeklyUpdates": "Haftalık güncellemeler",
+      "unsubscribe": "İstediğiniz zaman abonelikten çık"
+    }
+  },
+  "contact": {
   }
 } 

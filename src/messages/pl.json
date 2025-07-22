@@ -87,5 +87,19 @@
     "terms": "Warunki",
     "contact": "Kontakt",
     "copyright": "CryptoBonuses. Wszelkie prawa zastrzeżone."
+  },
+  "newsletter": {
+    "title": "Bądź Na Bieżąco z Najnowszymi Bonusami Kasyn",
+    "description": "Otrzymuj ekskluzywne kody bonusowe, nowe recenzje kasyn i specjalne oferty bezpośrednio do swojej skrzynki odbiorczej. Nie przegap najlepszych okazji w krypto kasynach!",
+    "emailPlaceholder": "Wprowadź swój adres e-mail",
+    "subscribe": "Subskrybuj",
+    "subscribing": "Subskrybuję...",
+    "trust": {
+      "noSpam": "Nigdy spam",
+      "weeklyUpdates": "Cotygodniowe aktualizacje",
+      "unsubscribe": "Anuluj subskrypcję w dowolnym momencie"
+    }
+  },
+  "contact": {
   }
 } 
