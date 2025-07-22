@@ -11,6 +11,10 @@ import Script from 'next/script';
 import { Suspense } from 'react';
 import SearchParamsWrapper from '@/components/SearchParamsWrapper';
 import SchemaMarkup from '@/components/SchemaMarkup';
+import { cookies, headers } from 'next/headers';
+import { prisma } from '@/lib/prisma';
+import { initializeApp } from '@/lib/startup';
+import { TranslationProvider } from '@/contexts/TranslationContext';
 
 // Define the types for our data
 interface Bonus {
