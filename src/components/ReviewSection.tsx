@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Review {
   id: string;
@@ -36,6 +37,16 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
     text: '',
   });
   const [showForm, setShowForm] = useState(false);
+  
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
   
   // Load reviews from props and localStorage on component mount
   useEffect(() => {
@@ -185,10 +196,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
       });
       
       // Show submission confirmation
-      alert('Thank you for your review! It has been submitted for moderation and will be visible after approval by our team.');
+      alert(t('reviews.review_submitted_message') || 'Thank you for your review! It has been submitted for moderation and will be visible after approval by our team.');
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('There was an error submitting your review. Please try again later.');
+      alert(t('reviews.review_error_message') || 'There was an error submitting your review. Please try again later.');
     }
   };
   
@@ -205,7 +216,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
   return (
     <section className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5">
-        <h2 className="text-xl sm:text-2xl font-bold">Reviews</h2>
+        <h2 className="text-xl sm:text-2xl font-bold">{t('reviews.title')}</h2>
         
         {/* Aggregate Star Rating */}
         <div className="flex items-center mt-2 sm:mt-0">
@@ -225,7 +236,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
                 ))}
               </div>
               <span className="text-white font-medium">{averageRating}</span>
-              <span className="text-white/60 text-sm ml-1">({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})</span>
+              <span className="text-white/60 text-sm ml-1">({reviewCount} {reviewCount === 1 ? t('reviews.review_singular') : t('reviews.reviews_plural')})</span>
             </>
           ) : (
             <>
@@ -243,7 +254,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
                 ))}
               </div>
               <span className="text-white font-medium">0.0</span>
-              <span className="text-white/60 text-sm ml-1">(0 reviews)</span>
+              <span className="text-white/60 text-sm ml-1">({t('reviews.no_reviews')})</span>
             </>
           )}
         </div>
@@ -255,17 +266,17 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
           onClick={() => setShowForm(true)}
                       className="bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-semibold px-4 py-2 rounded-lg transition-colors duration-300 mb-5 text-sm"
         >
-          Write a Review
+          {t('reviews.write_review_button')}
         </button>
       )}
       
       {/* Review Submission Form */}
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-[#2c2f3a] border border-[#404055] rounded-xl p-6 mb-5 shadow-lg">
-          <h3 className="font-bold mb-4 text-lg">Add Your Review</h3>
+          <h3 className="font-bold mb-4 text-lg">{t('reviews.add_your_review_title')}</h3>
           
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Your Name</label>
+            <label className="block text-sm font-medium mb-2">{t('reviews.your_name_label')}</label>
             <input 
               type="text" 
               name="username" 
@@ -277,7 +288,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
           </div>
           
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Rating</label>
+            <label className="block text-sm font-medium mb-2">{t('reviews.rating_label')}</label>
             <div className="flex">
               {[1, 2, 3, 4, 5].map((rating) => (
                 <button 
@@ -300,7 +311,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
           </div>
           
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">Your Review</label>
+            <label className="block text-sm font-medium mb-2">{t('reviews.your_review_label')}</label>
             <textarea 
               name="text" 
               value={newReview.text} 
@@ -315,14 +326,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
               type="submit"
               className="bg-[#68D08B] hover:bg-[#5abc7a] text-[#343541] font-semibold px-6 py-3 rounded-lg transition-colors duration-300 text-sm"
             >
-              Submit Review
+              {t('reviews.submit_review_button')}
             </button>
             <button 
               type="button"
               onClick={() => setShowForm(false)}
               className="bg-[#343541] border border-[#404055] text-white/90 px-6 py-3 rounded-lg hover:bg-[#383b4a] hover:border-[#68D08B]/30 transition-all duration-300 text-sm"
             >
-              Cancel
+              {t('reviews.cancel_button')}
             </button>
           </div>
         </form>
@@ -355,7 +366,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
                     
                     {review.verified && (
                       <span className="ml-2 text-xs bg-[#2c2f3a] text-[#68D08B] px-2 py-0.5 rounded-full">
-                        Verified
+                        {t('reviews.verified_badge')}
                       </span>
                     )}
                   </div>
@@ -371,7 +382,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
       ) : (
         <div className="bg-[#343541] p-4 rounded-lg text-center">
           <p className="text-white/85">
-            No reviews yet for {casinoName}. Be the first to share your experience!
+            {t('reviews.no_reviews_message')} {casinoName}. {t('reviews.be_first_to_share')}!
           </p>
         </div>
       )}
@@ -382,7 +393,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
           className="mt-4 text-[#68D08B] text-sm hover:underline flex items-center mx-auto"
           onClick={() => setExpanded(true)}
         >
-          Show all reviews
+          {t('reviews.show_all_reviews_button')}
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
@@ -394,7 +405,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
           className="mt-4 text-[#68D08B] text-sm hover:underline flex items-center mx-auto"
           onClick={() => setExpanded(false)}
         >
-          Show less
+          {t('reviews.show_less_button')}
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
           </svg>

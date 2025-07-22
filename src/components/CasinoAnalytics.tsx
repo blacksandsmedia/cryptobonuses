@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from 'recharts';
 
 interface AnalyticsData {
@@ -39,6 +40,16 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
 
   useEffect(() => {
     async function fetchAnalytics() {
@@ -126,11 +137,11 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
     <section id="analytics" className="bg-[#3e4050] rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">Bonus Activity Analytics</h2>
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">{t('analytics.bonusActivityTitle') || 'Bonus Activity Analytics'}</h2>
       </div>
       
       <p className="text-[#a7a9b4] mb-4 sm:mb-6 text-sm sm:text-base">
-        Live tracking showing recent bonus activity and community engagement at {casinoName}.
+        {t('analytics.liveTrackingDescription')} {casinoName}.
       </p>
 
       {/* Stats Grid - Mobile Responsive */}
@@ -138,7 +149,7 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
         <div className="bg-[#2c2f3a] rounded-lg p-3 sm:p-4 border border-[#404055]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[#a7a9b4] text-xs sm:text-sm">Total Claims</p>
+              <p className="text-[#a7a9b4] text-xs sm:text-sm">{t('analytics.totalClaims') || 'Total Claims'}</p>
               <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{data.stats.totalCombinedActions}</p>
             </div>
           </div>
@@ -147,7 +158,7 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
         <div className="bg-[#2c2f3a] rounded-lg p-3 sm:p-4 border border-[#404055]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[#a7a9b4] text-xs sm:text-sm">This Week</p>
+              <p className="text-[#a7a9b4] text-xs sm:text-sm">{t('analytics.thisWeek') || 'This Week'}</p>
               <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{data.stats.weeklyTotal}</p>
             </div>
           </div>
@@ -156,7 +167,7 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
         <div className="bg-[#2c2f3a] rounded-lg p-3 sm:p-4 border border-[#404055] sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[#a7a9b4] text-xs sm:text-sm">Weekly Rank</p>
+              <p className="text-[#a7a9b4] text-xs sm:text-sm">{t('analytics.weeklyRank') || 'Weekly Rank'}</p>
               <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">#{data.stats.weeklyLeaderboardPosition}</p>
             </div>
           </div>
@@ -166,9 +177,9 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
       {/* Chart Section - Mobile Responsive */}
       <div className="bg-[#2c2f3a] rounded-lg p-3 sm:p-4 lg:p-6 border border-[#404055] mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-2">
-          <h3 className="text-base sm:text-lg font-semibold text-white">Claims Last 7 Days</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-white">{t('analytics.claimsLast7Days') || 'Claims Last 7 Days'}</h3>
           <div className="text-[#68D08B] text-xs sm:text-sm font-medium">
-            {data.chartData.reduce((sum, item) => sum + item.count, 0)} total claims
+            {data.chartData.reduce((sum, item) => sum + item.count, 0)} {t('analytics.totalClaimsText') || 'total claims'}
           </div>
         </div>
         
@@ -254,10 +265,10 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-2 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4">
           <div className="flex items-center gap-2 justify-center sm:justify-start">
             <div className="w-3 h-3 bg-[#68D08B] rounded-full"></div>
-            <span className="text-[#9ca3af] text-xs sm:text-sm font-medium">Daily Claims</span>
+            <span className="text-[#9ca3af] text-xs sm:text-sm font-medium">{t('analytics.dailyClaims') || 'Daily Claims'}</span>
           </div>
           <div className="text-[#6b7280] text-xs text-center sm:text-left">
-            Peak: {Math.max(...data.chartData.map(d => d.count))} claims
+            {t('analytics.peak') || 'Peak'}: {Math.max(...data.chartData.map(d => d.count))} {t('analytics.claimsLabel') || 'claims'}
           </div>
         </div>
       </div>
@@ -266,7 +277,7 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
       <div className="bg-[#2c2f3a] rounded-lg p-3 sm:p-4 lg:p-6 border border-[#404055]">
         <div className="flex items-center gap-2 mb-3 sm:mb-4">
           <div className="w-2 h-2 bg-[#68D08B] rounded-full animate-pulse"></div>
-          <h3 className="text-base sm:text-lg font-semibold text-white">Recent Activity</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-white">{t('analytics.recentActivity') || 'Recent Activity'}</h3>
         </div>
         
         <div className="space-y-2 sm:space-y-3 max-h-48 sm:max-h-64 overflow-y-auto">
@@ -281,10 +292,10 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-xs sm:text-sm">
-                    Someone claimed{' '}
+                    {t('analytics.someoneClaimed') || 'Someone claimed'}{' '}
                     <span className="text-[#68D08B] font-semibold">{activity.bonusTitle}</span>
                     {activity.bonusCode && (
-                      <span className="text-[#a7a9b4]"> with code </span>
+                      <span className="text-[#a7a9b4]"> {t('analytics.withCode') || 'with code'} </span>
                     )}
                     {activity.bonusCode && (
                       <span className="text-[#68D08B] font-semibold">{activity.bonusCode}</span>

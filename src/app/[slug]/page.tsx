@@ -17,6 +17,7 @@ import SchemaMarkup from '@/components/SchemaMarkup';
 import TranslatedSectionHeader from '@/components/TranslatedSectionHeader';
 import TranslatedHowToRedeem from '@/components/TranslatedHowToRedeem';
 import TranslatedTableLabel from '@/components/TranslatedTableLabel';
+import TranslatedBonusTypeBadge from '@/components/TranslatedBonusTypeBadge';
 import ScreenshotGallery from '@/components/ScreenshotGallery';
 import ShareIcons from '@/components/ShareIcons';
 import DateDisplay from '@/components/DateDisplay';
@@ -908,9 +909,11 @@ export default async function SlugPage({ params }: { params: { slug: string } })
             {/* Bonus Type Badge */}
             <div className="flex flex-wrap gap-2 mb-4">
               {bonusTypes.map((type) => (
-                <Link key={type} href={`/?filter=${type}`} className="bg-[#2c2f3a] text-[#68D08B] px-3 py-1 rounded-lg text-sm font-medium hover:bg-[#68D08B] hover:text-[#1a1a1a] transition-colors cursor-pointer">
-                  {type.replace('_', ' ').toUpperCase()} BONUS
-                </Link>
+                <TranslatedBonusTypeBadge
+                  key={type}
+                  type={type}
+                  href={`/?filter=${type}`}
+                />
               ))}
             </div>
           </section>
