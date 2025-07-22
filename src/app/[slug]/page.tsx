@@ -1,28 +1,27 @@
+import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import CopyCodeButton from '@/components/CopyCodeButton';
 import ClickableBonusCode from '@/components/ClickableBonusCode';
-import { Metadata, ResolvingMetadata } from 'next';
+import OfferButton from '@/components/OfferButton';
+import TableOfContents from '@/components/TableOfContents';
+import RichContent from '@/components/casino/RichContent';
 import ReviewSection from '@/components/ReviewSection';
+import RecentlyViewed from '@/components/RecentlyViewed';
 import CasinoAnalytics from '@/components/CasinoAnalytics';
 import WeeklyPopularCasinos from '@/components/WeeklyPopularCasinos';
 import RecentPageChecks from '@/components/RecentPageChecks';
-import { prisma } from '@/lib/prisma';
-import OfferButton from '@/components/OfferButton';
-import UsageCounter from '@/components/UsageCounter';
-import ClientStickyWrapper from '@/components/ClientStickyWrapper';
-import ScreenshotGallery from '@/components/ScreenshotGallery';
-import Script from 'next/script';
-import { normalizeImagePath } from '@/lib/image-utils';
-import ShareIcons from '@/components/ShareIcons';
-import TableOfContents from '@/components/TableOfContents';
-import RichContent from "@/components/casino/RichContent";
-import { getCodeTermLabel } from '@/lib/settings';
-import RecentlyViewed from '@/components/RecentlyViewed';
 import RecentlyViewedTracker from '@/components/RecentlyViewedTracker';
 import SchemaMarkup from '@/components/SchemaMarkup';
+import TranslatedSectionHeader from '@/components/TranslatedSectionHeader';
+import TranslatedHowToRedeem from '@/components/TranslatedHowToRedeem';
+import ScreenshotGallery from '@/components/ScreenshotGallery';
+import ShareIcons from '@/components/ShareIcons';
 import DateDisplay from '@/components/DateDisplay';
+import ClientStickyWrapper from '@/components/ClientStickyWrapper';
+import { normalizeImagePath } from '@/lib/image-utils';
+import Link from 'next/link';
 import { getCasinoPageModifiedTime } from '@/lib/page-modified-time';
 
 // Add export const dynamic = 'force-dynamic' to disable caching
@@ -703,17 +702,17 @@ export default async function SlugPage({ params }: { params: { slug: string } })
 
           {/* How to Redeem Section - Moved to appear before About section */}
           <section id="how-to-redeem" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">How to Redeem</h2>
-            <RichContent 
-              content={howToRedeemContent || (bonusCode 
-                ? `1. Click the "Get Bonus" button above to visit ${dbCasino.name}'s website.\n2. Create your account and verify your email.\n3. Make your first deposit using cryptocurrency.\n4. Enter ${codeTypeCapitalized} ${bonusCode} during deposit.\n5. Start playing and enjoy your bonus!`
-                : `1. Click the "Get Bonus" button above to visit ${dbCasino.name}'s website.\n2. Create your account and verify your email.\n3. Start playing and enjoy your bonus!`
-              )} 
-              type="howToRedeem" 
+            <TranslatedSectionHeader 
+              translationKey="casino.howToRedeem" 
+              fallback="How to Redeem" 
+            />
+            <TranslatedHowToRedeem 
+              content={howToRedeemContent}
               bonusCode={bonusCode}
               casinoName={dbCasino.name}
               affiliateLink={dbCasino.affiliateLink}
               codeTermLabel={codeTermLabel}
+              codeTypeCapitalized={codeTypeCapitalized}
               casinoData={richContentCasinoData}
               bonusData={richContentBonusData}
               analyticsData={richContentAnalyticsData}
@@ -883,7 +882,10 @@ export default async function SlugPage({ params }: { params: { slug: string } })
 
           {/* Bonus Offer Section - Enhanced with more detailed content */}
           <section id="bonus-details" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Bonus Offer Details</h2>
+            <TranslatedSectionHeader 
+              translationKey="casino.bonusDetails" 
+              fallback="Bonus Offer Details" 
+            />
             {bonusDescription && (
               <div className="bg-[#2c2f3a] p-4 rounded-lg mb-4 border border-[#404055]">
                 <h3 className="text-lg font-semibold text-[#68D08B] mb-2">{bonusTitle}</h3>
@@ -923,7 +925,10 @@ export default async function SlugPage({ params }: { params: { slug: string } })
           {/* Terms & Conditions */}
           {termsContent && (
             <section id="terms" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Terms & Conditions</h2>
+              <TranslatedSectionHeader 
+                translationKey="casino.termsConditions" 
+                fallback="Terms & Conditions" 
+              />
               <RichContent 
                 content={termsContent} 
                 type="terms" 
@@ -936,7 +941,11 @@ export default async function SlugPage({ params }: { params: { slug: string } })
 
           {/* More Offers Section */}
           <section id="more-offers" className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-6">Recommended For You</h2>
+            <TranslatedSectionHeader 
+              translationKey="casino.moreOffers" 
+              fallback="Recommended For You" 
+              className="text-xl sm:text-2xl font-bold mb-6"
+            />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {relatedOffers.map((offer) => {
                 // Get the code term label for the recommended casino
