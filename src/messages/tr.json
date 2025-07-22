@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "contact": "İletişim",
+    "terms": "Şartlar",
+    "privacy": "Gizlilik",
+    "spin": "Çevir"
+  },
+  "homepage": {
+    "title": "En İyi Bitcoin Casino Bonusları ve Kripto Promosyonları 2025",
+    "description": "En iyi kripto casino bonuslarını, özel promosyon kodlarını ve Bitcoin casino tekliflerini bulun. Güvenilir kripto casinolardan para yatırma eşleşmeleri, bedava dönüşler ve para yatırma bonusları alın.",
+    "searchPlaceholder": "Casino ara...",
+    "featuredCasinos": "Öne Çıkan Kripto Casinolar",
+    "allOffers": "Tüm Teklifler"
+  },
+  "casino": {
+    "getBonus": "Bonus Al",
+    "claimOffer": "Teklifi Talep Et",
+    "copyCode": "Kodu Kopyala",
+    "visitSite": "Siteyi Ziyaret Et",
+    "bonusCode": "Bonus Kodu",
+    "terms": "Şartlar ve Koşullar",
+    "reviews": "Yorumlar",
+    "writeReview": "Yorum Yaz",
+    "rating": "Değerlendirme",
+    "founded": "Kuruluş",
+    "features": "Temel Özellikler"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "notFound": "Sayfa Bulunamadı",
+    "backHome": "Ana Sayfaya Dön",
+    "language": "Dil",
+    "search": "Ara"
+  }
+} 

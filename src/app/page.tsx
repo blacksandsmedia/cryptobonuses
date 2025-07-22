@@ -11,8 +11,7 @@ import Script from 'next/script';
 import { Suspense } from 'react';
 import SearchParamsWrapper from '@/components/SearchParamsWrapper';
 import SchemaMarkup from '@/components/SchemaMarkup';
-import { NextIntlClientProvider } from 'next-intl';
-import { defaultLocale } from '@/i18n';
+import SimpleLanguageIndicator from '@/components/SimpleLanguageIndicator';
 
 // Define the types for our data
 interface Bonus {
@@ -414,6 +413,9 @@ export default function Home() {
       <SchemaMarkup type="brand" />
 
       <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
+        {/* Translation Demo - Shows current language and translated content */}
+        <SimpleLanguageIndicator />
+        
         {/* Enhanced Hero Heading */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center gap-2 bg-[#68D08B]/10 border border-[#68D08B]/20 rounded-full px-4 py-2 mb-6">

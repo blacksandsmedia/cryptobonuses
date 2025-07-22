@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Home",
+    "contact": "Contact",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "spin": "Spin"
+  },
+  "homepage": {
+    "title": "Best Bitcoin Casino Bonuses & Crypto Promotions 2025",
+    "description": "Find the best crypto casino bonuses, exclusive promo codes, and Bitcoin casino offers. Get deposit matches, free spins, and no deposit bonuses at trusted crypto casinos.",
+    "searchPlaceholder": "Search for casinos...",
+    "featuredCasinos": "Featured Crypto Casinos",
+    "allOffers": "All Offers"
+  },
+  "casino": {
+    "getBonus": "Get Bonus",
+    "claimOffer": "Claim Offer",
+    "copyCode": "Copy Code",
+    "visitSite": "Visit Site",
+    "bonusCode": "Bonus Code",
+    "terms": "Terms & Conditions",
+    "reviews": "Reviews",
+    "writeReview": "Write a Review",
+    "rating": "Rating",
+    "founded": "Founded",
+    "features": "Key Features"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "notFound": "Page Not Found",
+    "backHome": "Back to Home",
+    "language": "Language",
+    "search": "Search"
+  }
+} 

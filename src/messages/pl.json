@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Strona główna",
+    "contact": "Kontakt",
+    "terms": "Warunki",
+    "privacy": "Prywatność",
+    "spin": "Kręć"
+  },
+  "homepage": {
+    "title": "Najlepsze Bonusy Bitcoin Casino i Promocje Krypto 2025",
+    "description": "Znajdź najlepsze bonusy krypto casino, ekskluzywne kody promocyjne i oferty Bitcoin casino. Otrzymaj dopasowania depozytów, darmowe obroty i bonusy bez depozytu w zaufanych krypto kasynach.",
+    "searchPlaceholder": "Szukaj kasyn...",
+    "featuredCasinos": "Polecane Krypto Kasyna",
+    "allOffers": "Wszystkie Oferty"
+  },
+  "casino": {
+    "getBonus": "Odbierz Bonus",
+    "claimOffer": "Odbierz Ofertę",
+    "copyCode": "Kopiuj Kod",
+    "visitSite": "Odwiedź Stronę",
+    "bonusCode": "Kod Bonusowy",
+    "terms": "Regulamin",
+    "reviews": "Opinie",
+    "writeReview": "Napisz Opinię",
+    "rating": "Ocena",
+    "founded": "Założone",
+    "features": "Kluczowe Funkcje"
+  },
+  "common": {
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "notFound": "Strona Nie Znaleziona",
+    "backHome": "Powrót do Strony Głównej",
+    "language": "Język",
+    "search": "Szukaj"
+  }
+} 
