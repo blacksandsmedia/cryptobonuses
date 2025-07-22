@@ -26,7 +26,7 @@ const messages: Record<Locale, Messages> = {
 
 interface TranslationContextType {
   locale: Locale;
-  t: (key: string) => string;
+  t: (key: string, interpolations?: Record<string, string | number>) => string;
   messages: Messages;
 }
 
@@ -40,7 +40,7 @@ interface TranslationProviderProps {
 export function TranslationProvider({ children, locale }: TranslationProviderProps) {
   const currentMessages = messages[locale] || messages.en;
 
-  const t = (key: string): string => {
+  const t = (key: string, interpolations?: Record<string, string | number>): string => {
     const keys = key.split('.');
     let value: any = currentMessages;
     
@@ -48,7 +48,16 @@ export function TranslationProvider({ children, locale }: TranslationProviderPro
       value = value?.[k];
     }
     
-    return value || key;
+    if (!value) return key;
+    
+    // Handle interpolation for variables like {year}, {count}
+    if (interpolations && typeof value === 'string') {
+      return Object.entries(interpolations).reduce((text, [key, replacement]) => {
+        return text.replace(new RegExp(`\\{${key}\\}`, 'g'), String(replacement));
+      }, value);
+    }
+    
+    return value;
   };
 
   return (
