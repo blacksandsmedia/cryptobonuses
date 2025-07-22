@@ -60,13 +60,13 @@ function TranslatedHomePage() {
             bonusValue: parseFloat(bonus.value) || 0,
             bonusText: bonus.title,
             logoUrl: casino.logoUrl,
-            promoCode: bonus.code ? bonus.code : null, // Ensure proper typing
+            promoCode: bonus.code || null, // Ensure null instead of undefined
             affiliateLink: casino.affiliateLink,
             isActive: true,
             casinoId: casino.id, // Keep database ID for tracking
             bonusId: bonus.id, // Keep bonus ID for tracking
             reviews: []
-          } as CasinoBonus))
+          } as any))
         );
         
         setBonuses(allBonuses);
@@ -193,7 +193,7 @@ function TranslatedHomePage() {
             <div className="inline-flex items-center gap-2 bg-[#68D08B]/10 border border-[#68D08B]/20 rounded-full px-6 py-3 mb-6">
               <div className="w-2 h-2 bg-[#68D08B] rounded-full animate-pulse"></div>
               <span className="text-[#68D08B] text-sm font-medium">
-                {totalUsers >= 1000 ? `${Math.floor(totalUsers / 1000)}K+` : `${totalUsers}+`} Players Trusted
+                {totalUsers >= 1000 ? `${Math.floor(totalUsers / 1000)}K+` : `${totalUsers}+`} {t('homepage.trustedBy')}
               </span>
             </div>
             

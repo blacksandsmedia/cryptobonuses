@@ -37,6 +37,11 @@
   },
   "casino": {
     "getBonus": "Bonus Al",
+    "claimNow": "Şimdi Talep Et",
+    "copied": "Kopyalandı!",
+    "usedCount": "{count} kez bugün kullanıldı",
+    "time": "kez",
+    "times": "kez",
     "claimOffer": "Teklifi Talep Et",
     "copyCode": "Kodu Kopyala",
     "visitSite": "Siteyi Ziyaret Et",
