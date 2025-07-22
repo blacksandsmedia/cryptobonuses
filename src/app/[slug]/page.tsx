@@ -390,9 +390,19 @@ function generateBonusDescription(casinoName: string, bonusTitle: string, bonusT
   return `The ${bonusTitle} is ${bonusTypeText[bonusType as keyof typeof bonusTypeText] || `an exclusive offer from ${casinoName} designed to enhance your gaming experience with added value and increased winning potential.\n\n${casinoName} regularly updates its promotional offerings to provide players with the most competitive bonuses in the crypto gambling space, ensuring both new and existing users receive exceptional value.`}${codeText}${termsText}`;
 }
 
-export default async function CasinoPage({ params }: { params: { slug: string } }) {
+export default async function SlugPage({ params }: { params: { slug: string } }) {
   const slug = params.slug;
   
+  // Check if the slug is a language code
+  const supportedLanguages = ['pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
+  
+  if (supportedLanguages.includes(slug)) {
+    // This is a language code, render the language homepage
+    const HomePage = (await import('../page')).default;
+    return <HomePage />;
+  }
+  
+  // This should be a casino slug, try to find the casino
   const dbCasino = await prisma.casino.findUnique({
     where: { slug },
     include: {

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 // Simple locale configuration
 const locales = ['en', 'pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
@@ -22,39 +23,50 @@ type Locale = keyof typeof localeConfig;
 
 export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname() || '/';
 
-  // Get current locale from localStorage or default to English
+  // Get current locale from pathname
   const getCurrentLocale = (): Locale => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('preferred-language') as Locale;
-      return saved && locales.includes(saved) ? saved : defaultLocale;
+    const segments = pathname.split('/');
+    // Check if path starts with a language code
+    if (segments[1] && locales.includes(segments[1] as Locale)) {
+      return segments[1] as Locale;
     }
     return defaultLocale;
   };
 
-  const [currentLocale, setCurrentLocale] = useState<Locale>(defaultLocale);
+  const currentLocale = getCurrentLocale();
 
-  // Initialize locale from localStorage on mount
-  useEffect(() => {
-    setCurrentLocale(getCurrentLocale());
-  }, []);
+  // Generate the new path for a given locale
+  const getLocalizedPath = (newLocale: Locale): string => {
+    const segments = pathname.split('/');
+    
+    // If current path starts with a language code
+    if (segments[1] && locales.includes(segments[1] as Locale)) {
+      if (newLocale === defaultLocale) {
+        // Remove language prefix for default language, keep the rest of the path
+        return '/' + segments.slice(2).join('/');
+      } else {
+        // Replace with new locale
+        segments[1] = newLocale;
+        return segments.join('/');
+      }
+    } else {
+      // Current path has no locale (default language)
+      if (newLocale === defaultLocale) {
+        return pathname;
+      } else {
+        // Add language prefix
+        return `/${newLocale}${pathname}`;
+      }
+    }
+  };
 
   const handleLanguageChange = (newLocale: Locale) => {
-    // Save preference to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('preferred-language', newLocale);
-    }
-    
-    // Update current state
-    setCurrentLocale(newLocale);
-    
-    // Close dropdown
+    const newPath = getLocalizedPath(newLocale);
+    router.push(newPath);
     setIsOpen(false);
-    
-    // Show a brief notification that language will be applied
-    if (newLocale !== 'en') {
-      alert(`Language changed to ${localeConfig[newLocale].name}. Full translation coming soon!`);
-    }
   };
 
   return (
