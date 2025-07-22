@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface RichContentProps {
   content: string;
@@ -285,6 +286,16 @@ export default function RichContent({
 }: RichContentProps) {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   
+  // Add translation support with fallback
+  let t;
+  try {
+    const translation = useTranslation();
+    t = translation.t;
+  } catch {
+    // Not in translation context, use fallback
+    t = (key: string) => key.split('.').pop() || key;
+  }
+  
   // Handle code copy with user feedback
   const handleCodeCopy = (code: string) => {
     console.log(`Promo code copied: ${code}`);
@@ -304,31 +315,31 @@ export default function RichContent({
       // For numbered list content, generate proper steps based on whether there's a bonus code
       const fallbackSteps = bonusCode ? [
         {
-          title: 'Copy bonus code',
-          description: casinoName ? `Click on the ${casinoName} code to copy it` : 'Click on the code to copy it'
+          title: t('casino.copyBonusCode') || 'Copy bonus code',
+          description: casinoName ? `${t('casino.clickCasinoCode') || 'Click on the'} ${casinoName} ${t('casino.codeToClick') || 'code to copy it'}` : t('casino.clickCode') || 'Click on the code to copy it'
         },
         {
-          title: 'Visit the site',
-          description: 'Open the casino website and sign up for an account with the code'
+          title: t('casino.visitSite') || 'Visit the site',
+          description: t('casino.openSiteSignUp') || 'Open the casino website and sign up for an account with the code'
         },
         {
-          title: 'Follow steps to unlock reward',
-          description: 'Complete the registration and deposit process to receive your bonus'
+          title: t('casino.followSteps') || 'Follow steps to unlock reward',
+          description: t('casino.completeRegistrationDeposit') || 'Complete the registration and deposit process to receive your bonus'
         }
       ] : [
         {
-          title: 'Redeem the bonus',
-          description: casinoName ? `Click the ${casinoName} 'Get Bonus' button` : 'Click the \'Get Bonus\' button'
+          title: t('casino.redeemBonus') || 'Redeem the bonus',
+          description: casinoName ? `${t('casino.clickThe') || 'Click the'} ${casinoName} '${t('casino.getBonusButton') || 'Get Bonus'}' ${t('casino.button') || 'button'}` : `${t('casino.clickThe') || 'Click the'} '${t('casino.getBonusButton') || 'Get Bonus'}' ${t('casino.button') || 'button'}`
         },
         {
-          title: 'Create an account',
+          title: t('casino.createAccount') || 'Create an account',
           description: casinoName && affiliateLink 
-            ? `Sign up on the [${casinoName} website](${affiliateLink})`
-            : casinoName ? `Sign up on the ${casinoName} website` : 'Sign up on the casino website'
+            ? `${t('casino.signUpOn') || 'Sign up on the'} [${casinoName} ${t('casino.website') || 'website'}](${affiliateLink})`
+            : casinoName ? `${t('casino.signUpOn') || 'Sign up on the'} ${casinoName} ${t('casino.website') || 'website'}` : t('casino.signUpCasino') || 'Sign up on the casino website'
         },
         {
-          title: 'Follow steps to unlock reward',
-          description: casinoName ? `Complete the requirements to receive your ${casinoName} bonus` : 'Complete the requirements to receive your bonus'
+          title: t('casino.followSteps') || 'Follow steps to unlock reward',
+          description: casinoName ? `${t('casino.completeRequirements') || 'Complete the requirements to receive your'} ${casinoName} ${t('casino.bonus') || 'bonus'}` : t('casino.completeRequirementsGeneric') || 'Complete the requirements to receive your bonus'
         }
       ];
       
@@ -349,7 +360,7 @@ export default function RichContent({
                   
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-white mb-0.5 leading-tight transition-colors duration-300 group-hover:text-[#68D08B]">
-                      {step.title}
+                      {processDescriptionWithLinks(step.title, handleCodeCopy, casinoData, bonusData, analyticsData)}
                     </h3>
                     <div className="text-[#a4a5b0] text-sm leading-relaxed transition-colors duration-300 group-hover:text-[#b5b6c1]">
                       {processDescriptionWithLinks(step.description, handleCodeCopy, casinoData, bonusData, analyticsData)}
@@ -390,24 +401,24 @@ export default function RichContent({
     if (steps.length < 3) {
       const fallbackSteps = [
         {
-          title: bonusCode ? 'Copy bonus code' : 'Redeem the bonus',
+          title: bonusCode ? t('casino.copyBonusCode') || 'Copy bonus code' : t('casino.redeemBonus') || 'Redeem the bonus',
           description: bonusCode 
-            ? casinoName ? `Click on the ${casinoName} code to copy it` : 'Click on the code to copy it'
-            : casinoName ? `Click the ${casinoName} 'Get Bonus' button` : 'Click the \'Get Bonus\' button'
+            ? casinoName ? `${t('casino.clickCasinoCode') || 'Click on the'} ${casinoName} ${t('casino.codeToClick') || 'code to copy it'}` : t('casino.clickCode') || 'Click on the code to copy it'
+            : casinoName ? `${t('casino.clickThe') || 'Click the'} ${casinoName} '${t('casino.getBonusButton') || 'Get Bonus'}' ${t('casino.button') || 'button'}` : `${t('casino.clickThe') || 'Click the'} '${t('casino.getBonusButton') || 'Get Bonus'}' ${t('casino.button') || 'button'}`
         },
         {
-          title: bonusCode ? 'Visit the site' : 'Create an account',
+          title: bonusCode ? t('casino.visitSite') || 'Visit the site' : t('casino.createAccount') || 'Create an account',
           description: bonusCode 
-            ? 'Open the casino website and sign up for an account with the code'
+            ? t('casino.openSiteSignUp') || 'Open the casino website and sign up for an account with the code'
             : casinoName && affiliateLink 
-              ? `Sign up on the [${casinoName} website](${affiliateLink})`
-              : casinoName ? `Sign up on the ${casinoName} website` : 'Sign up on the casino website'
+              ? `${t('casino.signUpOn') || 'Sign up on the'} [${casinoName} ${t('casino.website') || 'website'}](${affiliateLink})`
+              : casinoName ? `${t('casino.signUpOn') || 'Sign up on the'} ${casinoName} ${t('casino.website') || 'website'}` : t('casino.signUpCasino') || 'Sign up on the casino website'
         },
         {
-          title: 'Follow steps to unlock reward',
+          title: t('casino.followSteps') || 'Follow steps to unlock reward',
           description: bonusCode 
-            ? 'Complete the registration and deposit process to receive your bonus'
-            : casinoName ? `Complete the requirements to receive your ${casinoName} bonus` : 'Complete the requirements to receive your bonus'
+            ? t('casino.completeRegistrationDeposit') || 'Complete the registration and deposit process to receive your bonus'
+            : casinoName ? `${t('casino.completeRequirements') || 'Complete the requirements to receive your'} ${casinoName} ${t('casino.bonus') || 'bonus'}` : t('casino.completeRequirementsGeneric') || 'Complete the requirements to receive your bonus'
         }
       ];
       

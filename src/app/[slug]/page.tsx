@@ -16,6 +16,7 @@ import RecentlyViewedTracker from '@/components/RecentlyViewedTracker';
 import SchemaMarkup from '@/components/SchemaMarkup';
 import TranslatedSectionHeader from '@/components/TranslatedSectionHeader';
 import TranslatedHowToRedeem from '@/components/TranslatedHowToRedeem';
+import TranslatedTableLabel from '@/components/TranslatedTableLabel';
 import ScreenshotGallery from '@/components/ScreenshotGallery';
 import ShareIcons from '@/components/ShareIcons';
 import DateDisplay from '@/components/DateDisplay';
@@ -746,9 +747,10 @@ export default async function SlugPage({ params }: { params: { slug: string } })
                   {bonus?.title && (
                     <tr className={`hover:bg-[#252831]/50 transition-colors duration-200 h-[60px] ${!dbCasino.website && !dbCasino.foundedYear && !dbCasino.minimumDeposit && !dbCasino.wageringRequirement && (!dbCasino.customTableFields || dbCasino.customTableFields.length === 0) ? '' : 'border-b border-[#404055]'}`}>
                       <td className="py-0 px-6 text-[#9ca3af] font-semibold bg-[#252831] border-r border-[#404055] w-[40%] h-[60px]">
-                        <div className="h-full flex items-center">
-                          Bonus
-                        </div>
+                        <TranslatedTableLabel
+                          translationKey="casino.bonus"
+                          fallback="Bonus"
+                        />
                       </td>
                       <td className="py-0 px-6 text-white bg-[#2c2f3a] font-medium h-[60px]">
                         <div className="h-full flex items-center">
@@ -760,9 +762,10 @@ export default async function SlugPage({ params }: { params: { slug: string } })
                   {dbCasino.website && (
                     <tr className={`hover:bg-[#252831]/50 transition-colors duration-200 h-[60px] ${!dbCasino.foundedYear && !dbCasino.minimumDeposit && !dbCasino.wageringRequirement && (!dbCasino.customTableFields || dbCasino.customTableFields.length === 0) ? '' : 'border-b border-[#404055]'}`}>
                       <td className="py-0 px-6 text-[#9ca3af] font-semibold bg-[#252831] border-r border-[#404055] w-[40%] h-[60px]">
-                        <div className="h-full flex items-center">
-                          Website
-                        </div>
+                        <TranslatedTableLabel
+                          translationKey="casino.website"
+                          fallback="Website"
+                        />
                       </td>
                       <td className="py-0 px-6 text-white bg-[#2c2f3a] h-[60px]">
                         <div className="h-full flex items-center">
@@ -779,9 +782,10 @@ export default async function SlugPage({ params }: { params: { slug: string } })
                   {dbCasino.foundedYear && (
                     <tr className={`hover:bg-[#252831]/50 transition-colors duration-200 h-[60px] ${!dbCasino.minimumDeposit && !dbCasino.wageringRequirement && (!dbCasino.customTableFields || dbCasino.customTableFields.length === 0) ? '' : 'border-b border-[#404055]'}`}>
                       <td className="py-0 px-6 text-[#9ca3af] font-semibold bg-[#252831] border-r border-[#404055] w-[40%] h-[60px]">
-                        <div className="h-full flex items-center">
-                          Founded
-                        </div>
+                        <TranslatedTableLabel
+                          translationKey="casino.founded"
+                          fallback="Founded"
+                        />
                       </td>
                       <td className="py-0 px-6 text-white bg-[#2c2f3a] font-medium h-[60px]">
                         <div className="h-full flex items-center">
@@ -793,9 +797,10 @@ export default async function SlugPage({ params }: { params: { slug: string } })
                   {dbCasino.minimumDeposit && (
                     <tr className={`hover:bg-[#252831]/50 transition-colors duration-200 h-[60px] ${!dbCasino.wageringRequirement && (!dbCasino.customTableFields || dbCasino.customTableFields.length === 0) ? '' : 'border-b border-[#404055]'}`}>
                       <td className="py-0 px-6 text-[#9ca3af] font-semibold bg-[#252831] border-r border-[#404055] w-[40%] h-[60px]">
-                        <div className="h-full flex items-center">
-                          Minimum Deposit
-                        </div>
+                        <TranslatedTableLabel
+                          translationKey="casino.minimumDeposit"
+                          fallback="Minimum Deposit"
+                        />
                       </td>
                       <td className="py-0 px-6 text-white bg-[#2c2f3a] font-medium h-[60px]">
                         <div className="h-full flex items-center">
@@ -807,9 +812,10 @@ export default async function SlugPage({ params }: { params: { slug: string } })
                   {dbCasino.wageringRequirement && (
                     <tr className={`hover:bg-[#252831]/50 transition-colors duration-200 h-[60px] ${(!dbCasino.customTableFields || dbCasino.customTableFields.length === 0) ? '' : 'border-b border-[#404055]'}`}>
                       <td className="py-0 px-6 text-[#9ca3af] font-semibold bg-[#252831] border-r border-[#404055] w-[40%] h-[60px]">
-                        <div className="h-full flex items-center">
-                          Wagering Requirement
-                        </div>
+                        <TranslatedTableLabel
+                          translationKey="casino.wageringRequirement"
+                          fallback="Wagering Requirement"
+                        />
                       </td>
                       <td className="py-0 px-6 text-white bg-[#2c2f3a] font-medium h-[60px]">
                         <div className="h-full flex items-center">
