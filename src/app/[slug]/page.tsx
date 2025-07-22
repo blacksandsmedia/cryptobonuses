@@ -397,9 +397,9 @@ export default async function SlugPage({ params }: { params: { slug: string } })
   const supportedLanguages = ['pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
   
   if (supportedLanguages.includes(slug)) {
-    // This is a language code, render the language homepage
-    const HomePage = (await import('../page')).default;
-    return <HomePage />;
+    // This is a language code, render the language homepage with translations
+    const { LanguageHomePage } = await import('./LanguageHomePage');
+    return <LanguageHomePage language={slug} />;
   }
   
   // This should be a casino slug, try to find the casino

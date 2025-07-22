@@ -11,7 +11,6 @@ import Script from 'next/script';
 import { Suspense } from 'react';
 import SearchParamsWrapper from '@/components/SearchParamsWrapper';
 import SchemaMarkup from '@/components/SchemaMarkup';
-import SimpleLanguageIndicator from '@/components/SimpleLanguageIndicator';
 
 // Define the types for our data
 interface Bonus {
@@ -414,7 +413,6 @@ export default function Home() {
 
       <div className="mx-auto w-[90%] md:w-[95%] max-w-[1280px]">
         {/* Translation Demo - Shows current language and translated content */}
-        <SimpleLanguageIndicator />
         
         {/* Enhanced Hero Heading */}
         <div className="text-center mb-8 sm:mb-12">
