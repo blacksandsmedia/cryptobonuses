@@ -24,8 +24,22 @@ export default function TableOfContents({ items }: TableOfContentsProps) {
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'casino.howToRedeem': 'How to Redeem',
+      'casino.aboutCasino': 'About',
+      'casino.screenshots': 'Screenshots', 
+      'casino.games': 'Games',
+      'casino.bonusDetails': 'Bonus Details',
+      'casino.reviews': 'Reviews',
+      'casino.analytics': 'Analytics',
+      'casino.termsConditions': 'Terms',
+      'casino.moreOffers': 'More Offers',
+      'casino.faq': 'FAQ',
+      'casino.popularThisWeek': 'Popular This Week',
+      'casino.recentUpdates': 'Recent Updates'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   // Translation mapping for TOC labels

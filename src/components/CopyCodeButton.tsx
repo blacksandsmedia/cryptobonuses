@@ -31,8 +31,12 @@ export default function CopyCodeButton({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'casino.copyCode': 'Copy Code',
+      'casino.codeCopied': 'Copied!'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
   const displayCode = size === 'large' ? code : (code.length > 10 ? `${code.slice(0, 10)}..` : code);
 
@@ -122,7 +126,7 @@ export default function CopyCodeButton({
           <span className={size === 'large' 
             ? 'text-xl md:text-2xl font-medium text-white' 
             : `text-sm md:text-base font-medium text-white ${isSticky ? 'text-base md:text-lg' : ''}`}>
-            {copied ? (t('casino.copied') || 'Copied!') : displayCode}
+            {copied ? (t('casino.codeCopied') || 'Copied!') : displayCode}
           </span>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`${size === 'large' ? 'w-6 h-6 absolute right-4' : 'w-5 h-5 flex-shrink-0'} opacity-80 group-hover:text-[#68D08B] group-hover:opacity-100`}>

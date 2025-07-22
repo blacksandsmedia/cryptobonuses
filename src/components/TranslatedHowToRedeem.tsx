@@ -32,8 +32,16 @@ export default function TranslatedHowToRedeem({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'casino.step1WithCode': `Click the "Get Bonus" button above to visit ${casinoName}'s website.`,
+      'casino.step1NoCode': `Click the "Get Bonus" button above to visit ${casinoName}'s website.`,
+      'casino.step2': 'Create your account and verify your email.',
+      'casino.step3': 'Make your first deposit using cryptocurrency.',
+      'casino.step4': `Enter ${codeTypeCapitalized} ${bonusCode} during deposit.`,
+      'casino.step5': 'Start playing and enjoy your bonus!'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   // Generate translated fallback content if no custom content provided

@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import ShareIcons from './ShareIcons';
 import { useTranslation } from '@/contexts/TranslationContext';
-import ShareIcons from '@/components/ShareIcons';
 
 interface BonusUsageVerificationProps {
   bonusId?: string;
@@ -19,15 +19,90 @@ export default function BonusUsageVerification({
   casinoName,
   bonusTitle
 }: BonusUsageVerificationProps) {
-  // Add translation support with fallback
+  const [lastUsed, setLastUsed] = useState<string>('Loading...');
+  const [usageCount, setUsageCount] = useState<number>(0);
+
+  // Add translation support with English fallbacks
   let t;
   try {
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'verification.title': 'Bonus Usage & Verification',
+      'verification.realTimeData': 'Real-time Usage Data',
+      'verification.trackingStats': 'Live bonus tracking statistics',
+      'verification.lastUsed': 'Last Used',
+      'verification.usedToday': 'Used Today',
+      'verification.verifiedActive': 'Verified & Active',
+      'verification.verified': 'VERIFIED',
+      'verification.teamVerification': 'Our team has verified this bonus offer is active and working. All terms have been reviewed for accuracy.',
+      'verification.verifiedDate': `Verified ${formattedDate}`,
+      'verification.shareOffer': 'Share Offer',
+      'verification.reportIssue': 'Report Issue',
+      'verification.foundProblem': 'Found a problem? Let us know',
+      'verification.ageRestriction': '18+ Only',
+      'verification.gambleResponsibly': 'Gamble Responsibly',
+      'verification.termsApply': 'Terms Apply'
+    };
+    t = (key: string, interpolations?: Record<string, string | number>) => {
+      let text = englishTranslations[key] || key;
+      if (interpolations && typeof text === 'string') {
+        Object.entries(interpolations).forEach(([key, value]) => {
+          text = text.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value));
+        });
+      }
+      return text;
+    };
   }
+
+  useEffect(() => {
+    const fetchUsageData = async () => {
+      if (!bonusId) return;
+
+      try {
+        const response = await fetch(`/api/tracking?bonusId=${bonusId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch usage data');
+        }
+        const data = await response.json();
+
+        setLastUsed(data.lastUsed ? formatTimeAgo(data.lastUsed) : 'Never used');
+        setUsageCount(data.usageCount || 0);
+      } catch (error) {
+        console.error('Error fetching usage data:', error);
+        setLastUsed('Unable to load');
+        setUsageCount(0);
+      }
+    };
+
+    fetchUsageData();
+    const interval = setInterval(fetchUsageData, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, [bonusId]);
+
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return Math.floor(diffInSeconds / 60) + 'm ago';
+    if (diffInSeconds < 86400) return Math.floor(diffInSeconds / 3600) + 'h ago';
+
+    const days = Math.floor(diffInSeconds / 86400);
+    if (days === 1) return '1 day ago';
+    if (days < 7) return days + 'd ago';
+
+    const weeks = Math.floor(days / 7);
+    if (weeks === 1) return '1 week ago';
+    if (weeks < 4) return weeks + 'w ago';
+
+    const months = Math.floor(days / 30);
+    if (months === 1) return '1 month ago';
+    return months + 'mo ago';
+  };
 
   return (
     <div className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
@@ -134,7 +209,7 @@ export default function BonusUsageVerification({
             </div>
 
             {/* Report */}
-            <Link
+            <a
               href={`/${casinoSlug}/report`}
               className="flex items-center gap-3 p-4 bg-[#343541]/30 rounded-lg border border-[#404055]/50 hover:border-orange-400/30 transition-all hover:bg-[#343541]/50 group"
             >
@@ -149,7 +224,7 @@ export default function BonusUsageVerification({
                 <h4 className="text-white font-medium text-sm group-hover:text-orange-400 transition-colors">{t('verification.reportIssue') || 'Report Issue'}</h4>
                 <p className="text-white/60 text-xs mt-0.5">{t('verification.foundProblem') || 'Found a problem? Let us know'}</p>
               </div>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
@@ -185,7 +260,7 @@ export default function BonusUsageVerification({
                 function formatTimeAgo(dateString) {
                   const now = new Date();
                   const past = new Date(dateString);
-                  const diffInSeconds = Math.floor((now - past) / 1000);
+                  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
                   
                   if (diffInSeconds < 60) return 'Just now';
                   if (diffInSeconds < 3600) return Math.floor(diffInSeconds / 60) + 'm ago';

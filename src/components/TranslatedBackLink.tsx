@@ -18,8 +18,8 @@ export default function TranslatedBackLink({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallback
+    t = () => 'Back to all bonuses';
   }
 
   return (

@@ -21,8 +21,8 @@ export default function TranslatedSectionHeader({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return fallback
+    t = () => fallback;
   }
 
   const translatedText = t(translationKey, { casinoName }) || fallback;
