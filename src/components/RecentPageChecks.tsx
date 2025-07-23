@@ -40,8 +40,15 @@ export default function RecentPageChecks({ pageSlug, casinoName, pageType = 'cas
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'pageChecks.title': `Recent ${casinoName} Updates`,
+      'pageChecks.verifiedWorking': 'Verified Working',
+      'pageChecks.lastChecked': 'Last Checked',
+      'pageChecks.allSystemsOperational': 'All systems operational',
+      'pageChecks.noUpdates': 'No recent updates available'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   useEffect(() => {

@@ -22,8 +22,12 @@ export default function DateDisplay({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'casino.published': 'Published',
+      'casino.lastUpdated': 'Last Updated'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   const formatDate = (date: Date | string | undefined) => {

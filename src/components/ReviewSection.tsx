@@ -44,8 +44,25 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'reviews.title': 'User Reviews',
+      'reviews.verified_badge': 'Verified',
+      'reviews.no_reviews_message': 'No reviews yet',
+      'reviews.be_first_to_share': 'Be the first to share your experience',
+      'reviews.show_all_reviews_button': 'Show all reviews',
+      'reviews.show_less_button': 'Show less',
+      'reviews.review_submitted_message': 'Thank you for your review! It has been submitted for moderation and will appear after being approved by our team.',
+      'reviews.review_error_message': 'There was an error submitting your review. Please try again later.',
+      'reviews.writeReview': 'Write a Review',
+      'reviews.rating': 'Rating',
+      'reviews.required': 'required',
+      'reviews.username': 'Username',
+      'reviews.yourReview': 'Your Review',
+      'reviews.submitReview': 'Submit Review',
+      'reviews.submitting': 'Submitting...'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
   
   // Load reviews from props and localStorage on component mount

@@ -20,8 +20,22 @@ export default function TranslatedBonusTypeBadge({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'bonusTypes.welcome': 'WELCOME',
+      'bonusTypes.noDeposit': 'NO DEPOSIT',
+      'bonusTypes.freeSpins': 'FREE SPINS',
+      'bonusTypes.reload': 'RELOAD',
+      'bonusTypes.cashback': 'CASHBACK',
+      'bonusTypes.deposit': 'DEPOSIT',
+      'bonusTypes.rakeback': 'RAKEBACK',
+      'bonusTypes.vip': 'VIP',
+      'bonusTypes.rewards': 'REWARDS',
+      'bonusTypes.crypto': 'CRYPTO',
+      'bonusTypes.other': 'OTHER',
+      'bonusTypes.bonus': 'BONUS'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   // Translation mapping for bonus types

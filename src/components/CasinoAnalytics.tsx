@@ -47,8 +47,25 @@ export default function CasinoAnalytics({ casinoSlug, casinoName }: CasinoAnalyt
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'analytics.bonusActivityTitle': 'Bonus Activity Analytics',
+      'analytics.liveTrackingDescription': 'Live tracking of recent bonus activity and community engagement',
+      'analytics.totalClaims': 'Total Claims',
+      'analytics.thisWeek': 'This Week',
+      'analytics.weeklyRank': 'Weekly Rank',
+      'analytics.claimsLast7Days': 'Claims in Last 7 Days',
+      'analytics.totalClaimsText': 'total claims',
+      'analytics.dailyClaims': 'Daily Claims',
+      'analytics.peak': 'Peak',
+      'analytics.claimsLabel': 'claims',
+      'analytics.recentActivity': 'Recent Activity',
+      'analytics.someoneClaimed': 'Someone claimed',
+      'analytics.withCode': 'with code',
+      'analytics.updatedRealTime': 'Analytics updated in real-time',
+      'analytics.lastUpdated': 'Last updated'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   useEffect(() => {

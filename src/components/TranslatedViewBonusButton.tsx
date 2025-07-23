@@ -15,8 +15,8 @@ export default function TranslatedViewBonusButton({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallback
+    t = () => 'View Bonus';
   }
 
   return (
