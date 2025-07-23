@@ -48,7 +48,8 @@ export default function RecentPageChecks({ pageSlug, casinoName, pageType = 'cas
       'pageChecks.allSystemsOperational': 'All systems operational',
       'pageChecks.noUpdates': 'No recent updates available',
       'casino.recent': 'Recent',
-      'casino.updates': 'Updates'
+      'casino.updates': 'Updates',
+      'casino.checkedThisPage': 'checked this page'
     };
     t = (key: string) => englishTranslations[key] || key;
   }
