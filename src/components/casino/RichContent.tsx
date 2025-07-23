@@ -292,8 +292,29 @@ export default function RichContent({
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'casino.copyBonusCode': 'Copy bonus code',
+      'casino.clickCasinoCode': 'Click on the',
+      'casino.codeToClick': 'code to copy it',
+      'casino.clickCode': 'Click on the code to copy it',
+      'casino.visitSite': 'Visit the site',
+      'casino.openSiteSignUp': 'Open the casino website and sign up for an account with the code',
+      'casino.followSteps': 'Follow steps to unlock reward',
+      'casino.completeRegistrationDeposit': 'Complete the registration and deposit process to receive your bonus',
+      'casino.redeemBonus': 'Redeem the bonus',
+      'casino.clickThe': 'Click the',
+      'casino.getBonusButton': 'Get Bonus',
+      'casino.button': 'button',
+      'casino.createAccount': 'Create an account',
+      'casino.signUpOn': 'Sign up on the',
+      'casino.website': 'website',
+      'casino.signUpCasino': 'Sign up on the casino website',
+      'casino.completeRequirements': 'Complete the requirements to receive your',
+      'casino.bonus': 'bonus',
+      'casino.completeRequirementsGeneric': 'Complete the requirements to receive your bonus'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
   
   // Handle code copy with user feedback
