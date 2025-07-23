@@ -241,16 +241,22 @@
     "termsApply": "Şartlar Geçerlidir"
   },
   "newsletter": {
-    "title": "En Son Casino Bonuslarından Haberdar Olun",
-    "description": "Özel bonus kodları, yeni casino incelemeleri ve özel teklifler doğrudan e-posta kutunuza gönderilsin. En iyi kripto casino fırsatlarını kaçırmayın!",
+    "title": "En Son Casino Bonusları ile Güncel Kalın",
+    "description": "Özel bonus kodları, yeni casino incelemeleri ve özel teklifler doğrudan gelen kutunuza teslim edilsin. En iyi kripto casino fırsatlarını asla kaçırmayın!",
     "emailPlaceholder": "E-posta adresinizi girin",
-    "subscribe": "Abone Ol",
     "subscribing": "Abone oluyor...",
+    "subscribe": "Abone Ol",
     "trust": {
       "noSpam": "Asla spam yok",
-      "weeklyUpdates": "Haftalık güncellemeler",
+      "weeklyUpdates": "Haftalık güncellemeler", 
       "unsubscribe": "İstediğiniz zaman abonelikten çık"
     }
+  },
+  "footer": {
+    "privacyPolicy": "Gizlilik Politikası",
+    "terms": "Şartlar",
+    "contact": "İletişim",
+    "copyright": "Tüm hakları saklıdır"
   },
   "contact": {
   }
