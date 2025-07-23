@@ -217,6 +217,12 @@
     "published": "Yayınlandı",
     "modified": "Değiştirildi"
   },
+  "nav": {
+    "spin": "Çevir",
+    "contact": "İletişim",
+    "terms": "Şartlar",
+    "privacy": "Gizlilik Politikası"
+  },
   "footer": {
     "privacyPolicy": "Gizlilik Politikası",
     "terms": "Şartlar",

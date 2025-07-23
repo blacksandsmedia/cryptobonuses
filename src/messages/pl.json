@@ -217,6 +217,12 @@
     "published": "Opublikowano",
     "modified": "Zmodyfikowano"
   },
+  "nav": {
+    "spin": "Kręć",
+    "contact": "Kontakt",
+    "terms": "Warunki",
+    "privacy": "Polityka Prywatności"
+  },
   "footer": {
     "privacyPolicy": "Polityka Prywatności",
     "terms": "Warunki",
@@ -251,12 +257,6 @@
       "weeklyUpdates": "Cotygodniowe aktualizacje",
       "unsubscribe": "Anuluj subskrypcję w dowolnym momencie"
     }
-  },
-  "footer": {
-    "privacyPolicy": "Polityka Prywatności",
-    "terms": "Warunki",
-    "contact": "Kontakt",
-    "copyright": "Wszelkie prawa zastrzeżone"
   },
   "contact": {
   }
