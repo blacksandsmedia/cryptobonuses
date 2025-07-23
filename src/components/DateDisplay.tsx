@@ -1,7 +1,4 @@
-'use client';
-
 import React from 'react';
-import { useTranslation } from '@/contexts/TranslationContext';
 
 interface DateDisplayProps {
   publishedAt?: Date | string;
@@ -16,22 +13,6 @@ export default function DateDisplay({
   showLabels = true, 
   className = '' 
 }: DateDisplayProps) {
-  // Add translation support with fallback
-  let t;
-  try {
-    const translation = useTranslation();
-    t = translation.t;
-  } catch {
-    // Not in translation context, return English fallbacks
-    const englishTranslations: Record<string, string> = {
-      'casino.published': 'Published',
-      'casino.lastUpdated': 'Last Updated',
-      'common.published': 'Published',
-      'common.modified': 'Modified'
-    };
-    t = (key: string) => englishTranslations[key] || key;
-  }
-
   const formatDate = (date: Date | string | undefined) => {
     if (!date) return null;
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -58,7 +39,7 @@ export default function DateDisplay({
             <path d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
           </svg>
           <span>
-            {showLabels && `${t('common.published') || 'Published'}: `}
+            {showLabels && 'Published: '}
             <time dateTime={typeof publishedAt === 'string' ? publishedAt : publishedAt?.toISOString()}>
               {publishedDate}
             </time>
@@ -72,7 +53,7 @@ export default function DateDisplay({
             <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
           </svg>
           <span>
-            {showLabels && `${t('common.modified') || 'Modified'}: `}
+            {showLabels && 'Modified: '}
             <time dateTime={typeof modifiedAt === 'string' ? modifiedAt : modifiedAt?.toISOString()}>
               {modifiedDate}
             </time>

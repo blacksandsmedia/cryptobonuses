@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { normalizeImagePath } from '@/lib/image-utils';
 import ClickableBonusCode from './ClickableBonusCode';
-import { useTranslation } from '@/contexts/TranslationContext';
-import { usePathname } from 'next/navigation';
 
 // Define the bonus type directly here to avoid import issues
 interface Bonus {
@@ -37,29 +35,6 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
   const [imageLoading, setImageLoading] = useState(true);
   const [imagePath, setImagePath] = useState('');
   const [isMobile, setIsMobile] = useState(false);
-  
-  // Add translation support (with fallback)
-  let t, locale;
-  try {
-    const translation = useTranslation();
-    t = translation.t;
-    locale = translation.locale;
-  } catch {
-    // Not in translation context, use defaults
-    t = null;
-    locale = 'en';
-  }
-  const pathname = usePathname();
-  
-  // Detect current language from pathname
-  const currentLang = pathname?.startsWith('/tr') ? 'tr' : 
-                      pathname?.startsWith('/pl') ? 'pl' : 
-                      pathname?.startsWith('/es') ? 'es' : 
-                      pathname?.startsWith('/pt') ? 'pt' : 
-                      pathname?.startsWith('/vi') ? 'vi' : 
-                      pathname?.startsWith('/ja') ? 'ja' : 
-                      pathname?.startsWith('/ko') ? 'ko' : 
-                      pathname?.startsWith('/fr') ? 'fr' : 'en';
   
   // Use casino-specific code term label, fallback to "bonus code"
   const codeTermLabel = bonus.codeTermLabel || 'bonus code';
@@ -245,7 +220,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
         style={{ transform: 'translateZ(0)' }}
       >
         <a 
-          href={currentLang === 'en' ? `/${bonus.id}` : `/${currentLang}/${bonus.id}`} 
+          href={`/${bonus.id}`} 
           className="block"
           title={`${bonus.casinoName} ${codeTypeCapitalized} - ${bonus.bonusText} (${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`}
         >
@@ -294,7 +269,7 @@ export default function CasinoCard({ bonus }: CasinoCardProps) {
           }`}
           onClick={handleGetBonusClick}
         >
-          {t ? t('casino.getBonus') : 'Get Bonus'}
+          Get Bonus
         </a>
       </article>
     </div>

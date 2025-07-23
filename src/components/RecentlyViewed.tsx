@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useTranslation } from '@/contexts/TranslationContext';
 import { getRecentlyViewed, type RecentlyViewedCasino } from '@/utils/recentlyViewed';
 import { normalizeImagePath } from '@/lib/image-utils';
 
@@ -14,19 +13,6 @@ interface RecentlyViewedProps {
 export default function RecentlyViewed({ currentCasinoSlug }: RecentlyViewedProps) {
   const [recentCasinos, setRecentCasinos] = useState<RecentlyViewedCasino[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-
-  // Add translation support with fallback
-  let t;
-  try {
-    const translation = useTranslation();
-    t = translation.t;
-  } catch {
-    // Not in translation context, return English fallbacks
-    const englishTranslations: Record<string, string> = {
-      'common.recentlyViewed': 'Recently Viewed'
-    };
-    t = (key: string) => englishTranslations[key] || key;
-  }
 
   useEffect(() => {
     // Only run on client side
@@ -47,7 +33,7 @@ export default function RecentlyViewed({ currentCasinoSlug }: RecentlyViewedProp
 
   return (
     <section className="bg-[#3e4050] rounded-xl px-7 py-6 sm:p-8">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-5">{t('common.recentlyViewed') || 'Recently Viewed'}</h2>
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-5">Recently Viewed</h2>
       <div className={`grid gap-4 ${
         recentCasinos.length === 1 ? 'grid-cols-1' :
         recentCasinos.length === 2 ? 'grid-cols-1 sm:grid-cols-2' :

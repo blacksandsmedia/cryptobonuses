@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useTranslation } from '@/contexts/TranslationContext';
 
 interface TOCItem {
   id: string;
@@ -17,56 +16,6 @@ export default function TableOfContents({ items }: TableOfContentsProps) {
   const [activeSection, setActiveSection] = useState<string>('');
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
-  // Add translation support with fallback
-  let t;
-  try {
-    const translation = useTranslation();
-    t = translation.t;
-  } catch {
-    // Not in translation context, return English fallbacks
-    const englishTranslations: Record<string, string> = {
-      'casino.howToRedeem': 'How to Redeem',
-      'casino.aboutCasino': 'About',
-      'casino.screenshots': 'Screenshots', 
-      'casino.games': 'Games',
-      'casino.bonusDetails': 'Bonus Details',
-      'casino.reviews': 'Reviews',
-      'casino.analytics': 'Analytics',
-      'casino.termsConditions': 'Terms',
-      'casino.moreOffers': 'More Offers',
-      'casino.faq': 'FAQ',
-      'casino.popularThisWeek': 'Popular This Week',
-      'casino.recentUpdates': 'Recent Updates',
-      'casino.recent': 'Recent',
-      'casino.updates': 'Updates'
-    };
-    t = (key: string) => englishTranslations[key] || key;
-  }
-
-  // Translation mapping for TOC labels
-  const getTranslatedLabel = (label: string) => {
-    const labelMap: { [key: string]: string } = {
-      'How to Redeem': t('casino.howToRedeem') || 'How to Redeem',
-      'About': t('casino.aboutCasino') || 'About',
-      'Screenshots': t('casino.screenshots') || 'Screenshots', 
-      'Games': t('casino.gamesAvailable') || 'Games',
-      'Bonus Details': t('casino.bonusDetails') || 'Bonus Details',
-      'Reviews': t('casino.reviews') || 'Reviews',
-      'Analytics': t('casino.analytics') || 'Analytics',
-      'Terms': t('casino.terms') || 'Terms',
-      'More Offers': t('casino.moreOffers') || 'More Offers',
-      'FAQ': t('casino.faq') || 'FAQ',
-      'Popular This Week': t('casino.popularThisWeek') || 'Popular This Week'
-    };
-
-    // Handle dynamic labels like "Recent {casino} Updates"
-    if (label.includes('Recent') && label.includes('Updates')) {
-      return label.replace('Recent', t('casino.recent') || 'Recent').replace('Updates', t('casino.updates') || 'Updates');
-    }
-
-    return labelMap[label] || label;
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -143,7 +92,7 @@ export default function TableOfContents({ items }: TableOfContentsProps) {
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap text-white/70 hover:text-white hover:bg-[#343541]"
             >
               {item.icon && <span className="text-base">{item.icon}</span>}
-              <span className={item.icon ? "hidden sm:inline" : ""}>{getTranslatedLabel(item.label)}</span>
+              <span className={item.icon ? "hidden sm:inline" : ""}>{item.label}</span>
             </button>
           ))}
         </div>

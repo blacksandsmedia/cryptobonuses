@@ -1,38 +1,20 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import LanguageSelector from './LanguageSelector';
-import CryptoTicker from './CryptoTicker';
 import Newsletter from './Newsletter';
 import SearchModal from './SearchModal';
-
-
-interface Settings {
-  id: string;
-  siteName: string;
-  siteTitle: string;
-  logoUrl: string | null;
-  faviconUrl: string | null;
-  hideCryptoTicker: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import CryptoTicker from './CryptoTicker';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
+  faviconUrl?: string;
 }
 
-export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
+export default function ConditionalLayout({ children, faviconUrl }: ConditionalLayoutProps) {
   const pathname = usePathname();
-  
-  // Check if we're on a language-specific page
-  const supportedLanguages = ['pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
-  const isLanguagePage = supportedLanguages.some(lang => 
-    pathname?.startsWith(`/${lang}/`) || pathname === `/${lang}`
-  );
-
   const isAdminPage = pathname?.startsWith('/admin');
   const currentYear = new Date().getFullYear();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -92,15 +74,16 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
 
           {/* Logo - Centered on Mobile */}
           <div className="flex-1 flex justify-center md:flex-none md:justify-start">
-            <a href="/" className="flex items-center">
-              <img
+            <Link href="/" className="flex items-center">
+              <Image
                 src="https://cdn.prod.website-files.com/67dd29ae7952086f714105e7/67e11433aaedad5402a3d9c5_CryptoBonuses%20Logo%20Main.webp"
                 alt="CryptoBonuses - Bitcoin Casino Bonuses"
                 width={240}
                 height={50}
+                priority
                 className="h-[50px] w-auto"
               />
-            </a>
+            </Link>
           </div>
           
           {/* Desktop Navigation Menu */}
@@ -138,7 +121,6 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
-            <LanguageSelector />
           </nav>
           
           {/* Search button on mobile */}
@@ -221,11 +203,6 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
                   </a>
                 )}
               </div>
-
-              {/* Language Selector for Mobile */}
-              <div className="mt-4 pt-4 border-t border-[#404055] flex justify-center">
-                <LanguageSelector />
-              </div>
               
               {/* Menu Footer */}
               <div className="mt-6 pt-4 border-t border-[#404055] text-center">
@@ -250,8 +227,8 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
         {children}
       </div>
 
-      {/* Newsletter Section - Only render on non-language pages */}
-      {!isLanguagePage && <Newsletter />}
+      {/* Newsletter Section */}
+      <Newsletter />
 
       <footer className="border-t border-[#404055] text-[#a4a5b0] py-8">
         <div className="container mx-auto px-4">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from '@/contexts/TranslationContext';
 
 interface OfferButtonProps {
   affiliateLink: string | null;
@@ -18,16 +17,6 @@ export default function OfferButton({
   size = 'default',
   isSticky = false
 }: OfferButtonProps) {
-  // Add translation support with fallback
-  let t;
-  try {
-    const translation = useTranslation();
-    t = translation.t;
-  } catch {
-    // Not in translation context, return English fallbacks
-    t = () => 'Get Bonus';
-  }
-
   const trackOfferClick = async () => {
     if (!casinoId || !bonusId) return;
     
@@ -85,13 +74,13 @@ export default function OfferButton({
     >
       {isSticky ? (
         <span className="flex items-center gap-1.5">
-          <span>{t('casino.claimNow') || 'Claim Now'}</span>
+          <span>Claim Now</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
             <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </span>
       ) : (
-        t('casino.getBonus') || "Get Bonus"
+        "Get Bonus"
       )}
     </a>
   );

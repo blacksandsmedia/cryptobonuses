@@ -1,43 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslation } from '@/contexts/TranslationContext';
+import React, { useState, useEffect } from 'react';
 
 interface CopyCodeButtonProps {
   code: string;
-  size?: 'small' | 'large';
+  size?: 'default' | 'large';
   casinoId?: string;
-  bonusId?: string | undefined;
-  isSticky?: boolean;
+  bonusId?: string;
   showUsageCount?: boolean;
+  isSticky?: boolean;
   affiliateLink?: string | null;
 }
 
 export default function CopyCodeButton({ 
   code, 
-  size = 'small', 
+  size = 'default', 
   casinoId, 
   bonusId,
-  isSticky = false,
   showUsageCount = false,
+  isSticky = false,
   affiliateLink
 }: CopyCodeButtonProps) {
   const [copied, setCopied] = useState(false);
   const [usageCount, setUsageCount] = useState<number | null>(null);
-  
-  // Add translation support with fallback
-  let t;
-  try {
-    const translation = useTranslation();
-    t = translation.t;
-  } catch {
-    // Not in translation context, return English fallbacks
-    const englishTranslations: Record<string, string> = {
-      'casino.copyCode': 'Copy Code',
-      'casino.codeCopied': 'Copied!'
-    };
-    t = (key: string) => englishTranslations[key] || key;
-  }
   const displayCode = size === 'large' ? code : (code.length > 10 ? `${code.slice(0, 10)}..` : code);
 
   // Fetch usage count if needed
@@ -126,7 +111,7 @@ export default function CopyCodeButton({
           <span className={size === 'large' 
             ? 'text-xl md:text-2xl font-medium text-white' 
             : `text-sm md:text-base font-medium text-white ${isSticky ? 'text-base md:text-lg' : ''}`}>
-            {copied ? (t('casino.codeCopied') || 'Copied!') : displayCode}
+            {copied ? 'Copied!' : displayCode}
           </span>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`${size === 'large' ? 'w-6 h-6 absolute right-4' : 'w-5 h-5 flex-shrink-0'} opacity-80 group-hover:text-[#68D08B] group-hover:opacity-100`}>
@@ -136,8 +121,7 @@ export default function CopyCodeButton({
       </button>
       {showUsageCount && usageCount !== null && (
         <div className="text-white/70 text-xs mt-1 text-center">
-          {t('casino.usedCount', { count: usageCount, unit: usageCount === 1 ? t('casino.time') || 'time' : t('casino.times') || 'times' }) 
-            || `Used ${usageCount} ${usageCount === 1 ? 'time' : 'times'} today`}
+          Used {usageCount} {usageCount === 1 ? 'time' : 'times'} today
         </div>
       )}
     </div>

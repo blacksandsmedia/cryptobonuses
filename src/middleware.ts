@@ -48,45 +48,35 @@ const CASINO_REDIRECTS = new Map([
   ['bovada', 'bovada.lv'],
   ['oshi', 'oshi.io'],
   ['bitcasino', 'bitcasino.io'],
-  ['7bit', '7bitcasino.com'],
-  ['bspin', 'bspin.io'],
-  ['crashino', 'crashino.com'],
-  ['duelbits', 'duelbits.com'],
-  ['everygame', 'everygame.eu'],
-  ['mega-dice', 'megadice.com'],
-  ['metaspins', 'metaspins.com'],
-  ['roobet', 'roobet.com'],
-  ['rollbit', 'rollbit.com'],
-  ['stake', 'stake.com'],
-  ['thunderpick', 'thunderpick.io'],
-  ['wolfbet', 'wolfbet.com'],
-  ['wazamba', 'wazamba.com'],
-  ['winz-io', 'winz.io'],
-  ['vave', 'vave.com'],
-  ['sportsbet-io', 'sportsbet.io'],
-  ['gamdom', 'gamdom.com'],
-  ['888starz', '888starz.bet'],
-  ['betpanda', 'betpanda.io'],
-  ['casinoin', 'casinoin.io'],
-  ['coinplay', 'coinplay.com'],
-  ['moonwin', 'moonwin.com'],
-  ['1xbit', '1xbit.com'],
-  ['0xbet', '0xbet.com'],
-  ['cryptogames', 'cryptogames.com'],
-  ['slots-palace', 'slotspalace.com'],
-  ['weiss-bet', 'weiss.bet'],
-  ['cosmobet', 'cosmobet.com'],
-  ['casinozer', 'casinozer.com'],
-  ['mbit', 'mbit.casino'],
-  ['crypto-games', 'cryptogames.com'],
-  ['betchain', 'betchain.com'],
-  ['betonic', 'betonic.com'],
-  ['bitsler', 'bitsler.com'],
-  ['freebitco-in', 'freebitco.in'],
-  ['primedice', 'primedice.com'],
-  ['chipstars', 'chipstars.bet'],
+  ['trustdice', 'trustdice.win'],
   ['chips-gg', 'chips.gg'],
-  ['bitdice', 'bitdice.me'],
+  ['7bit-casino', '7bitcasino.com'],
+  ['gamdom', 'gamdom.com'],
+  ['betchain', 'betchain.com'],
+  ['rollbit', 'rollbit.com'],
+  ['cryptoleo', 'cryptoleo.com'],
+  ['1xbit', '1xbit1.com'],
+  ['metaspins', 'metaspins.com'],
+  ['coinpoker', 'coinpoker.com'],
+  ['justbit', 'justbit.io'],
+  ['roobet', 'roobet.com'],
+  ['thunderpick', 'thunderpick.io'],
+  ['sportsbet', 'sportsbet.io'],
+  ['vave', 'vave.com'],
+  ['tether-bet', 'tether.bet'],
+  ['stake', 'stake.com'],
+  ['bitsler', 'bitsler.com'],
+  ['crashino', 'crashino.com/en'],
+  ['cryptogames', 'crypto-games.io'],
+  ['betpanda', 'betpanda.io'],
+  ['sirwin', 'sirwin.com'],
+  ['primedice', 'primedice.com'],
+  ['destinyx', 'destinyx.com'],
+  ['lottery', 'spin'],
+  // Add the missing redirects that were causing issues
+  ['phemex', ''],
+  ['primexbt', ''],
+  ['app', ''],
   ['crypto-com', ''],
   ['kucoin', ''],
   ['bingx', ''],
@@ -96,52 +86,16 @@ const CASINO_REDIRECTS = new Map([
   ['pixel-gg', ''],
 ]);
 
-// Supported locales for simple locale detection
-const supportedLocales = ['en', 'pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
-
-// Helper function to extract locale from pathname
-function getLocaleFromPathname(pathname: string): string | null {
-  const segments = pathname.split('/');
-  const firstSegment = segments[1];
-  return supportedLocales.includes(firstSegment) ? firstSegment : null;
-}
-
-// Helper function to remove locale from pathname
-function removeLocaleFromPathname(pathname: string): string {
-  const segments = pathname.split('/');
-  const firstSegment = segments[1];
-  if (supportedLocales.includes(firstSegment)) {
-    return '/' + segments.slice(2).join('/');
-  }
-  return pathname;
-}
-
-// Middleware that handles i18n, admin routes, API routes, and casino redirects
+// Middleware that handles admin routes, API routes, and casino redirects
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-
-  // Skip i18n handling for specific paths
-  if (
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/_next') ||
-    pathname.includes('/favicon.ico') ||
-    pathname.includes('/sitemap') ||
-    pathname.includes('/robots')
-  ) {
-    // Handle these paths with existing logic
-    return handleNonI18nPaths(request);
-  }
-
-  // Extract locale from pathname for casino redirect checks
-  const detectedLocale = getLocaleFromPathname(pathname);
-  const pathWithoutLocale = removeLocaleFromPathname(pathname);
-
+  
   // Handle casino redirects BEFORE Next.js processes trailing slashes
   // This prevents double redirects (308 for trailing slash removal + 301 for casino redirect)
   
-  // Check for casino redirects with trailing slash (e.g., /stake/ or /pl/stake/)
-  if (pathWithoutLocale.endsWith('/') && pathWithoutLocale.length > 1) {
-    const casinoSlug = pathWithoutLocale.slice(1, -1); // Remove leading slash and trailing slash
+  // Check for casino redirects with trailing slash (e.g., /stake/)
+  if (pathname.endsWith('/') && pathname.length > 1) {
+    const casinoSlug = pathname.slice(1, -1); // Remove leading slash and trailing slash
     if (CASINO_REDIRECTS.has(casinoSlug)) {
       const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
       const destination = targetDomain === '' ? '/' : `/${targetDomain}`;
@@ -155,9 +109,9 @@ export async function middleware(request: NextRequest) {
     }
   }
   
-  // Check for casino redirects without trailing slash (e.g., /stake or /pl/stake)
-  if (pathWithoutLocale.startsWith('/') && !pathWithoutLocale.endsWith('/') && pathWithoutLocale.split('/').length === 2) {
-    const casinoSlug = pathWithoutLocale.slice(1); // Remove leading slash
+  // Check for casino redirects without trailing slash (e.g., /stake)
+  if (pathname.startsWith('/') && !pathname.endsWith('/') && pathname.split('/').length === 2) {
+    const casinoSlug = pathname.slice(1); // Remove leading slash
     if (CASINO_REDIRECTS.has(casinoSlug)) {
       const targetDomain = CASINO_REDIRECTS.get(casinoSlug);
       const destination = targetDomain === '' ? '/' : `/${targetDomain}`;
@@ -170,19 +124,7 @@ export async function middleware(request: NextRequest) {
       );
     }
   }
-
-  // For locale-prefixed paths, continue with the request
-  // Set locale header for the application to use
-  const currentLocale = getLocaleFromPathname(pathname) || 'en';
-  const response = NextResponse.next();
-  response.headers.set('x-locale', currentLocale);
-  return response;
-}
-
-// Handle non-i18n paths (API, static files, etc.)
-async function handleNonI18nPaths(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
+  
   // Handle preflight OPTIONS requests for CORS
   if (request.method === 'OPTIONS') {
     const response = new NextResponse(null, { status: 204 });
@@ -246,14 +188,35 @@ async function handleNonI18nPaths(request: NextRequest) {
     return response;
   }
   
-  // Admin route authentication
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const token = request.cookies.get('admin-token');
+  // Skip middleware for login page
+  if (pathname === '/admin/login') {
+    return response;
+  }
+  
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    // Get admin-token from cookies
+    const token = request.cookies.get('admin-token')?.value;
     
+    // Redirect to login if no token found
     if (!token) {
-      const redirectResponse = NextResponse.redirect(new URL('/admin/login', request.url));
+      console.log('No admin token found, redirecting to login');
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+    
+    try {
+      const decoded = verifyJWT(token, process.env.AUTH_SECRET || 'cryptobonuses-secret-key');
       
-      // Clear any existing admin-token cookie
+      // Check if user has admin role
+      if (decoded.role !== 'ADMIN') {
+        console.log('User does not have admin role, redirecting to login');
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+      
+    } catch (error) {
+      console.log('Token verification failed, redirecting to login:', error.message);
+      const redirectResponse = NextResponse.redirect(new URL('/admin/login', request.url));
+      // Clear the invalid token
       redirectResponse.cookies.set('admin-token', '', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -271,7 +234,7 @@ async function handleNonI18nPaths(request: NextRequest) {
 // Configure the paths that middleware should run on
 export const config = {
   matcher: [
-    // Match all paths except specific static files
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.).*)',
+    // Match all paths except static files and Next.js internals
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }; 

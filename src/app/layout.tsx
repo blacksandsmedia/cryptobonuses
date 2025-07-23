@@ -11,7 +11,6 @@ import { NotificationProvider } from '@/components/NotificationContext';
 import VisitorTracker from '@/components/VisitorTracker';
 import Script from 'next/script';
 import { getHomepageModifiedTime } from '@/lib/page-modified-time';
-
 // Initialize application startup (upload directory, etc.)
 import '@/lib/startup';
 
@@ -98,8 +97,6 @@ export default async function RootLayout({
   } catch (error) {
     console.error('Error fetching settings:', error);
   }
-
-
 
   // Add cache busting parameter for favicon
   const cacheBuster = Date.now();
