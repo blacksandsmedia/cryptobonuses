@@ -269,34 +269,31 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
       {/* Newsletter Section - Only render on non-language pages */}
       {!isLanguagePage && <Newsletter />}
 
-      {/* Footer - Only render on non-language pages */}
-      {!isLanguagePage && (
-        <footer className="border-t border-[#404055] text-[#a4a5b0] py-8">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-6 sm:mb-0">
-                <a href="/" className="text-[#68D08B] hover:text-[#5abc7a] transition-all duration-200 hover:translate-y-[-1px] font-medium text-center sm:text-left text-base">
-                  CryptoBonuses.com
+      <footer className="border-t border-[#404055] text-[#a4a5b0] py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-6 sm:mb-0">
+              <a href="/" className="text-[#68D08B] hover:text-[#5abc7a] transition-all duration-200 hover:translate-y-[-1px] font-medium text-center sm:text-left text-base">
+                CryptoBonuses.com
+              </a>
+              <div className="flex items-center justify-center sm:justify-start gap-6 mt-4 sm:mt-0 text-sm">
+                <a href="/privacy" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
+                  {t('footer.privacyPolicy') || 'Privacy Policy'}
                 </a>
-                <div className="flex items-center justify-center sm:justify-start gap-6 mt-4 sm:mt-0 text-sm">
-                  <a href="/privacy" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                    {t('footer.privacyPolicy') || 'Privacy Policy'}
-                  </a>
-                  <a href="/terms" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                    {t('footer.terms') || 'Terms'}
-                  </a>
-                  <a href="/contact" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                    {t('footer.contact') || 'Contact'}
-                  </a>
-                </div>
-              </div>
-              <div className="text-center sm:text-right opacity-70 text-xs">
-                © {currentYear} CryptoBonuses. {t('footer.copyright') || 'All rights reserved'}.
+                <a href="/terms" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
+                  {t('footer.terms') || 'Terms'}
+                </a>
+                <a href="/contact" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
+                  {t('footer.contact') || 'Contact'}
+                </a>
               </div>
             </div>
+            <div className="text-center sm:text-right opacity-70 text-xs">
+              © {currentYear} CryptoBonuses. {t('footer.copyright') || 'All rights reserved'}.
+            </div>
           </div>
-        </footer>
-      )}
+        </div>
+      </footer>
       
       {/* Search Modal */}
       <SearchModal 
