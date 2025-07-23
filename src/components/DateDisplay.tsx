@@ -25,7 +25,9 @@ export default function DateDisplay({
     // Not in translation context, return English fallbacks
     const englishTranslations: Record<string, string> = {
       'casino.published': 'Published',
-      'casino.lastUpdated': 'Last Updated'
+      'casino.lastUpdated': 'Last Updated',
+      'common.published': 'Published',
+      'common.modified': 'Modified'
     };
     t = (key: string) => englishTranslations[key] || key;
   }

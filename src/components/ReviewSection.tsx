@@ -60,7 +60,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ casinoName, casinoId, rev
       'reviews.username': 'Username',
       'reviews.yourReview': 'Your Review',
       'reviews.submitReview': 'Submit Review',
-      'reviews.submitting': 'Submitting...'
+      'reviews.submitting': 'Submitting...',
+      'reviews.no_reviews': 'No reviews',
+      'reviews.write_review_button': 'Write a Review'
     };
     t = (key: string) => englishTranslations[key] || key;
   }

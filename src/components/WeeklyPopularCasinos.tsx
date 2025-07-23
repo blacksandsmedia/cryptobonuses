@@ -39,9 +39,14 @@ export default function WeeklyPopularCasinos({ currentCasinoSlug }: WeeklyPopula
     // Not in translation context, return English fallbacks
     const englishTranslations: Record<string, string> = {
       'casino.popularThisWeek': 'Popular This Week',
-      'casino.topCasinos': 'Top Casinos',
+      'casino.topCasinos': 'Top Casinos', 
       'casino.viewBonus': 'View Bonus',
-      'casino.copyCode': 'Copy Code'
+      'casino.copyCode': 'Copy Code',
+      'casino.mostPopularCasinos': 'Most Popular Crypto Casinos',
+      'casino.trending': 'Trending',
+      'casino.popularCasinosDescription': 'Discover the top crypto casinos that players are choosing this week, ranked by community activity.',
+      'casino.claims': 'claims',
+      'casino.viewAllCryptoCasinos': 'View All Crypto Casinos'
     };
     t = (key: string) => englishTranslations[key] || key;
   }

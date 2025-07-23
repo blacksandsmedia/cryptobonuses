@@ -37,7 +37,9 @@ export default function TableOfContents({ items }: TableOfContentsProps) {
       'casino.moreOffers': 'More Offers',
       'casino.faq': 'FAQ',
       'casino.popularThisWeek': 'Popular This Week',
-      'casino.recentUpdates': 'Recent Updates'
+      'casino.recentUpdates': 'Recent Updates',
+      'casino.recent': 'Recent',
+      'casino.updates': 'Updates'
     };
     t = (key: string) => englishTranslations[key] || key;
   }
