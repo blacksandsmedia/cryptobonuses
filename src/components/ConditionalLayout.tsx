@@ -7,7 +7,7 @@ import LanguageSelector from './LanguageSelector';
 import CryptoTicker from './CryptoTicker';
 import Newsletter from './Newsletter';
 import SearchModal from './SearchModal';
-import { useTranslation } from '@/contexts/TranslationContext';
+
 
 interface Settings {
   id: string;
@@ -39,30 +39,6 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [hideCryptoTicker, setHideCryptoTicker] = useState(false);
   const [hideBuyCryptoButton, setHideBuyCryptoButton] = useState(false);
-
-  // Add translation support with fallback - improved detection
-  let t;
-  let hasTranslationContext = false;
-  
-  try {
-    const translation = useTranslation();
-    if (translation && translation.t) {
-      t = translation.t;
-      hasTranslationContext = true;
-    } else {
-      throw new Error('No translation context');
-    }
-  } catch {
-    // Not in translation context, return English fallbacks
-    hasTranslationContext = false;
-    const englishTranslations: Record<string, string> = {
-      'footer.privacyPolicy': 'Privacy Policy',
-      'footer.terms': 'Terms',
-      'footer.contact': 'Contact',
-      'footer.copyright': 'All rights reserved'
-    };
-    t = (key: string) => englishTranslations[key] || key;
-  }
 
   // Fetch visibility settings
   useEffect(() => {
@@ -286,18 +262,18 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
               </a>
               <div className="flex items-center justify-center sm:justify-start gap-6 mt-4 sm:mt-0 text-sm">
                 <a href="/privacy" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                  {t('footer.privacyPolicy') || 'Privacy Policy'}
+                  Privacy Policy
                 </a>
                 <a href="/terms" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                  {t('footer.terms') || 'Terms'}
+                  Terms
                 </a>
                 <a href="/contact" className="text-[#a4a5b0] hover:text-[#68D08B] transition-all duration-200 hover:translate-y-[-1px]">
-                  {t('footer.contact') || 'Contact'}
+                  Contact
                 </a>
               </div>
             </div>
             <div className="text-center sm:text-right opacity-70 text-xs">
-              © {currentYear} CryptoBonuses. {t('footer.copyright') || 'All rights reserved'}.
+              © {currentYear} CryptoBonuses. All rights reserved.
             </div>
           </div>
         </div>
