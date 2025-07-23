@@ -21,8 +21,11 @@ export default function RecentlyViewed({ currentCasinoSlug }: RecentlyViewedProp
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'common.recentlyViewed': 'Recently Viewed'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   useEffect(() => {

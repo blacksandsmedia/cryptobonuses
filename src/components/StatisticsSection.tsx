@@ -27,8 +27,16 @@ export default function StatisticsSection() {
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'statistics.title': 'CryptoBonuses by the Numbers',
+      'statistics.description': 'Join thousands of players who trust CryptoBonuses to find the best crypto casino offers',
+      'statistics.totalUsers': 'Total Users',
+      'statistics.bonusesClaimed': 'Bonuses Claimed',
+      'statistics.activeOffers': 'Active Offers',
+      'statistics.totalValue': 'Total Claimed Value'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   useEffect(() => {

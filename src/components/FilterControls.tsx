@@ -23,8 +23,18 @@ export default function FilterControls({ filters, onFilterChange, casinos, casin
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'homepage.searchPlaceholder': 'Search bonuses...',
+      'homepage.allOffers': 'All Types',
+      'homepage.welcome': 'Welcome',
+      'homepage.noDeposit': 'No Deposit',
+      'homepage.freeSpins': 'Free Spins',
+      'homepage.reload': 'Reload',
+      'homepage.cashback': 'Cashback',
+      'homepage.deposit': 'Deposit'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   // Create dynamic placeholder text

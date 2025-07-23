@@ -14,8 +14,18 @@ export default function Newsletter() {
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'newsletter.title': 'Stay Updated with the Latest Casino Bonuses',
+      'newsletter.description': 'Get exclusive bonus codes, new casino reviews, and special offers delivered straight to your inbox. Never miss out on the best crypto casino deals!',
+      'newsletter.emailPlaceholder': 'Enter your email address',
+      'newsletter.subscribing': 'Subscribing...',
+      'newsletter.subscribe': 'Subscribe',
+      'newsletter.trust.noSpam': 'No spam, ever',
+      'newsletter.trust.weeklyUpdates': 'Weekly updates',
+      'newsletter.trust.unsubscribe': 'Unsubscribe anytime'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

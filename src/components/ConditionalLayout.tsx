@@ -39,8 +39,14 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
     const translation = useTranslation();
     t = translation.t;
   } catch {
-    // Not in translation context, use fallback
-    t = (key: string) => key.split('.').pop() || key;
+    // Not in translation context, return English fallbacks
+    const englishTranslations: Record<string, string> = {
+      'footer.privacyPolicy': 'Privacy Policy',
+      'footer.terms': 'Terms',
+      'footer.contact': 'Contact',
+      'footer.copyright': 'All rights reserved'
+    };
+    t = (key: string) => englishTranslations[key] || key;
   }
 
   // Fetch visibility settings
