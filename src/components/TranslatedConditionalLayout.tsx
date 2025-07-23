@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslation } from '@/contexts/TranslationContext';
+import Newsletter from './Newsletter';
 
 interface TranslatedConditionalLayoutProps {
   children: React.ReactNode;
@@ -35,6 +36,9 @@ export default function TranslatedConditionalLayout({ children }: TranslatedCond
       <div style={{ paddingTop: '64px' }}>
         {children}
       </div>
+
+      {/* Newsletter Section */}
+      <Newsletter />
 
       {/* Simple footer */}
       <footer className="bg-[#2a2b36] border-t border-[#404055] py-8 px-4">
