@@ -40,13 +40,21 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const [hideCryptoTicker, setHideCryptoTicker] = useState(false);
   const [hideBuyCryptoButton, setHideBuyCryptoButton] = useState(false);
 
-  // Add translation support with fallback
+  // Add translation support with fallback - improved detection
   let t;
+  let hasTranslationContext = false;
+  
   try {
     const translation = useTranslation();
-    t = translation.t;
+    if (translation && translation.t) {
+      t = translation.t;
+      hasTranslationContext = true;
+    } else {
+      throw new Error('No translation context');
+    }
   } catch {
     // Not in translation context, return English fallbacks
+    hasTranslationContext = false;
     const englishTranslations: Record<string, string> = {
       'footer.privacyPolicy': 'Privacy Policy',
       'footer.terms': 'Terms',
