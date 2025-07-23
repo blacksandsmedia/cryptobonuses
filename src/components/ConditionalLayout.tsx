@@ -26,6 +26,13 @@ interface ConditionalLayoutProps {
 
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname();
+  
+  // Check if we're on a language-specific page
+  const supportedLanguages = ['pl', 'tr', 'es', 'pt', 'vi', 'ja', 'ko', 'fr'];
+  const isLanguagePage = supportedLanguages.some(lang => 
+    pathname?.startsWith(`/${lang}/`) || pathname === `/${lang}`
+  );
+
   const isAdminPage = pathname?.startsWith('/admin');
   const currentYear = new Date().getFullYear();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -259,8 +266,8 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
         {children}
       </div>
 
-      {/* Newsletter Section */}
-      <Newsletter />
+      {/* Newsletter Section - Only render on non-language pages */}
+      {!isLanguagePage && <Newsletter />}
 
       <footer className="border-t border-[#404055] text-[#a4a5b0] py-8">
         <div className="container mx-auto px-4">
